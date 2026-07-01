@@ -8,56 +8,22 @@ export const FOLDER_COLORS = {
   green: { base: '#5db84a', light: '#a6e07a', dark: '#3a8230', outline: '#1f4a18' },
 } satisfies Record<string, FolderColors>;
 
-export const FOLDER_OUTLINE_DARK = {
-  amber: '#3a240c',
-  blue:  '#102b44',
-  green: '#173812',
-} as const;
-
 export interface Theme {
-  id: string;
-  name: string;
   pageBg: string;
   nameColor: string;
   nameShadow: string;
   iconColor: string;
   iconHoverColor: string;
   labelColor: string;
-  outlineOverride?: Record<'amber' | 'blue' | 'green', string>;
 }
 
-export const THEMES: Record<string, Theme> = {
-  light: {
-    id: 'light',
-    name: 'Paper Light',
-    pageBg: '#f4f1e9',
-    nameColor: '#211f1b',
-    nameShadow: '3px 3px 0 rgba(0,0,0,.10)',
-    iconColor: '#7c766a',
-    iconHoverColor: '#211f1b',
-    labelColor: '#3b362d',
-  },
-  dark: {
-    id: 'dark',
-    name: 'Night',
-    pageBg: '#15161b',
-    nameColor: '#ffd76b',
-    nameShadow: '3px 3px 0 #000',
-    iconColor: '#82858f',
-    iconHoverColor: '#ededf0',
-    labelColor: '#cdcfd6',
-    outlineOverride: FOLDER_OUTLINE_DARK,
-  },
-  cream: {
-    id: 'cream',
-    name: 'Cream',
-    pageBg: '#ece4d3',
-    nameColor: '#34302a',
-    nameShadow: '3px 3px 0 rgba(0,0,0,.10)',
-    iconColor: '#857c6b',
-    iconHoverColor: '#34302a',
-    labelColor: '#4a443a',
-  },
+export const THEME: Theme = {
+  pageBg: '#ece4d3',
+  nameColor: '#34302a',
+  nameShadow: '3px 3px 0 rgba(0,0,0,.10)',
+  iconColor: '#857c6b',
+  iconHoverColor: '#34302a',
+  labelColor: '#4a443a',
 };
 
 export const PROFILE = {

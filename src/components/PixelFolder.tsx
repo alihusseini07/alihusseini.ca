@@ -101,7 +101,7 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', on
   };
 
   const labelStyle: CSSProperties = {
-    fontFamily: "'Silkscreen', monospace",
+    fontFamily: "'Press Start 2P', monospace",
     fontSize: 13,
     letterSpacing: 0.5,
     color: labelColor,
