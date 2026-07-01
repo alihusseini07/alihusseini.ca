@@ -101,6 +101,7 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', on
   };
 
   const labelStyle: CSSProperties = {
+    display: 'inline-block',
     fontFamily: "'Press Start 2P', monospace",
     fontSize: 13,
     letterSpacing: 0.5,
@@ -108,6 +109,8 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', on
     textAlign: 'center',
     textTransform: 'uppercase',
     whiteSpace: 'nowrap',
+    transform: 'scaleY(1.4)',
+    transformOrigin: 'bottom',
   };
 
   return (

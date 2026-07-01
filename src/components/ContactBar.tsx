@@ -10,7 +10,7 @@ interface IconLinkProps {
 }
 
 function IconLink({ href, label, external = true, color, hoverColor, children }: IconLinkProps) {
-  const style: CSSProperties = { display: 'flex', color, transition: 'transform .18s ease, color .18s ease' };
+  const style: CSSProperties = { display: 'flex', color, transition: 'transform .16s ease, color .16s ease' };
   return (
     <a
       href={href}
@@ -32,7 +32,7 @@ function IconLink({ href, label, external = true, color, hoverColor, children }:
   );
 }
 
-const S = 23;
+const S = 22;
 
 export interface ContactBarProps {
   links: { linkedin: string; github: string; resume: string; email: string };
@@ -42,7 +42,7 @@ export interface ContactBarProps {
 
 export default function ContactBar({ links, color, hoverColor }: ContactBarProps) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 26 }}>
+    <nav style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
       <IconLink href={links.linkedin} label="LinkedIn" color={color} hoverColor={hoverColor}>
         <svg width={S} height={S} viewBox="0 0 24 24" fill="currentColor">
           <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0z" />
@@ -70,6 +70,6 @@ export default function ContactBar({ links, color, hoverColor }: ContactBarProps
           <path d="m3 7.5 9 6 9-6" />
         </svg>
       </IconLink>
-    </div>
+    </nav>
   );
 }
