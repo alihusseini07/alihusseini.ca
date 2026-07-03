@@ -51,6 +51,10 @@ export default function Portfolio() {
   const [modalClosing, setModalClosing] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [mediaSize, setMediaSize] = useState({ w: 500, h: 300 });
+  const resize = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
+  const [resizing, setResizing] = useState(false);
+
   const onMove = useCallback((e: MouseEvent) => {
     if (!drag.current || !boardRef.current) return;
     const b = boardRef.current.getBoundingClientRect();
@@ -70,6 +74,32 @@ export default function Portfolio() {
       window.removeEventListener('drop', block);
     };
   }, []);
+
+  const onResizeMove = useCallback((e: MouseEvent) => {
+    if (!resize.current) return;
+    const { startX, startY, startW, startH } = resize.current;
+    const w = Math.min(900, Math.max(260, startW + (e.clientX - startX)));
+    const h = Math.min(640, Math.max(150, startH + (e.clientY - startY)));
+    setMediaSize({ w, h });
+  }, []);
+
+  const onResizeUp = useCallback(() => {
+    resize.current = null;
+    setResizing(false);
+    window.removeEventListener('mousemove', onResizeMove);
+    window.removeEventListener('mouseup', onResizeUp);
+    window.removeEventListener('blur', onResizeUp);
+  }, [onResizeMove]);
+
+  const startResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resize.current = { startX: e.clientX, startY: e.clientY, startW: mediaSize.w, startH: mediaSize.h };
+    setResizing(true);
+    window.addEventListener('mousemove', onResizeMove);
+    window.addEventListener('mouseup', onResizeUp);
+    window.addEventListener('blur', onResizeUp);
+  };
 
   const onUp = useCallback(() => {
     drag.current = null;
@@ -194,19 +224,36 @@ export default function Portfolio() {
           </div>
 
           {/* MEDIA */}
-          <div key={`media-${af}-${sel}`} onMouseDown={startDrag('media')} style={cardStyle('media', 500, -0.8)}>
+          <div key={`media-${af}-${sel}`} onMouseDown={startDrag('media')} style={cardStyle('media', mediaSize.w, -0.8)}>
             <div className="enter-pop" style={{ ...enter(0, 60), background: '#fffdf6', padding: '12px 12px 14px', border: '1px solid #e4d9bf', boxShadow: '0 13px 26px rgba(52,48,42,.2)', position: 'relative' }}>
               <div style={{ position: 'absolute', top: -11, left: 34, width: 78, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(-3deg)' }} />
               <div style={{ position: 'absolute', top: -11, right: 34, width: 78, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(2deg)' }} />
-              <div style={{ position: 'relative', width: '100%', height: 300, background: '#ece4d3', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', width: '100%', height: mediaSize.h, background: '#ece4d3', overflow: 'hidden' }}>
                 {d.video ? (
-                  <VideoSlot id={`${af}-${sel}-main`} src={d.video} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: 300 }} />
+                  <VideoSlot id={`${af}-${sel}-main`} src={d.video} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: mediaSize.h }} />
                 ) : d.image ? (
-                  <ImageSlot id={`${af}-${sel}-main-img`} src={d.image} style={{ display: 'block', width: '100%', height: 300 }} />
+                  <ImageSlot id={`${af}-${sel}-main-img`} src={d.image} style={{ display: 'block', width: '100%', height: mediaSize.h }} />
                 ) : (
-                  <VideoSlot id={`${af}-${sel}-main`} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: 300 }} />
+                  <VideoSlot id={`${af}-${sel}-main`} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: mediaSize.h }} />
                 )}
               </div>
+              <div
+                onMouseDown={startResize}
+                title="Drag to resize"
+                style={{
+                  position: 'absolute',
+                  right: 2,
+                  bottom: 2,
+                  width: 18,
+                  height: 18,
+                  cursor: 'nwse-resize',
+                  zIndex: 5,
+                  background: resizing ? '#34302a' : 'transparent',
+                  backgroundImage: resizing
+                    ? undefined
+                    : 'linear-gradient(135deg, transparent 0 40%, #857c6b 40% 46%, transparent 46% 62%, #857c6b 62% 68%, transparent 68% 84%, #857c6b 84% 90%, transparent 90%)',
+                }}
+              />
             </div>
           </div>
 
