@@ -18,3 +18,84 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* smooth (big moves) */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(10px) scale(.95); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes modal-out {
+  to { opacity: 0; transform: translateY(8px) scale(.96); }
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+}
+
+@keyframes overlay-out {
+  to { opacity: 0; }
+}
+
+@keyframes page-out {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+/* folder dive: camera zooms into the clicked folder, interior grows in */
+@keyframes dive-out {
+  to { opacity: 0; transform: scale(2.2); }
+}
+
+@keyframes inside-in {
+  from { opacity: 0; transform: scale(.92); }
+  to { opacity: 1; transform: none; }
+}
+
+/* folder back-out: interior shrinks into the folder, exterior pulls back */
+@keyframes back-out {
+  to { opacity: 0; transform: scale(.55); }
+}
+
+@keyframes outside-in {
+  from { opacity: 0; transform: scale(2.2); }
+  to { opacity: 1; transform: none; }
+}
+
+/* stepped/retro (micro) */
+@keyframes pop-step {
+  0% { opacity: 0; transform: scale(.7); }
+  60% { transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.enter-rise { animation: rise-in .32s cubic-bezier(.2,.85,.3,1) both; }
+.enter-drop { animation: drop-in .28s cubic-bezier(.2,.85,.3,1) both; }
+.enter-pop { animation: pop-step .26s steps(4, end) both; }
+.modal-enter { animation: modal-in .18s cubic-bezier(.2,.85,.3,1) both; }
+.modal-exit { animation: modal-out .16s ease-in both; }
+.overlay-enter { animation: overlay-in .18s ease both; }
+.overlay-exit { animation: overlay-out .16s ease both; }
+.page-enter { animation: rise-in .26s cubic-bezier(.2,.85,.3,1) both; }
+.page-exit { animation: page-out .2s ease-in both; }
+.page-exit-dive { animation: dive-out .36s cubic-bezier(.5,0,.8,.4) both; }
+.page-enter-inside { animation: inside-in .3s cubic-bezier(.2,.85,.3,1) both; }
+.page-exit-back { animation: back-out .36s cubic-bezier(.5,0,.8,.4) both; }
+.page-enter-outside { animation: outside-in .38s cubic-bezier(.2,.85,.3,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

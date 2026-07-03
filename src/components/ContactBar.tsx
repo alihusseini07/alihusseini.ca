@@ -10,7 +10,7 @@ interface IconLinkProps {
 }
 
 function IconLink({ href, label, external = true, color, hoverColor, children }: IconLinkProps) {
-  const style: CSSProperties = { display: 'flex', color, transition: 'transform .16s ease, color .16s ease' };
+  const style: CSSProperties = { display: 'flex', color, transition: 'transform .16s steps(2, end), color .16s steps(2, end)' };
   return (
     <a
       href={href}

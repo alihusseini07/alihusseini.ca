@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
 import { buildSprites, type FolderPalette } from '../sprites';
+import { play } from '../lib/sound';
 
 export interface PixelFolderProps {
   label: string;
@@ -7,34 +8,8 @@ export interface PixelFolderProps {
   labelColor?: string;
   /** base art width in px (everything scales from 182) */
   width?: number;
-  onClick?: () => void;
-}
-
-function useBlip() {
-  const acRef = useRef<AudioContext | null>(null);
-  return () => {
-    try {
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!Ctx) return;
-      if (!acRef.current) acRef.current = new Ctx();
-      const ac = acRef.current;
-      if (ac.state === 'suspended') void ac.resume();
-      const now = ac.currentTime;
-      [620, 930].forEach((f, i) => {
-        const o = ac.createOscillator();
-        const g = ac.createGain();
-        o.type = 'square';
-        o.frequency.value = f;
-        const t = now + i * 0.075;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.1, t + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
-        o.connect(g).connect(ac.destination);
-        o.start(t);
-        o.stop(t + 0.08);
-      });
-    } catch { /* no-op */ }
-  };
+  /** rect = folder art position at click time (for zoom-into-folder transitions) */
+  onClick?: (rect?: DOMRect) => void;
 }
 
 const PIXELATED: CSSProperties = { imageRendering: 'pixelated' };
@@ -43,7 +18,7 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
   const [open, setOpen] = useState(false);
   const [pop, setPop] = useState(false);
   const popTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const blip = useBlip();
+  const artRef = useRef<HTMLDivElement>(null);
 
   const sprites = useMemo(
     () => buildSprites(palette),
@@ -54,12 +29,14 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
   const r = (n: number) => Math.round(n * s);
 
   const handleClick = () => {
-    blip();
+    play('navigate');
+    const rect = artRef.current?.getBoundingClientRect();
+    setOpen(true);
     setPop(true);
     if (popTimer.current) clearTimeout(popTimer.current);
     popTimer.current = setTimeout(() => {
       setPop(false);
-      onClick?.();
+      onClick?.(rect);
     }, 170);
   };
 
@@ -104,7 +81,7 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: Math.max(12, r(20)), userSelect: 'none' }}>
-      <div style={art} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={handleClick}>
+      <div ref={artRef} style={art} onMouseEnter={() => { play('tick'); setOpen(true); }} onMouseLeave={() => setOpen(false)} onClick={handleClick}>
         <img src={sprites.back} draggable={false} alt="" style={backStyle} />
         <img src={sprites.papers} draggable={false} alt="" style={papersStyle} />
         <img src={sprites.front} draggable={false} alt="" style={frontStyle} />

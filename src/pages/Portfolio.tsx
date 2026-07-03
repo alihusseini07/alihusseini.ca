@@ -1,9 +1,12 @@
 import { useCallback, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ContactBar from '../components/ContactBar';
 import PixelFolder from '../components/PixelFolder';
+import SoundToggle from '../components/SoundToggle';
 import VideoSlot from '../components/VideoSlot';
 import ImageSlot from '../components/ImageSlot';
+import { useTransitionNavigate } from '../components/PageTransition';
+import { play } from '../lib/sound';
+import { enter, MODAL_CLOSE_MS, REDUCED } from '../lib/motion';
 import { FOLDER_COLORS, PROFILE, THEME } from '../tokens';
 import { PORTFOLIO, CATEGORY_META, type Category } from '../data/portfolio';
 
@@ -33,7 +36,7 @@ function fit(k: number, origin: 'top' | 'bottom') {
 }
 
 export default function Portfolio() {
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const boardRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ key: CardKey; dx: number; dy: number } | null>(null);
 
@@ -44,6 +47,9 @@ export default function Portfolio() {
   const [zc, setZc] = useState(4);
   const [z, setZ] = useState<Record<CardKey, number>>(START_Z);
   const [pos, setPos] = useState<Record<CardKey, Pos>>(START_POS);
+  const [dragKey, setDragKey] = useState<CardKey | null>(null);
+  const [modalClosing, setModalClosing] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onMove = useCallback((e: MouseEvent) => {
     if (!drag.current || !boardRef.current) return;
@@ -55,6 +61,8 @@ export default function Portfolio() {
 
   const onUp = useCallback(() => {
     drag.current = null;
+    setDragKey(null);
+    play('drop');
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
   }, [onMove]);
@@ -67,6 +75,8 @@ export default function Portfolio() {
     const b = boardRef.current.getBoundingClientRect();
     const p = pos[key];
     drag.current = { key, dx: e.clientX - (b.left + p.x), dy: e.clientY - (b.top + p.y) };
+    setDragKey(key);
+    play('pickup');
     const nz = zc + 1;
     setZc(nz);
     setZ((prev) => ({ ...prev, [key]: nz }));
@@ -74,16 +84,46 @@ export default function Portfolio() {
     window.addEventListener('mouseup', onUp);
   };
 
-  const cardStyle = (key: CardKey, w: number | 'auto', rot: number): CSSProperties => ({
-    position: 'absolute',
-    left: pos[key].x,
-    top: pos[key].y,
-    width: w,
-    zIndex: z[key],
-    transform: `rotate(${rot}deg)`,
-    cursor: 'grab',
-    userSelect: 'none',
-  });
+  const openModal = (folder: Category) => {
+    play('whooshOpen');
+    setPopupFolder(folder);
+    setModalClosing(false);
+    setView('folder');
+  };
+
+  const closeModal = (then?: () => void) => {
+    if (modalClosing) return;
+    play('whooshClose');
+    if (REDUCED()) {
+      setView('board');
+      then?.();
+      return;
+    }
+    setModalClosing(true);
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => {
+      setModalClosing(false);
+      setView('board');
+      then?.();
+    }, MODAL_CLOSE_MS);
+  };
+
+  const cardStyle = (key: CardKey, w: number | 'auto', rot: number): CSSProperties => {
+    const lifted = dragKey === key;
+    return {
+      position: 'absolute',
+      left: pos[key].x,
+      top: pos[key].y,
+      width: w,
+      zIndex: z[key],
+      transform: `rotate(${rot}deg) scale(${lifted ? 1.03 : 1})`,
+      cursor: lifted ? 'grabbing' : 'grab',
+      userSelect: 'none',
+      filter: lifted ? 'drop-shadow(0 16px 18px rgba(52,48,42,.3))' : 'none',
+      // positions (left/top) must never transition — drag stays instant
+      transition: 'transform .12s steps(3, end), filter .15s ease',
+    };
+  };
 
   const popupOpen = view === 'folder';
   const pf = popupFolder;
@@ -96,7 +136,7 @@ export default function Portfolio() {
   const isExp = af === 'experiences';
   const accent = ACCENTS[sel % 3];
 
-  const goHome = () => navigate('/');
+  const goHome = () => { play('click'); navigate('/', { zoom: 'out' }); };
 
   const page: CSSProperties = { height: '100vh', display: 'flex', flexDirection: 'column', background: '#ece4d3', fontFamily: PIXEL, WebkitFontSmoothing: 'none', overflow: 'hidden' };
   const header: CSSProperties = { flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px', height: 58, background: '#e6dcc6', borderBottom: '2px solid #34302a', boxShadow: '0 2px 0 rgba(52,48,42,.12)', zIndex: 30 };
@@ -117,13 +157,16 @@ export default function Portfolio() {
 
   return (
     <div style={page}>
-      <header style={header}>
+      <header className="enter-drop" style={header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
           <span style={crumbMuted} onClick={goHome}>{PROFILE.name}</span>
           <span style={slash}>/</span>
           <span style={crumbActive}>portfolio</span>
         </div>
-        <ContactBar links={PROFILE.links} color={THEME.iconColor} hoverColor={THEME.iconHoverColor} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <ContactBar links={PROFILE.links} color={THEME.iconColor} hoverColor={THEME.iconHoverColor} />
+          <SoundToggle />
+        </div>
       </header>
 
       {/* BOARD */}
@@ -135,8 +178,8 @@ export default function Portfolio() {
           </div>
 
           {/* MEDIA */}
-          <div onMouseDown={startDrag('media')} style={cardStyle('media', 500, -0.8)}>
-            <div style={{ background: '#fffdf6', padding: '12px 12px 14px', border: '1px solid #e4d9bf', boxShadow: '0 13px 26px rgba(52,48,42,.2)', position: 'relative' }}>
+          <div key={`media-${af}-${sel}`} onMouseDown={startDrag('media')} style={cardStyle('media', 500, -0.8)}>
+            <div className="enter-pop" style={{ ...enter(0, 60), background: '#fffdf6', padding: '12px 12px 14px', border: '1px solid #e4d9bf', boxShadow: '0 13px 26px rgba(52,48,42,.2)', position: 'relative' }}>
               <div style={{ position: 'absolute', top: -11, left: 34, width: 78, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(-3deg)' }} />
               <div style={{ position: 'absolute', top: -11, right: 34, width: 78, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(2deg)' }} />
               <div style={{ position: 'relative', width: '100%', height: 300, background: '#ece4d3', overflow: 'hidden' }}>
@@ -146,8 +189,8 @@ export default function Portfolio() {
           </div>
 
           {/* INFO: title + stack */}
-          <div onMouseDown={startDrag('info')} style={cardStyle('info', 340, 1.4)}>
-            <div style={{ background: '#fdf1b0', padding: '20px 22px 22px', boxShadow: '0 11px 22px rgba(52,48,42,.2)', position: 'relative' }}>
+          <div key={`info-${af}-${sel}`} onMouseDown={startDrag('info')} style={cardStyle('info', 340, 1.4)}>
+            <div className="enter-pop" style={{ ...enter(1, 60), background: '#fdf1b0', padding: '20px 22px 22px', boxShadow: '0 11px 22px rgba(52,48,42,.2)', position: 'relative' }}>
               <div style={{ position: 'absolute', top: -10, left: '50%', marginLeft: -42, width: 84, height: 22, background: 'rgba(255,253,246,.66)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(-2deg)' }} />
               <h1 ref={fit(1.4, 'bottom')} style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 19, color: '#34302a' }}>{d.title}</h1>
               <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 11, flexWrap: 'wrap' }}>
@@ -168,8 +211,8 @@ export default function Portfolio() {
           </div>
 
           {/* DESCRIPTION */}
-          <div onMouseDown={startDrag('desc')} style={cardStyle('desc', 348, -1.1)}>
-            <div style={{ background: '#fffdf6', backgroundImage: 'repeating-linear-gradient(#fffdf6 0px,#fffdf6 25px,#eee2c6 25px,#eee2c6 26px)', padding: '22px 24px 24px', border: '1px solid #e4d9bf', boxShadow: '0 11px 22px rgba(52,48,42,.2)', position: 'relative' }}>
+          <div key={`desc-${af}-${sel}`} onMouseDown={startDrag('desc')} style={cardStyle('desc', 348, -1.1)}>
+            <div className="enter-pop" style={{ ...enter(2, 60), background: '#fffdf6', backgroundImage: 'repeating-linear-gradient(#fffdf6 0px,#fffdf6 25px,#eee2c6 25px,#eee2c6 26px)', padding: '22px 24px 24px', border: '1px solid #e4d9bf', boxShadow: '0 11px 22px rgba(52,48,42,.2)', position: 'relative' }}>
               <div style={{ position: 'absolute', top: -10, right: 26, width: 82, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(3deg)' }} />
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 9, marginBottom: 16 }}>
                 <div style={{ width: 8, height: 8, background: accent }} />
@@ -180,8 +223,8 @@ export default function Portfolio() {
           </div>
 
           {/* LINKS */}
-          <div onMouseDown={startDrag('links')} style={cardStyle('links', 'auto', 0.6)}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, padding: 8 }}>
+          <div key={`links-${af}-${sel}`} onMouseDown={startDrag('links')} style={cardStyle('links', 'auto', 0.6)}>
+            <div className="enter-pop" style={{ ...enter(3, 60), display: 'flex', flexWrap: 'wrap', gap: 14, padding: 8 }}>
               <a href={d.demo} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 18px', background: '#3f8fd6', border: '2px solid #34302a', color: '#fffdf6', textDecoration: 'none', boxShadow: '3px 3px 0 rgba(52,48,42,.25)' }}>
                 <div style={{ width: 0, height: 0, borderLeft: '10px solid #fffdf6', borderTop: '6px solid transparent', borderBottom: '6px solid transparent' }} />
                 <span style={{ ...stretch, fontSize: 10 }}>{isExp ? 'read more' : 'live demo'}</span>
@@ -196,7 +239,7 @@ export default function Portfolio() {
       </div>
 
       {/* FLOATING FOLDERS */}
-      <div style={{ position: 'fixed', right: 30, bottom: 26, zIndex: 40, display: 'flex', alignItems: 'flex-end', gap: 26, padding: '18px 26px 14px', background: 'rgba(230,220,198,.86)', border: '2px solid #34302a', boxShadow: '0 10px 26px rgba(52,48,42,.28)' }}>
+      <div className="enter-rise" style={{ animationDelay: '300ms', position: 'fixed', right: 30, bottom: 26, zIndex: 40, display: 'flex', alignItems: 'flex-end', gap: 26, padding: '18px 26px 14px', background: 'rgba(230,220,198,.86)', border: '2px solid #34302a', boxShadow: '0 10px 26px rgba(52,48,42,.28)' }}>
         <div style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -30, width: 60, height: 18, background: 'rgba(255,224,138,.8)', border: '1px solid rgba(201,180,143,.6)', transform: 'rotate(-2deg)' }} />
         {floaters.map((f) => (
           <PixelFolder
@@ -205,44 +248,44 @@ export default function Portfolio() {
             palette={FOLDER_COLORS[CATEGORY_META[f.key].color]}
             labelColor={THEME.labelColor}
             width={108}
-            onClick={() => { setPopupFolder(f.key); setView('folder'); }}
+            onClick={() => openModal(f.key)}
           />
         ))}
       </div>
 
       {/* COVER POPUP */}
       {popupOpen && (
-        <div onClick={() => setView('board')} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(52,48,42,.44)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(920px,94vw)', maxHeight: '88vh', display: 'flex', flexDirection: 'column', background: '#ece4d3', border: '2px solid #34302a', boxShadow: '0 22px 44px rgba(52,48,42,.4)' }}>
+        <div onClick={() => closeModal()} className={modalClosing ? 'overlay-exit' : 'overlay-enter'} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(52,48,42,.44)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40, pointerEvents: modalClosing ? 'none' : undefined }}>
+          <div onClick={(e) => e.stopPropagation()} className={modalClosing ? 'modal-exit' : 'modal-enter'} style={{ width: 'min(920px,94vw)', maxHeight: '88vh', display: 'flex', flexDirection: 'column', background: '#ece4d3', border: '2px solid #34302a', boxShadow: '0 22px 44px rgba(52,48,42,.4)' }}>
             <div style={{ flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 0 20px', height: 52, background: '#e6dcc6', borderBottom: '2px solid #34302a' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={crumbMuted} onClick={goHome}>{PROFILE.name}</span>
                 <span style={slash}>/</span>
                 <span style={{ ...stretch, fontSize: 11, letterSpacing: 1, color: '#857c6b', textTransform: 'uppercase' }}>portfolio</span>
                 <span style={slash}>/</span>
-                <span onClick={() => setPopupFolder('projects')} style={pf === 'projects' ? activeTab : idleTab}>projects</span>
-                <span onClick={() => setPopupFolder('experiences')} style={pf === 'experiences' ? activeTab : idleTab}>experiences</span>
+                <span onClick={() => { play('tab'); setPopupFolder('projects'); }} style={pf === 'projects' ? activeTab : idleTab}>projects</span>
+                <span onClick={() => { play('tab'); setPopupFolder('experiences'); }} style={pf === 'experiences' ? activeTab : idleTab}>experiences</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ ...stretch, fontSize: 9, color: '#9a9080' }}>{String(plist.length).padStart(2, '0')}</span>
-                <button onClick={() => setView('board')} aria-label="Close" style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#d99b96', border: '2px solid #34302a', boxShadow: '2px 2px 0 rgba(52,48,42,.25)', cursor: 'pointer', color: '#34302a', padding: 0 }}>
+                <button onClick={() => closeModal()} aria-label="Close" style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#d99b96', border: '2px solid #34302a', boxShadow: '2px 2px 0 rgba(52,48,42,.25)', cursor: 'pointer', color: '#34302a', padding: 0 }}>
                   <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
                 </button>
               </div>
             </div>
 
             <div style={{ overflowY: 'auto', padding: 26, backgroundColor: '#ece4d3', backgroundImage: RULES }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))', gap: 26 }}>
+              <div key={pf} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))', gap: 26 }}>
                 {plist.map((c, i) => (
                   <div
                     key={c.title}
-                    onClick={() => { setActiveFolder(pf); setSelected(i); setView('board'); }}
-                    style={{ position: 'relative', cursor: 'pointer', transform: `rotate(${(i % 2 ? 1 : -1) * (0.6 + (i % 3) * 0.4)}deg)`, transition: 'transform .16s ease' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px) rotate(0deg)'; }}
+                    onClick={() => { play('click'); closeModal(() => { setActiveFolder(pf); setSelected(i); }); }}
+                    style={{ position: 'relative', cursor: 'pointer', transform: `rotate(${(i % 2 ? 1 : -1) * (0.6 + (i % 3) * 0.4)}deg)`, transition: 'transform .16s steps(3, end)' }}
+                    onMouseEnter={(e) => { play('tick'); e.currentTarget.style.transform = 'translateY(-6px) rotate(0deg)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${(i % 2 ? 1 : -1) * (0.6 + (i % 3) * 0.4)}deg)`; }}
                   >
                     <div style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -26, width: 52, height: 17, background: 'rgba(255,224,138,.82)', border: '1px solid rgba(201,180,143,.6)', transform: 'rotate(-3deg)', zIndex: 2 }} />
-                    <div style={{ background: '#fffdf6', padding: '9px 9px 12px', border: '1px solid #e4d9bf', boxShadow: '0 10px 20px rgba(52,48,42,.2)' }}>
+                    <div className="enter-pop" style={{ ...enter(i, 40), background: '#fffdf6', padding: '9px 9px 12px', border: '1px solid #e4d9bf', boxShadow: '0 10px 20px rgba(52,48,42,.2)' }}>
                       <div style={{ position: 'relative', width: '100%', height: 132, background: '#ece4d3', overflow: 'hidden' }}>
                         <ImageSlot id={`cover-${pf}-${i}`} placeholder="drop cover" style={{ display: 'block', width: '100%', height: 132 }} />
                         <span style={{ position: 'absolute', top: 8, left: 8, ...stretch, transformOrigin: 'top left', fontSize: 9, color: '#fffdf6', background: ACCENTS[i % 3], padding: '4px 6px' }}>{String(i + 1).padStart(2, '0')}</span>

@@ -1,7 +1,9 @@
 import { type CSSProperties } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PixelFolder from './PixelFolder';
 import ContactBar from './ContactBar';
+import SoundToggle from './SoundToggle';
+import { useTransitionNavigate } from './PageTransition';
+import { enter } from '../lib/motion';
 import { FOLDER_COLORS, FOLDERS, PROFILE, THEME } from '../tokens';
 
 /** ruled-paper line spacing, in px */
@@ -23,7 +25,7 @@ const highlight: CSSProperties = {
 const PIXEL = "'Press Start 2P', monospace";
 
 export default function PortfolioPage() {
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
 
   const page: CSSProperties = {
     minHeight: '100vh',
@@ -140,11 +142,14 @@ export default function PortfolioPage() {
 
   return (
     <div style={page}>
-      <header style={header}>
+      <header className="enter-drop" style={header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={headerName}>{PROFILE.name}</span>
         </div>
-        <ContactBar links={PROFILE.links} color={THEME.iconColor} hoverColor={THEME.iconHoverColor} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <ContactBar links={PROFILE.links} color={THEME.iconColor} hoverColor={THEME.iconHoverColor} />
+          <SoundToggle />
+        </div>
       </header>
 
       <div style={sheet}>
@@ -153,28 +158,28 @@ export default function PortfolioPage() {
         <div style={content}>
           <div style={blank} />
 
-          <h1 style={name}>
+          <h1 className="enter-rise" style={{ ...name, ...enter(1) }}>
             <span style={stretch}>{PROFILE.name}</span>
           </h1>
 
           <div style={blank} />
 
-          <p style={affiliation}>
+          <p className="enter-rise" style={{ ...affiliation, ...enter(2) }}>
             <span style={stretch}>
               <span style={highlight}>{PROFILE.affiliation.label}</span>{' '}
               <span style={{ color: THEME.accentBlue, marginLeft: 10 }}>{PROFILE.affiliation.school}</span>
             </span>
           </p>
 
-          <p style={tagline}>
+          <p className="enter-rise" style={{ ...tagline, ...enter(3) }}>
             <span style={stretch}>{PROFILE.tagline}</span>
           </p>
 
           <div style={blank} />
 
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {PROFILE.bullets.map((b) => (
-              <li key={b.text} style={bullet}>
+            {PROFILE.bullets.map((b, i) => (
+              <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
                 <span style={marker(b.color)} />
                 <span style={b.highlight ? { ...highlight, ...stretch } : stretch}>{b.text}</span>
               </li>
@@ -182,14 +187,18 @@ export default function PortfolioPage() {
           </ul>
 
           <div style={foldersRow}>
-            {FOLDERS.map((f) => (
-              <PixelFolder
-                key={f.label}
-                label={f.label}
-                palette={FOLDER_COLORS[f.color]}
-                labelColor={THEME.labelColor}
-                onClick={() => navigate(f.route)}
-              />
+            {FOLDERS.map((f, i) => (
+              <div key={f.label} className="enter-pop" style={enter(8 + i)}>
+                <PixelFolder
+                  label={f.label}
+                  palette={FOLDER_COLORS[f.color]}
+                  labelColor={THEME.labelColor}
+                  onClick={(rect) => navigate(f.route, {
+                    zoom: 'in',
+                    origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
+                  })}
+                />
+              </div>
             ))}
           </div>
         </div>
