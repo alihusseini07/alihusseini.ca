@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import ContactBar from '../components/ContactBar';
 import PixelFolder from '../components/PixelFolder';
 import SoundToggle from '../components/SoundToggle';
@@ -59,12 +59,25 @@ export default function Portfolio() {
     setPos((p) => ({ ...p, [drag.current!.key]: { x, y } }));
   }, []);
 
+  useEffect(() => {
+    // block browser default drop navigation (e.g. a stray native drag of an
+    // unguarded media element would otherwise blank the whole tab)
+    const block = (e: DragEvent) => e.preventDefault();
+    window.addEventListener('dragover', block);
+    window.addEventListener('drop', block);
+    return () => {
+      window.removeEventListener('dragover', block);
+      window.removeEventListener('drop', block);
+    };
+  }, []);
+
   const onUp = useCallback(() => {
     drag.current = null;
     setDragKey(null);
     play('drop');
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
+    window.removeEventListener('blur', onUp);
   }, [onMove]);
 
   const startDrag = (key: CardKey) => (e: React.MouseEvent) => {
@@ -82,6 +95,9 @@ export default function Portfolio() {
     setZ((prev) => ({ ...prev, [key]: nz }));
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
+    // if the button is released outside the window (e.g. a fast drag toward
+    // a screen edge), no mouseup ever reaches us — end the drag on blur too
+    window.addEventListener('blur', onUp);
   };
 
   const openModal = (folder: Category) => {
@@ -225,11 +241,11 @@ export default function Portfolio() {
           {/* LINKS */}
           <div key={`links-${af}-${sel}`} onMouseDown={startDrag('links')} style={cardStyle('links', 'auto', 0.6)}>
             <div className="enter-pop" style={{ ...enter(3, 60), display: 'flex', flexWrap: 'wrap', gap: 14, padding: 8 }}>
-              <a href={d.demo} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 18px', background: '#3f8fd6', border: '2px solid #34302a', color: '#fffdf6', textDecoration: 'none', boxShadow: '3px 3px 0 rgba(52,48,42,.25)' }}>
+              <a href={d.demo} target="_blank" rel="noopener" draggable={false} style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 18px', background: '#3f8fd6', border: '2px solid #34302a', color: '#fffdf6', textDecoration: 'none', boxShadow: '3px 3px 0 rgba(52,48,42,.25)' }}>
                 <div style={{ width: 0, height: 0, borderLeft: '10px solid #fffdf6', borderTop: '6px solid transparent', borderBottom: '6px solid transparent' }} />
                 <span style={{ ...stretch, fontSize: 10 }}>{isExp ? 'read more' : 'live demo'}</span>
               </a>
-              <a href={d.github} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 18px', background: '#e6dcc6', border: '2px solid #34302a', color: '#34302a', textDecoration: 'none', boxShadow: '3px 3px 0 rgba(52,48,42,.2)' }}>
+              <a href={d.github} target="_blank" rel="noopener" draggable={false} style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 18px', background: '#e6dcc6', border: '2px solid #34302a', color: '#34302a', textDecoration: 'none', boxShadow: '3px 3px 0 rgba(52,48,42,.2)' }}>
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.21 3.44 9.63 8.21 11.19.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.72-4.04-1.59-4.04-1.59-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.22 1.84 1.22 1.07 1.81 2.81 1.29 3.49.99.11-.77.42-1.29.76-1.59-2.67-.3-5.47-1.32-5.47-5.86 0-1.29.47-2.35 1.23-3.18-.12-.3-.53-1.51.12-3.15 0 0 1.01-.32 3.3 1.21.96-.26 1.98-.39 3-.4 1.02.01 2.04.14 3 .4 2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.85.12 3.15.77.83 1.23 1.89 1.23 3.18 0 4.55-2.81 5.56-5.49 5.85.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z" /></svg>
                 <span style={{ ...stretch, fontSize: 10 }}>github</span>
               </a>

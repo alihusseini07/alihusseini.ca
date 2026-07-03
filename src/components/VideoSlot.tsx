@@ -109,6 +109,7 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
             autoPlay
             loop
             playsInline
+            draggable={false}
             onClick={togglePlay}
             onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#1c1a17', cursor: 'pointer' }}
