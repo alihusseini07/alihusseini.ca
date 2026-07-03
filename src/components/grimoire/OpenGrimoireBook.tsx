@@ -18,7 +18,7 @@ export default function OpenGrimoireBook({ leftPage, rightPage }: OpenGrimoireBo
       }}
     >
       <img
-        src="/open-grimoire.svg"
+        src="/open-grimoire.png"
         alt=""
         aria-hidden="true"
         draggable={false}
