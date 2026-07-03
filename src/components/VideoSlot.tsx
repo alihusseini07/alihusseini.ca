@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { getBlob, setBlob, delBlob } from '../lib/mediaStore';
+import { getBlob, setBlob } from '../lib/mediaStore';
 
 const PIXEL = "'Press Start 2P', monospace";
 
@@ -59,16 +59,6 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
     setMuted(true);
     setUrl(u);
     setFilled(true);
-  };
-
-  const clear = async () => {
-    if (urlRef.current) {
-      URL.revokeObjectURL(urlRef.current);
-      urlRef.current = null;
-    }
-    await delBlob(id);
-    setUrl(src ?? null);
-    setFilled(!!src);
   };
 
   const togglePlay = () => {
@@ -140,14 +130,6 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
         )}
       </div>
 
-      {/* controls (hover, when filled) */}
-      {filled && hover && (
-        <div style={{ position: 'absolute', right: 6, top: 6, display: 'flex', gap: 6, zIndex: 2 }}>
-          <button type="button" onClick={() => inputRef.current?.click()} style={ctlBtn}>Replace</button>
-          <button type="button" onClick={() => void clear()} style={ctlBtn}>Remove</button>
-        </div>
-      )}
-
       {/* mute / unmute — hover only */}
       {filled && hover && (
         <button
@@ -169,14 +151,3 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
     </div>
   );
 }
-
-const ctlBtn: CSSProperties = {
-  border: '2px solid #34302a',
-  background: '#e6dcc6',
-  color: '#34302a',
-  cursor: 'pointer',
-  fontFamily: PIXEL,
-  fontSize: 7,
-  padding: '5px 7px',
-  boxShadow: '2px 2px 0 rgba(52,48,42,.25)',
-};

@@ -199,7 +199,13 @@ export default function Portfolio() {
               <div style={{ position: 'absolute', top: -11, left: 34, width: 78, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(-3deg)' }} />
               <div style={{ position: 'absolute', top: -11, right: 34, width: 78, height: 22, background: 'rgba(255,224,138,.72)', border: '1px solid rgba(201,180,143,.5)', transform: 'rotate(2deg)' }} />
               <div style={{ position: 'relative', width: '100%', height: 300, background: '#ece4d3', overflow: 'hidden' }}>
-                <VideoSlot id={`${af}-${sel}-main`} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: 300 }} />
+                {d.video ? (
+                  <VideoSlot id={`${af}-${sel}-main`} src={d.video} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: 300 }} />
+                ) : d.image ? (
+                  <ImageSlot id={`${af}-${sel}-main-img`} src={d.image} style={{ display: 'block', width: '100%', height: 300 }} />
+                ) : (
+                  <VideoSlot id={`${af}-${sel}-main`} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: 300 }} />
+                )}
               </div>
             </div>
           </div>
@@ -303,7 +309,7 @@ export default function Portfolio() {
                     <div style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -26, width: 52, height: 17, background: 'rgba(255,224,138,.82)', border: '1px solid rgba(201,180,143,.6)', transform: 'rotate(-3deg)', zIndex: 2 }} />
                     <div className="enter-pop" style={{ ...enter(i, 40), background: '#fffdf6', padding: '9px 9px 12px', border: '1px solid #e4d9bf', boxShadow: '0 10px 20px rgba(52,48,42,.2)' }}>
                       <div style={{ position: 'relative', width: '100%', height: 132, background: '#ece4d3', overflow: 'hidden' }}>
-                        <ImageSlot id={`cover-${pf}-${i}`} placeholder="drop cover" style={{ display: 'block', width: '100%', height: 132 }} />
+                        <ImageSlot id={`cover-${pf}-${i}`} src={c.image} placeholder="drop cover" style={{ display: 'block', width: '100%', height: 132 }} />
                         <span style={{ position: 'absolute', top: 8, left: 8, ...stretch, transformOrigin: 'top left', fontSize: 9, color: '#fffdf6', background: ACCENTS[i % 3], padding: '4px 6px' }}>{String(i + 1).padStart(2, '0')}</span>
                       </div>
                       <div style={{ marginTop: 11, padding: '0 2px' }}>

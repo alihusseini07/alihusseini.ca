@@ -5,6 +5,10 @@ export interface PortfolioItem {
   stack: string[];
   demo: string;
   github: string;
+  /** committed cover image (falls back to a drop-your-own slot if unset) */
+  image?: string;
+  /** committed demo video — takes priority over `image` in the main hero card */
+  video?: string;
 }
 
 export type Category = 'projects' | 'experiences';
@@ -17,96 +21,129 @@ export const CATEGORY_META: Record<Category, { label: string; color: 'blue' | 'g
 export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
   projects: [
     {
-      title: 'Line-Follower Robot',
+      title: 'Compilot',
       year: '2025',
       description:
-        'A treaded robot that reads a taped track with reflectance sensors and holds the line with a hand-tuned PID loop \u2014 smooth at speed, and recovers from sharp turns.',
-      stack: ['C', 'STM32', 'PID', 'KiCad'],
+        'A tiered multi-agent platform that tracks and analyzes competitor companies across the web. Runs 3 parallel scraper agents across 6+ sources (GitHub, RSS, job boards, HN) and synthesizes LLM conclusions into daily, weekly, and monthly intelligence reports.',
+      stack: ['Python', 'FastAPI', 'Celery', 'Redis', 'PostgreSQL', 'React', 'Vite', 'Docker', 'Kubernetes'],
       demo: '#',
-      github: '#',
+      github: 'https://github.com/alihusseini07/compilot',
+      image: '/assets/compilot.png',
     },
     {
-      title: 'Telemetry Dashboard',
+      title: 'Clarus',
       year: '2025',
       description:
-        'Streams live readings from a microcontroller over WebSocket and plots them in real time, with pause, zoom, and one-click CSV export.',
-      stack: ['React', 'TypeScript', 'WebSocket', 'D3'],
+        'A student dashboard that syncs course data from Brightspace, organizes deadlines and grade weights, and generates AI-ranked study action plans.',
+      stack: ['TypeScript', 'Next.js', 'Fastify', 'Prisma', 'Playwright'],
       demo: '#',
-      github: '#',
+      github: 'https://github.com/athravseruwam07/clarus',
+      image: '/assets/clarus-poster.jpg',
+      video: '/assets/clarus-demo.mp4',
     },
     {
-      title: 'Pick-and-Place Arm',
+      title: 'ChefIt',
+      year: '2025',
+      description:
+        'A full-stack social cooking app that scans pantry items, matches recipes by ingredient coverage, and supports posts, reviews, and smart shopping lists.',
+      stack: ['SwiftUI', 'Node.js', 'Express', 'PostgreSQL', 'OpenAI Vision'],
+      demo: '#',
+      github: 'https://github.com/MatthewKim07/chef-it',
+      image: '/assets/chefit.png',
+      video: '/assets/chef-it-demo.mp4',
+    },
+    {
+      title: 'WaterlooWorks+',
       year: '2024',
       description:
-        'A 6-DOF arm that spots parts with a webcam and sorts them into bins. Vision runs in OpenCV, motion is planned with MoveIt on ROS 2.',
-      stack: ['ROS 2', 'Python', 'OpenCV', 'MoveIt'],
+        'A Manifest V3 Chrome extension that parses resumes and job posts, scores candidate fit, and adds dashboards and overlays to streamline co-op job screening.',
+      stack: ['JavaScript', 'Manifest V3', 'DOM APIs', 'Node.js', 'PDF.js'],
       demo: '#',
-      github: '#',
+      github: 'https://github.com/MatthewKim07/waterloo-works-plus',
+      image: '/assets/waterlooworksplus.png',
+      video: '/assets/waterloo-works-plus-demo.mp4',
     },
     {
-      title: 'Gesture-Fly Drone',
+      title: 'Joblyze',
       year: '2024',
       description:
-        'Fly a quadcopter with hand gestures \u2014 a webcam maps poses to flight commands sent over MAVLink. Built in 24 hours, landed in one piece.',
-      stack: ['Python', 'OpenCV', 'MAVLink'],
+        'An AI-powered job posting analyzer that extracts required skills, compares them with resumes, and highlights gaps for stronger applications.',
+      stack: ['Python', 'Streamlit', 'LangChain', 'OpenAI'],
       demo: '#',
-      github: '#',
+      github: 'https://github.com/alihusseini07/joblyze',
+      image: '/assets/joblyze.jpg',
     },
     {
-      title: 'This Portfolio',
-      year: '2026',
+      title: 'IoT-Enabled Electronic Safe',
+      year: '2024',
       description:
-        'The pixel-and-paper site you are reading right now \u2014 hand-built sprite folders and a lined-paper layout, no UI kit anywhere.',
-      stack: ['React', 'TypeScript', 'Vite'],
+        'An ESP32 safe with keypad, LEDs, buzzer, and temperature sensing; the web interface mirrors lock state and controls access in real time.',
+      stack: ['C++', 'ESP32', 'PlatformIO', 'Web'],
       demo: '#',
-      github: '#',
+      github: 'https://github.com/alihusseini07/web-esp32',
+      image: '/assets/esp32-safe.jpg',
     },
     {
-      title: 'Anime Rec Engine',
+      title: 'Dynamic Delivery Drone',
       year: '2023',
       description:
-        'Suggests your next binge from the shows you have rated, using collaborative filtering served behind a small, fast API.',
-      stack: ['Python', 'PyTorch', 'FastAPI'],
-      demo: '#',
+        'Designed and 3D-printed a delivery drone prototype in Fusion 360, iterating propeller arm connectors and custom axles into a functional scale model.',
+      stack: ['Fusion 360', '3D Printing', 'Iteration'],
+      demo: 'https://drive.google.com/drive/folders/1SHUE_o_2eRWSIrl6BWkGlvkt_lDGdFTK?usp=drive_link',
       github: '#',
+      image: '/assets/delivery-drone.jpg',
     },
   ],
   experiences: [
     {
-      title: 'Robotics Software Intern',
-      year: 'Jan \u2013 Apr 2025',
+      title: 'Software Engineer Co-op — ATS360 / Netdynamic Inc.',
+      year: 'Jan 2026 – Apr 2026 · Mississauga, ON',
       description:
-        'Placeholder \u2014 wrote and commissioned PLC and vision routines for an automated assembly cell, trimming cycle time on the pick station. Swap in your real story.',
-      stack: ['C#', '.NET', 'PLC', 'Cognex'],
+        'Built an end-to-end AI video screening platform using AWS Lambda, S3, Transcribe, and Bedrock/Claude — covering four interview scheduling flows, calendar sync, and a centralized Interview Hub deployed to 30+ enterprise hiring teams. Also handled QA across 100+ resumes and wrote developer handoff documentation.',
+      stack: ['AWS Lambda', 'AWS S3', 'AWS Bedrock', 'Claude', 'AWS Transcribe'],
       demo: '#',
       github: '#',
+      image: '/assets/ndi-logo.png',
     },
     {
-      title: 'Firmware Co-op',
-      year: 'May \u2013 Aug 2024',
+      title: 'Firmware Developer — University of Waterloo Formula Electric',
+      year: 'Sept 2025 – Dec 2025 · Waterloo, ON',
       description:
-        'Placeholder \u2014 brought up motor-control firmware on a new board, added CAN diagnostics, and built a bench rig for regression testing. Replace with details.',
-      stack: ['C', 'RTOS', 'CAN', 'Altium'],
+        'Wrote and tested embedded C/C++ firmware for STM32 ECUs across motor, sensor, and control subsystems. Validated CAN/UART signal integrity using simulated inputs, reducing communication errors by ~20%.',
+      stack: ['C++', 'STM32', 'CAN', 'UART'],
       demo: '#',
       github: '#',
+      image: '/assets/waterlooformulaelectric_logo.png',
     },
     {
-      title: 'Teaching Assistant',
-      year: '2024',
+      title: 'Co-op Student Technician — Volvo Cars Oakville',
+      year: 'July 2024 – Aug 2024 · Oakville, ON',
       description:
-        'Placeholder \u2014 ran labs and office hours for a first-year programming course, and rebuilt two lab handouts that students kept getting stuck on.',
-      stack: ['Python', 'MATLAB', 'Git'],
+        'Worked alongside senior technicians diagnosing complex vehicle malfunctions using structured root-cause analysis, adapting to different workflows to support timely completion of critical repairs.',
+      stack: ['Diagnostics', 'Root-Cause Analysis'],
       demo: '#',
       github: '#',
+      image: '/assets/volvo-logo.png',
     },
     {
-      title: 'Robotics Club Lead',
-      year: '2023 \u2013 now',
+      title: 'Tutor & Communications Executive — Garth Webb SS Peer Tutoring Club',
+      year: 'Sept 2024 – June 2025 · Oakville, ON',
       description:
-        "Placeholder \u2014 lead the software squad for the club's autonomy stack, mentoring new members and keeping the ROS 2 pipeline running on race weekends.",
-      stack: ['ROS 2', 'C++', 'Docker'],
+        'Founded and grew a peer tutoring club to 200+ students, managing announcements, teacher coordination, and club communications. Personally tutored 50+ students in Math and Science, with grade improvements of up to 15% through tailored study plans.',
+      stack: ['Leadership', 'Tutoring', 'Communications'],
       demo: '#',
       github: '#',
+      image: '/assets/garthwebb-logo.png',
+    },
+    {
+      title: 'Energy, Engineering & Robotics SHSM — Garth Webb SS',
+      year: 'Oct 2023 – June 2025 · Oakville, ON',
+      description:
+        'Completed WHMIS, Worker Health & Safety, and First Aid/CPR certifications. Designed sustainable-city solutions during ICE training and coordinated project tasks and timelines across the program.',
+      stack: ['WHMIS', 'Health & Safety', 'Project Coordination'],
+      demo: '#',
+      github: '#',
+      image: '/assets/garthwebb-logo.png',
     },
   ],
 };
