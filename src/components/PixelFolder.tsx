@@ -5,6 +5,8 @@ export interface PixelFolderProps {
   label: string;
   palette: FolderPalette;
   labelColor?: string;
+  /** base art width in px (everything scales from 182) */
+  width?: number;
   onClick?: () => void;
 }
 
@@ -37,7 +39,7 @@ function useBlip() {
 
 const PIXELATED: CSSProperties = { imageRendering: 'pixelated' };
 
-export default function PixelFolder({ label, palette, labelColor = '#3b362d', onClick }: PixelFolderProps) {
+export default function PixelFolder({ label, palette, labelColor = '#3b362d', width = 182, onClick }: PixelFolderProps) {
   const [open, setOpen] = useState(false);
   const [pop, setPop] = useState(false);
   const popTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -47,6 +49,9 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', on
     () => buildSprites(palette),
     [palette.base, palette.light, palette.dark, palette.outline],
   );
+
+  const s = width / 182;
+  const r = (n: number) => Math.round(n * s);
 
   const handleClick = () => {
     blip();
@@ -59,51 +64,35 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', on
   };
 
   const art: CSSProperties = {
-    width: 182,
-    height: 134,
+    width,
+    height: r(134),
     position: 'relative',
     cursor: 'pointer',
-    perspective: 780,
-    transform: `translateY(${open ? -16 : 0}px) scale(${pop ? 1.05 : 1})`,
+    perspective: 780 * s,
+    transform: `translateY(${open ? r(-16) : 0}px) scale(${pop ? 1.05 : 1})`,
     transition: 'transform .24s cubic-bezier(.2,.85,.3,1), filter .24s ease',
     filter: open
-      ? 'drop-shadow(0 18px 14px rgba(0,0,0,.22))'
-      : 'drop-shadow(0 7px 6px rgba(0,0,0,.15))',
+      ? `drop-shadow(0 ${r(18)}px ${r(14)}px rgba(0,0,0,.22))`
+      : `drop-shadow(0 ${r(7)}px ${r(6)}px rgba(0,0,0,.15))`,
   };
 
-  const backStyle: CSSProperties = {
-    ...PIXELATED, position: 'absolute', left: 0, top: 0, width: 182, height: 133, zIndex: 0,
-  };
+  const backStyle: CSSProperties = { ...PIXELATED, position: 'absolute', left: 0, top: 0, width, height: r(133), zIndex: 0 };
 
   const papersStyle: CSSProperties = {
-    ...PIXELATED,
-    position: 'absolute',
-    left: 7,
-    top: 28,
-    width: 168,
-    height: 105,
-    zIndex: 1,
-    transform: `translateY(${open ? -34 : 0}px)`,
-    transition: 'transform .24s cubic-bezier(.2,.85,.3,1)',
+    ...PIXELATED, position: 'absolute', left: r(7), top: r(28), width: r(168), height: r(105), zIndex: 1,
+    transform: `translateY(${open ? r(-34) : 0}px)`, transition: 'transform .24s cubic-bezier(.2,.85,.3,1)',
   };
 
   const frontStyle: CSSProperties = {
-    ...PIXELATED,
-    position: 'absolute',
-    left: 0,
-    top: 28,
-    width: 182,
-    height: 105,
-    zIndex: 2,
-    transformOrigin: 'bottom center',
-    transform: `rotateX(${open ? -42 : 0}deg)`,
+    ...PIXELATED, position: 'absolute', left: 0, top: r(28), width, height: r(105), zIndex: 2,
+    transformOrigin: 'bottom center', transform: `rotateX(${open ? -42 : 0}deg)`,
     transition: 'transform .26s cubic-bezier(.2,.85,.3,1)',
   };
 
   const labelStyle: CSSProperties = {
     display: 'inline-block',
     fontFamily: "'Press Start 2P', monospace",
-    fontSize: 13,
+    fontSize: Math.max(9, r(13)),
     letterSpacing: 0.5,
     color: labelColor,
     textAlign: 'center',
@@ -114,16 +103,11 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', on
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, userSelect: 'none' }}>
-      <div
-        style={art}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onClick={handleClick}
-      >
-        <img src={sprites.back}   draggable={false} alt="" style={backStyle} />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: Math.max(12, r(20)), userSelect: 'none' }}>
+      <div style={art} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={handleClick}>
+        <img src={sprites.back} draggable={false} alt="" style={backStyle} />
         <img src={sprites.papers} draggable={false} alt="" style={papersStyle} />
-        <img src={sprites.front}  draggable={false} alt="" style={frontStyle} />
+        <img src={sprites.front} draggable={false} alt="" style={frontStyle} />
       </div>
       <div style={labelStyle}>{label}</div>
     </div>

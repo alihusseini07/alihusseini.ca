@@ -63,8 +63,10 @@ export const PROFILE = {
   },
 };
 
+// Landing-page folders. "Projects" is now "Portfolio" (the bulletin board that
+// holds both Projects and Experiences); "Experiences" is now "Skills".
 export const FOLDERS = [
-  { label: 'About Me',    color: 'amber' as const, route: '/about' },
-  { label: 'Projects',    color: 'blue'  as const, route: '/projects' },
-  { label: 'Experiences', color: 'green' as const, route: '/experiences' },
+  { label: 'About Me',  color: 'amber' as const, route: '/about' },
+  { label: 'Portfolio', color: 'blue'  as const, route: '/portfolio' },
+  { label: 'Skills',    color: 'green' as const, route: '/skills' },
 ];

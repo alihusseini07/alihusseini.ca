@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PortfolioPage from './components/PortfolioPage';
 import AboutMe from './pages/AboutMe';
-import Projects from './pages/Projects';
-import Experiences from './pages/Experiences';
+import Portfolio from './pages/Portfolio';
+import Skills from './pages/Skills';
 
 export default function App() {
   return (
@@ -10,8 +10,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<PortfolioPage />} />
         <Route path="/about" element={<AboutMe />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/experiences" element={<Experiences />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/skills" element={<Skills />} />
       </Routes>
     </BrowserRouter>
   );
