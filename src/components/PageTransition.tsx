@@ -1,11 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { play } from '../lib/sound';
-import { EXIT_MS, ZOOM_MS, REDUCED } from '../lib/motion';
+import { EXIT_MS, ZOOM_MS, WARP_IN_MS, WARP_OUT_MS, REDUCED } from '../lib/motion';
 
 export interface GoOptions {
   /** 'in' = dive into a folder, 'out' = pull back out of it */
   zoom?: 'in' | 'out';
+  /** 'in' = glitch + twist into the grimoire dimension, 'out' = warp back home */
+  warp?: 'in' | 'out';
   /** viewport point to zoom toward (the clicked folder's center) */
   origin?: { x: number; y: number };
 }
@@ -38,7 +40,21 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     let origin: string | undefined;
     let enterOrigin: string | undefined;
     let ms = EXIT_MS;
-    if (opts?.zoom === 'in') {
+    if (opts?.warp === 'in') {
+      if (opts.origin) lastOrigin = opts.origin;
+      origin = opts.origin ? `${opts.origin.x}px ${opts.origin.y}px` : '50% 50%';
+      exitCls = 'page-exit-glitchwarp';
+      enterCls = 'page-enter-warped';
+      ms = WARP_IN_MS;
+      play('warpIn');
+    } else if (opts?.warp === 'out') {
+      origin = lastOrigin ? `${lastOrigin.x}px ${lastOrigin.y}px` : '50% 45%';
+      enterOrigin = origin;
+      exitCls = 'page-exit-unwarp';
+      enterCls = 'page-enter-unwarped';
+      ms = WARP_OUT_MS;
+      play('warpOut');
+    } else if (opts?.zoom === 'in') {
       if (opts.origin) lastOrigin = opts.origin;
       origin = opts.origin ? `${opts.origin.x}px ${opts.origin.y}px` : '50% 50%';
       exitCls = 'page-exit-dive';

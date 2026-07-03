@@ -3,7 +3,9 @@ import { useSyncExternalStore } from 'react';
 export type SoundName =
   | 'click' | 'tick' | 'whooshOpen' | 'whooshClose'
   | 'pickup' | 'drop' | 'tab' | 'toggleOn' | 'toggleOff' | 'navigate'
-  | 'paperIn' | 'paperOut';
+  | 'paperIn' | 'paperOut'
+  | 'warpIn' | 'warpOut'
+  | 'bell' | 'chime' | 'pageTurn' | 'chantHover';
 
 const MUTE_KEY = 'ah:sound-muted';
 
@@ -101,6 +103,19 @@ function swish(
   src.stop(at + dur + 0.01);
 }
 
+/** struck bell: inharmonic sine partials with long decay (medieval church bell) */
+function bellTone(
+  a: AudioContext, out: GainNode,
+  base: number, at: number, dur: number, peak: number,
+) {
+  const partials: Array<[number, number]> = [
+    [1, 1], [2.0, 0.55], [2.92, 0.38], [4.16, 0.22], [5.4, 0.12],
+  ];
+  for (const [ratio, amp] of partials) {
+    tone(a, out, 'sine', base * ratio, at, dur * (1 - ratio * 0.07), peak * amp, undefined, 0.002);
+  }
+}
+
 export function play(name: SoundName): void {
   if (muted) return;
   try {
@@ -153,6 +168,39 @@ export function play(name: SoundName): void {
         swish(a, m, 'highpass', 4200, 4200, now + 0.03, 0.02, 0.025, 0.003);
         swish(a, m, 'highpass', 3600, 3600, now + 0.09, 0.015, 0.02, 0.003);
         swish(a, m, 'highpass', 4600, 4600, now + 0.16, 0.02, 0.022, 0.003);
+        break;
+      case 'warpIn': { // glitch stutter -> dimensional suck -> deep arrival bell
+        const blips = [1200, 400, 2400, 700, 1800];
+        blips.forEach((f, i) =>
+          tone(a, m, 'square', f, now + i * 0.055, 0.03, 0.045, f * 0.5, 0.002));
+        tone(a, m, 'sawtooth', 220, now + 0.3, 0.55, 0.055, 28);
+        swish(a, m, 'bandpass', 300, 2600, now + 0.3, 0.5, 0.05, 0.12);
+        bellTone(a, m, 98, now + 0.72, 0.9, 0.1);
+        break;
+      }
+      case 'warpOut': { // glitch stutter -> rising return rift -> resolving bell
+        const blips = [800, 2000, 500, 1600];
+        blips.forEach((f, i) =>
+          tone(a, m, 'square', f, now + i * 0.05, 0.028, 0.04, f * 1.6, 0.002));
+        tone(a, m, 'sawtooth', 42, now + 0.26, 0.5, 0.05, 240);
+        swish(a, m, 'bandpass', 2400, 350, now + 0.26, 0.45, 0.05, 0.1);
+        bellTone(a, m, 147, now + 0.62, 0.7, 0.07);
+        break;
+      }
+      case 'bell': // grimoire sigil strike
+        bellTone(a, m, 392, now, 0.65, 0.075);
+        break;
+      case 'chime': // plucked open fifth, D5 + A5
+        tone(a, m, 'triangle', 587.33, now, 0.22, 0.06, undefined, 0.003);
+        tone(a, m, 'triangle', 880, now + 0.06, 0.28, 0.05, undefined, 0.003);
+        break;
+      case 'pageTurn': // soft parchment sweep + rustle
+        swish(a, m, 'bandpass', 1200, 480, now, 0.25, 0.045, 0.05);
+        swish(a, m, 'highpass', 3400, 3400, now + 0.05, 0.018, 0.018, 0.003);
+        swish(a, m, 'highpass', 3900, 3900, now + 0.12, 0.015, 0.015, 0.003);
+        break;
+      case 'chantHover': // low quiet drone touch, G3
+        tone(a, m, 'sine', 196, now, 0.08, 0.02, undefined, 0.01);
         break;
     }
   } catch { /* no-op */ }

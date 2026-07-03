@@ -194,7 +194,8 @@ export default function PortfolioPage() {
                   palette={FOLDER_COLORS[f.color]}
                   labelColor={THEME.labelColor}
                   onClick={(rect) => navigate(f.route, {
-                    zoom: 'in',
+                    // skills folder tears open a new dimension; the rest zoom in
+                    ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
                     origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
                   })}
                 />

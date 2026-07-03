@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Skill } from '../../data/grimoire-data'
 import SkillIconArt from './SkillIconArt'
+import { play } from '../../lib/sound'
 
 interface SkillIconProps {
   skill: Skill
@@ -36,6 +37,7 @@ export default function SkillIcon({ skill, size = 52, onHover, onClick }: SkillI
   const enter = () => {
     setHovered(true)
     updateTooltipPos()
+    play('chantHover')
     onHover?.(skill)
   }
   const leave = () => {

@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { useTransitionNavigate } from '../components/PageTransition';
 import GrimoireBookShell from '../components/grimoire/GrimoireBookShell';
 import NoiseOverlay from '../components/grimoire/NoiseOverlay';
 
 export default function Skills() {
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
 
   return (
     <div
@@ -83,7 +83,7 @@ export default function Skills() {
         }}
       />
 
-      <button className="grimoire-back-btn" onClick={() => navigate('/')}>
+      <button className="grimoire-back-btn" onClick={() => navigate('/', { warp: 'out' })}>
         ← Return
       </button>
 

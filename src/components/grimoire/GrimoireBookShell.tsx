@@ -3,6 +3,7 @@ import OpenGrimoireBook from './OpenGrimoireBook';
 import GrimoireOrbits, { useIsMobile } from './GrimoireOrbits';
 import GrimoireDetailPanel from './GrimoireDetailPanel';
 import type { Skill } from '../../data/grimoire-data';
+import { play } from '../../lib/sound';
 
 export default function GrimoireBookShell() {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
@@ -10,13 +11,17 @@ export default function GrimoireBookShell() {
 
   return (
     <OpenGrimoireBook
-      leftPage={<GrimoireOrbits onSkillClick={setSelectedSkill} />}
+      leftPage={
+        <GrimoireOrbits
+          onSkillClick={(s) => { play('bell'); setSelectedSkill(s); }}
+        />
+      }
       rightPage={
         isMobile ? null : (
           <GrimoireDetailPanel
             skill={selectedSkill}
-            onSelect={setSelectedSkill}
-            onClose={() => setSelectedSkill(null)}
+            onSelect={(s) => { play('chime'); setSelectedSkill(s); }}
+            onClose={() => { play('pageTurn'); setSelectedSkill(null); }}
           />
         )
       }

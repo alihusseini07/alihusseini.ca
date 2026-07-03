@@ -4,6 +4,9 @@ import type { CSSProperties } from 'react';
 export const EXIT_MS = 200;
 /** duration of the folder dive/back-out page transitions */
 export const ZOOM_MS = 360;
+/** duration of the glitch + dimension-warp transitions (skills grimoire) */
+export const WARP_IN_MS = 950;
+export const WARP_OUT_MS = 850;
 /** duration of the modal-exit animation before unmounting */
 export const MODAL_CLOSE_MS = 160;
 

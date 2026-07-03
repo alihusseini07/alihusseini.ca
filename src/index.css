@@ -71,6 +71,64 @@ a {
   to { opacity: 1; transform: none; }
 }
 
+/* dimension warp: glitch flicker, then wormhole twist — non-uniform scale
+   under rotation smears the page like spaghettification; perspective tilts
+   it into the tunnel. No blur: full-page blur repaints every frame. */
+@keyframes glitch-warp-out {
+  0%   { transform: none; filter: none; opacity: 1; }
+  4%   { transform: translate(-7px, 3px) skewX(-4deg); filter: hue-rotate(90deg) saturate(3); }
+  8%   { transform: translate(6px, -4px) skewX(3deg); filter: invert(1) hue-rotate(180deg); }
+  11%  { transform: none; filter: none; }
+  15%  { transform: translate(9px, -2px) skewX(-6deg) scaleY(1.03); filter: hue-rotate(-120deg) contrast(2.2); }
+  19%  { transform: translate(-6px, 5px); filter: saturate(0) contrast(3); }
+  23%  { transform: none; filter: none; }
+  28%  { transform: translate(11px, -7px) skewX(8deg); filter: invert(1) saturate(2); }
+  32%  { transform: none; filter: none; }
+  40%  { transform: scale(1.08, 1.02) rotate(4deg); filter: none; }
+  55%  { transform: perspective(900px) rotateX(8deg) scale(1.12, 1.3) rotate(-22deg); filter: hue-rotate(50deg) saturate(1.6); opacity: 1; }
+  75%  { transform: perspective(700px) rotateX(22deg) scale(0.5, 1.7) rotate(180deg); filter: hue-rotate(150deg) saturate(2.2); }
+  100% { transform: perspective(600px) rotateX(40deg) scale(0.001, 0.35) rotate(580deg); filter: hue-rotate(250deg) saturate(3); opacity: 0; }
+}
+
+/* arrive in the new dimension: stretched streak unspools from the tunnel */
+@keyframes warped-in {
+  0%   { transform: perspective(600px) rotateX(-35deg) scale(0.001, 0.35) rotate(-580deg); filter: hue-rotate(-220deg) saturate(3); opacity: 0; }
+  40%  { opacity: 1; }
+  55%  { transform: perspective(800px) rotateX(-12deg) scale(0.7, 1.4) rotate(-90deg); filter: hue-rotate(-70deg) saturate(1.8); }
+  75%  { transform: scale(1.06, 0.96) rotate(7deg); filter: hue-rotate(-15deg); }
+  88%  { transform: scale(0.99, 1.01) rotate(-2deg); filter: none; }
+  100% { transform: none; filter: none; opacity: 1; }
+}
+
+/* leave the dimension: glitch, then wormhole twist back the other way */
+@keyframes unwarp-out {
+  0%   { transform: none; filter: none; opacity: 1; }
+  5%   { transform: translate(6px, -3px) skewX(4deg); filter: hue-rotate(-90deg) saturate(3); }
+  9%   { transform: translate(-7px, 4px) skewX(-3deg); filter: invert(1); }
+  13%  { transform: none; filter: none; }
+  18%  { transform: translate(-9px, 2px) skewX(6deg) scaleY(1.03); filter: hue-rotate(140deg) contrast(2.2); }
+  22%  { transform: none; filter: none; }
+  27%  { transform: translate(8px, 6px) skewX(-7deg); filter: saturate(0) contrast(3); }
+  31%  { transform: none; filter: none; }
+  50%  { transform: perspective(900px) rotateX(-8deg) scale(1.1, 1.28) rotate(18deg); filter: hue-rotate(-50deg) saturate(1.6); opacity: 1; }
+  72%  { transform: perspective(700px) rotateX(-22deg) scale(0.5, 1.65) rotate(-170deg); filter: hue-rotate(-150deg) saturate(2.2); }
+  100% { transform: perspective(600px) rotateX(-40deg) scale(0.001, 0.35) rotate(-560deg); filter: hue-rotate(-250deg) saturate(3); opacity: 0; }
+}
+
+/* back in the original dimension: streak home, settle with residual flicker */
+@keyframes unwarped-in {
+  0%   { transform: perspective(600px) rotateX(30deg) scale(0.001, 0.35) rotate(540deg); filter: hue-rotate(200deg) saturate(3); opacity: 0; }
+  40%  { opacity: 1; }
+  55%  { transform: perspective(800px) rotateX(10deg) scale(0.75, 1.35) rotate(70deg); filter: hue-rotate(60deg) saturate(1.8); }
+  68%  { transform: scale(1.04, 0.97) rotate(-5deg); filter: none; }
+  75%  { transform: none; filter: none; }
+  80%  { transform: translate(4px, -2px) skewX(2deg); filter: hue-rotate(60deg) saturate(2); }
+  84%  { transform: none; filter: none; }
+  90%  { transform: translate(-3px, 2px); filter: invert(1); }
+  93%  { transform: none; filter: none; opacity: 1; }
+  100% { transform: none; filter: none; opacity: 1; }
+}
+
 /* stepped/retro (micro) */
 @keyframes pop-step {
   0% { opacity: 0; transform: scale(.7); }
@@ -91,6 +149,23 @@ a {
 .page-enter-inside { animation: inside-in .3s cubic-bezier(.2,.85,.3,1) both; }
 .page-exit-back { animation: back-out .36s cubic-bezier(.5,0,.8,.4) both; }
 .page-enter-outside { animation: outside-in .38s cubic-bezier(.2,.85,.3,1) both; }
+/* exit wrappers are unmounted right after the animation, so the
+   will-change layer promotion is transient; enter classes persist on the
+   page wrapper, so they must not carry will-change (permanent layer). */
+.page-exit-glitchwarp,
+.page-exit-unwarp {
+  will-change: transform, filter, opacity;
+}
+.page-exit-glitchwarp,
+.page-enter-warped,
+.page-exit-unwarp,
+.page-enter-unwarped {
+  backface-visibility: hidden;
+}
+.page-exit-glitchwarp { animation: glitch-warp-out .95s cubic-bezier(.6,0,.85,.35) both; }
+.page-enter-warped { animation: warped-in .7s cubic-bezier(.2,.75,.3,1) both; }
+.page-exit-unwarp { animation: unwarp-out .85s cubic-bezier(.6,0,.85,.35) both; }
+.page-enter-unwarped { animation: unwarped-in .8s cubic-bezier(.2,.75,.3,1) both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
