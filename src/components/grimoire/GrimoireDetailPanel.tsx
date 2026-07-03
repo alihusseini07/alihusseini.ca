@@ -139,17 +139,20 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
         type="button"
         aria-label="Dismiss selection"
         onClick={onClose}
+        className="grim-close-btn"
         style={{
           position: 'absolute',
           top: '0.5rem',
           right: '0.65rem',
-          width: 26,
-          height: 26,
-          borderRadius: '50%',
-          background: 'rgba(241,222,186,0.55)',
-          border: '1px solid rgba(58,42,24,0.45)',
-          color: HEADING_COLOR,
-          fontFamily: 'var(--font-mono)',
+          width: 28,
+          height: 28,
+          background: 'radial-gradient(circle at 50% 30%, #4a3820, #241a0e)',
+          border: '2px solid #14100a',
+          boxShadow:
+            'inset 0 0 0 1px #6b4f2a, inset 0 0 8px rgba(217,176,121,0.25), 2px 2px 0 rgba(20,12,4,0.5)',
+          color: '#e8c88a',
+          textShadow: '0 0 6px rgba(217,176,121,0.7)',
+          fontFamily: 'var(--font-display)',
           fontSize: '0.95rem',
           lineHeight: 1,
           cursor: 'pointer',
@@ -157,6 +160,7 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
           alignItems: 'center',
           justifyContent: 'center',
           padding: 0,
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease',
         }}
       >
         ×
@@ -164,7 +168,7 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{ flex: '0 0 auto', width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <SkillIconArt skill={skill} size={120} glow="big" />
+          <SkillIconArt skill={skill} size={120} glow="none" />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: 0 }}>
           <h3 style={{
@@ -224,16 +228,18 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.4rem',
-                    padding: '0.3rem 0.6rem',
-                    background: 'rgba(241,222,186,0.45)',
-                    border: '1px solid rgba(58,42,24,0.4)',
-                    borderRadius: 4,
+                    padding: '0.35rem 0.65rem',
+                    background: 'linear-gradient(180deg, #f3e2c0 0%, #e6d0a4 100%)',
+                    border: '2px solid #3a2a18',
+                    boxShadow:
+                      'inset 0 0 0 1px rgba(176,137,79,0.6), inset 0 0 10px rgba(176,137,79,0.18), 2px 2px 0 rgba(58,42,24,0.4)',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.78rem',
                     color: HEADING_COLOR,
                     letterSpacing: '0.02em',
-                    transition: 'background 0.15s ease, transform 0.15s ease',
+                    transition:
+                      'background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, color 0.2s ease',
                   }}
                 >
                   <SkillIconArt skill={rel} size={22} />
@@ -246,12 +252,43 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
       )}
 
       <style>{`
+        /* enchanted scroll-tag: hover lifts it off its shadow and wakes a
+           gold arcane flare; active stamps it back into the page */
         .grim-related-chip:hover {
-          background: rgba(241,222,186,0.75) !important;
-          transform: translateY(-1px);
+          background: linear-gradient(180deg, #f9ecd2 0%, #eedab2 100%) !important;
+          transform: translate(-1px, -1px);
+          box-shadow:
+            inset 0 0 0 1px rgba(176,137,79,0.85),
+            inset 0 0 12px rgba(217,176,121,0.35),
+            3px 3px 0 rgba(58,42,24,0.4),
+            0 0 12px rgba(217,176,121,0.5) !important;
+        }
+        .grim-related-chip:active {
+          transform: translate(1px, 1px);
+          box-shadow:
+            inset 0 0 0 1px rgba(176,137,79,0.85),
+            inset 0 0 12px rgba(217,176,121,0.35),
+            1px 1px 0 rgba(58,42,24,0.4) !important;
         }
         .grim-related-chip:focus-visible {
-          outline: 2px solid var(--accent-frost);
+          outline: 2px solid #b0894f;
+          outline-offset: 3px;
+        }
+        /* rune-seal: the sigil turns and flares when touched */
+        .grim-close-btn:hover {
+          color: #fff3d6 !important;
+          transform: rotate(90deg);
+          box-shadow:
+            inset 0 0 0 1px #8a6a38,
+            inset 0 0 10px rgba(217,176,121,0.45),
+            2px 2px 0 rgba(20,12,4,0.5),
+            0 0 12px rgba(217,176,121,0.55) !important;
+        }
+        .grim-close-btn:active {
+          transform: rotate(90deg) scale(0.92);
+        }
+        .grim-close-btn:focus-visible {
+          outline: 2px solid #b0894f;
           outline-offset: 3px;
         }
       `}</style>

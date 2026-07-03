@@ -1,9 +1,20 @@
+import { useEffect, useRef } from 'react';
 import { useTransitionNavigate } from '../components/PageTransition';
 import GrimoireBookShell from '../components/grimoire/GrimoireBookShell';
 import NoiseOverlay from '../components/grimoire/NoiseOverlay';
+import { play } from '../lib/sound';
 
 export default function Skills() {
   const navigate = useTransitionNavigate();
+
+  // the grimoire heaves open as the page materializes (once — StrictMode
+  // double-mounts effects in dev)
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current) return;
+    opened.current = true;
+    play('bookOpen');
+  }, []);
 
   return (
     <div
@@ -117,48 +128,101 @@ export default function Skills() {
           from { transform: translate3d(-50%, 0, 0); }
           to   { transform: translate3d(0, 0, 0); }
         }
+        /* bound like the grimoire itself: dark leather rim, antique gold
+           fillet, then stacked parchment page-edge bands (the book's
+           fore-edge palette: leather #33200E, gold #A88757, pages
+           #B99C6D–#C8AF83), breathing a slow candle-gold aura */
         .grimoire-back-btn {
           position: fixed;
           top: 2rem;
           left: 2rem;
-          font-family: var(--font-mono);
-          font-size: 0.85rem;
+          font-family: var(--font-display);
+          font-size: 0.95rem;
           font-weight: 400;
-          color: #9ab8cc;
-          background: linear-gradient(135deg, #2a3040, #1e2535);
-          border: none;
+          color: #f0e4c8;
+          background:
+            radial-gradient(ellipse at 50% -20%, rgba(200,175,131,0.25), transparent 65%),
+            linear-gradient(180deg, #4a2f14 0%, #33200e 55%, #241505 100%);
+          border: 3px solid #1c1006;
           cursor: pointer;
-          letter-spacing: 0.1em;
-          padding: 0.45rem 1.1rem;
+          letter-spacing: 0.12em;
+          padding: 0.6rem 2.4rem;
+          text-shadow: 0 0 8px rgba(200,175,131,0.5), 0 2px 0 rgba(0,0,0,0.65);
           box-shadow:
-            inset 0 0 0 1px rgba(180,200,220,0.12),
-            0 0 0 3px #3a4050,
-            0 0 0 5px #1a1e28,
-            0 0 0 8px #3a4050,
-            0 0 0 10px #1a1e28,
-            0 4px 12px rgba(0,0,0,0.5);
+            inset 0 0 0 2px #a88757,
+            inset 0 0 0 3px #241505,
+            inset 0 0 0 5px #c5ab7f,
+            inset 0 0 0 6px #b99c6d,
+            inset 0 0 0 7px #9c7949,
+            inset 0 0 16px rgba(200,175,131,0.16),
+            3px 4px 0 #14100a,
+            0 8px 18px rgba(0,0,0,0.45);
+          animation: tome-breathe 3.6s ease-in-out infinite;
           transition:
-            box-shadow 0.2s ease,
+            box-shadow 0.25s ease,
             color 0.2s ease,
-            transform 0.2s ease;
+            transform 0.15s ease,
+            filter 0.25s ease;
           z-index: 50;
         }
-        .grimoire-back-btn:hover {
-          color: #c8e0f0;
-          box-shadow:
-            inset 0 0 0 1px rgba(180,200,220,0.12),
-            0 0 0 3px #3a4050,
-            0 0 0 5px #1a1e28,
-            0 0 0 8px #3a4050,
-            0 0 0 10px #1a1e28,
-            0 0 0 16px rgba(126,212,164,0.35),
-            0 6px 18px rgba(0,0,0,0.6);
-          transform: translateX(-2px);
+        .grimoire-back-btn::before,
+        .grimoire-back-btn::after {
+          content: '✦';
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 0.7rem;
+          color: #c8af83;
+          text-shadow: 0 0 6px rgba(200,175,131,0.9);
+          animation: sigil-flicker 2.6s ease-in-out infinite;
+          pointer-events: none;
         }
-        .grimoire-back-btn:active { transform: translateX(-1px) scale(0.97); }
+        .grimoire-back-btn::before { left: 0.85rem; }
+        .grimoire-back-btn::after { right: 0.85rem; animation-delay: 1.3s; }
+        .grimoire-back-btn:hover {
+          color: #fff6dd;
+          animation: none;
+          filter: drop-shadow(0 0 14px rgba(217,186,131,0.45));
+          box-shadow:
+            inset 0 0 0 2px #c2a06a,
+            inset 0 0 0 3px #241505,
+            inset 0 0 0 5px #d2b98c,
+            inset 0 0 0 6px #c5ab7f,
+            inset 0 0 0 7px #a88757,
+            inset 0 0 20px rgba(217,186,131,0.28),
+            4px 5px 0 #14100a,
+            0 8px 18px rgba(0,0,0,0.45);
+          transform: translate(-1px, -1px);
+        }
+        .grimoire-back-btn:hover::before,
+        .grimoire-back-btn:hover::after {
+          color: #ffedc4;
+          text-shadow: 0 0 10px rgba(255,230,170,1);
+          animation: none;
+        }
+        .grimoire-back-btn:active {
+          transform: translate(1px, 2px);
+          box-shadow:
+            inset 0 0 0 2px #a88757,
+            inset 0 0 0 3px #241505,
+            inset 0 0 0 5px #c5ab7f,
+            inset 0 0 0 6px #b99c6d,
+            inset 0 0 0 7px #9c7949,
+            inset 0 0 16px rgba(200,175,131,0.2),
+            1px 1px 0 #14100a,
+            0 4px 10px rgba(0,0,0,0.4);
+        }
         .grimoire-back-btn:focus-visible {
-          outline: 2px solid var(--accent-frost);
+          outline: 2px solid #c8af83;
           outline-offset: 6px;
+        }
+        @keyframes tome-breathe {
+          0%, 100% { filter: drop-shadow(0 0 5px rgba(200,175,131,0.16)); }
+          50%      { filter: drop-shadow(0 0 12px rgba(200,175,131,0.34)); }
+        }
+        @keyframes sigil-flicker {
+          0%, 100% { opacity: 0.65; text-shadow: 0 0 4px rgba(200,175,131,0.6); }
+          50%      { opacity: 1;    text-shadow: 0 0 9px rgba(200,175,131,1); }
         }
       `}</style>
     </div>

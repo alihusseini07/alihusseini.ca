@@ -106,10 +106,9 @@ export default function SkillIcon({ skill, size = 52, onHover, onClick }: SkillI
             background: 'linear-gradient(135deg, #f1deba 0%, #e3cda5 100%)',
             border: '1px solid rgba(58,42,24,0.55)',
             boxShadow: '0 0 0 2px #2b251f, 0 0 0 3px rgba(176,137,79,0.45), 0 8px 22px rgba(0,0,0,0.6)',
-            padding: '0.55rem 0.85rem',
-            minWidth: 170,
-            maxWidth: 240,
+            padding: '0.45rem 0.8rem',
             textAlign: 'center',
+            whiteSpace: 'nowrap',
             pointerEvents: 'none',
             zIndex: 9999,
             animation: 'frost-in 0.15s ease-out',
@@ -122,19 +121,9 @@ export default function SkillIcon({ skill, size = 52, onHover, onClick }: SkillI
             color: '#2a1c10',
             letterSpacing: '0.02em',
             lineHeight: 1.1,
-            marginBottom: 4,
             textShadow: '0 0 1px rgba(58,42,24,0.3)',
           }}>
             {skill.name}
-          </div>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.78rem',
-            color: '#5a4022',
-            lineHeight: 1.4,
-            letterSpacing: '0.03em',
-          }}>
-            {skill.blurb}
           </div>
         </div>,
         document.body,
@@ -142,9 +131,8 @@ export default function SkillIcon({ skill, size = 52, onHover, onClick }: SkillI
 
       <style>{`
         .skill-tile:focus-visible {
-          outline: 2px solid var(--accent-frost);
+          outline: 2px solid #d9b079;
           outline-offset: 6px;
-          border-radius: 4px;
         }
       `}</style>
     </div>

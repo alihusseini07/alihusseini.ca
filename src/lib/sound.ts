@@ -5,7 +5,8 @@ export type SoundName =
   | 'pickup' | 'drop' | 'tab' | 'toggleOn' | 'toggleOff' | 'navigate'
   | 'paperIn' | 'paperOut'
   | 'warpIn' | 'warpOut'
-  | 'bell' | 'chime' | 'pageTurn' | 'chantHover';
+  | 'bell' | 'chime' | 'pageTurn' | 'chantHover'
+  | 'bookOpen' | 'ringHalt';
 
 const MUTE_KEY = 'ah:sound-muted';
 
@@ -24,6 +25,7 @@ export function toggleMute() {
   } else {
     play('toggleOff'); // audible feedback before mute takes effect
     muted = true;
+    stopRingHum(); // kill any running loop; owners restart it on unmute
   }
   try { localStorage.setItem(MUTE_KEY, muted ? '1' : '0'); } catch { /* no-op */ }
   listeners.forEach((fn) => fn());
@@ -116,6 +118,112 @@ function bellTone(
   }
 }
 
+/* ---- grimoire ring hum: continuous loop while the three rings turn ---- */
+
+let hum: { gate: GainNode; sources: AudioScheduledSourceNode[] } | null = null;
+
+/** brooding war-drone: dark detuned strings on an open fifth (D2+A2) under a
+    deep sub root, breathing in slow ominous swells; call stopRingHum to end */
+export function startRingHum(): void {
+  if (muted || hum) return;
+  try {
+    const c = ctx();
+    if (!c) return;
+    const { ac: a, master: m } = c;
+    const now = a.currentTime;
+
+    const gate = a.createGain();
+    gate.gain.setValueAtTime(0.0001, now);
+    gate.gain.exponentialRampToValueAtTime(1, now + 1.2);
+    gate.connect(m);
+
+    // slow swell breathes the whole drone (~12s cycle)
+    const swell = a.createGain();
+    swell.gain.value = 0.75;
+    swell.connect(gate);
+
+    const sources: AudioScheduledSourceNode[] = [];
+
+    const swellLfo = a.createOscillator();
+    swellLfo.type = 'sine';
+    swellLfo.frequency.value = 0.08;
+    const swellAmt = a.createGain();
+    swellAmt.gain.value = 0.22;
+    swellLfo.connect(swellAmt).connect(swell.gain);
+    swellLfo.start(now);
+    sources.push(swellLfo);
+
+    // dark string section: detuned saw pairs, muffled behind a low ceiling
+    const lp = a.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 380;
+    lp.Q.value = 0.7;
+    lp.connect(swell);
+    for (const [f, amp] of [
+      [73.42, 0.02], [73.95, 0.018],   // D2 pair, slow beat = menace
+      [110, 0.011], [110.65, 0.01],    // A2 pair
+      [146.83, 0.005],                 // D3 whisper on top
+    ] as const) {
+      const o = a.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.value = f;
+      const g = a.createGain();
+      g.gain.value = amp;
+      o.connect(g).connect(lp);
+      o.start(now);
+      sources.push(o);
+    }
+
+    // sub root D1: felt more than heard
+    const sub = a.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.value = 36.71;
+    const subG = a.createGain();
+    subG.gain.value = 0.03;
+    sub.connect(subG).connect(swell);
+    sub.start(now);
+    sources.push(sub);
+
+    // cavern breath: dark looped noise drifting with its own slow cycle
+    const src = a.createBufferSource();
+    src.buffer = noise(a);
+    src.loop = true;
+    const bf = a.createBiquadFilter();
+    bf.type = 'bandpass';
+    bf.frequency.value = 240;
+    bf.Q.value = 1.4;
+    const ng = a.createGain();
+    ng.gain.value = 0.012;
+    const breathLfo = a.createOscillator();
+    breathLfo.type = 'sine';
+    breathLfo.frequency.value = 0.12;
+    const breathAmt = a.createGain();
+    breathAmt.gain.value = 120;
+    breathLfo.connect(breathAmt).connect(bf.frequency);
+    src.connect(bf).connect(ng).connect(swell);
+    src.start(now);
+    breathLfo.start(now);
+    sources.push(src, breathLfo);
+
+    hum = { gate, sources };
+  } catch { /* no-op */ }
+}
+
+export function stopRingHum(): void {
+  if (!hum) return;
+  const { gate, sources } = hum;
+  hum = null;
+  try {
+    if (!ac) return;
+    const t = ac.currentTime;
+    gate.gain.cancelScheduledValues(t);
+    gate.gain.setValueAtTime(Math.max(gate.gain.value, 0.0001), t);
+    gate.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+    sources.forEach((s) => s.stop(t + 0.3));
+    setTimeout(() => { try { gate.disconnect(); } catch { /* no-op */ } }, 350);
+  } catch { /* no-op */ }
+}
+
 export function play(name: SoundName): void {
   if (muted) return;
   try {
@@ -187,20 +295,42 @@ export function play(name: SoundName): void {
         bellTone(a, m, 147, now + 0.62, 0.7, 0.07);
         break;
       }
-      case 'bell': // grimoire sigil strike
-        bellTone(a, m, 392, now, 0.65, 0.075);
+      case 'bell': // sigil inscribed: quill scratch, then dark monastery bell
+        swish(a, m, 'highpass', 2600, 4200, now, 0.06, 0.028, 0.004);
+        bellTone(a, m, 311.13, now + 0.04, 0.85, 0.08);
+        tone(a, m, 'sine', 155.56, now + 0.07, 0.5, 0.02, undefined, 0.01);
         break;
-      case 'chime': // plucked open fifth, D5 + A5
-        tone(a, m, 'triangle', 587.33, now, 0.22, 0.06, undefined, 0.003);
-        tone(a, m, 'triangle', 880, now + 0.06, 0.28, 0.05, undefined, 0.003);
+      case 'chime': // plucked lute, open fifth D4 + A4 with pick transient
+        swish(a, m, 'highpass', 3000, 3000, now, 0.012, 0.022, 0.002);
+        tone(a, m, 'triangle', 293.66, now, 0.3, 0.06, undefined, 0.003);
+        tone(a, m, 'triangle', 440, now + 0.07, 0.35, 0.05, undefined, 0.003);
+        tone(a, m, 'sine', 587.33, now + 0.07, 0.25, 0.018, undefined, 0.005);
         break;
-      case 'pageTurn': // soft parchment sweep + rustle
-        swish(a, m, 'bandpass', 1200, 480, now, 0.25, 0.045, 0.05);
-        swish(a, m, 'highpass', 3400, 3400, now + 0.05, 0.018, 0.018, 0.003);
-        swish(a, m, 'highpass', 3900, 3900, now + 0.12, 0.015, 0.015, 0.003);
+      case 'pageTurn': // heavy tome page: leather flex, parchment sweep, settle
+        tone(a, m, 'sine', 75, now, 0.09, 0.035, undefined, 0.008);
+        swish(a, m, 'bandpass', 1400, 380, now + 0.02, 0.3, 0.05, 0.05);
+        swish(a, m, 'highpass', 3400, 3400, now + 0.08, 0.02, 0.02, 0.003);
+        swish(a, m, 'highpass', 3900, 3900, now + 0.16, 0.016, 0.016, 0.003);
+        tone(a, m, 'triangle', 523.25, now + 0.24, 0.15, 0.018, undefined, 0.004);
         break;
-      case 'chantHover': // low quiet drone touch, G3
-        tone(a, m, 'sine', 196, now, 0.08, 0.02, undefined, 0.01);
+      case 'chantHover': // parallel organum touch: G3 + D4, whisper quiet
+        tone(a, m, 'sine', 196, now, 0.1, 0.018, undefined, 0.012);
+        tone(a, m, 'sine', 293.66, now, 0.09, 0.01, undefined, 0.015);
+        break;
+      case 'bookOpen': // heavy cover swings, parchment flutters, arcane bells bloom
+        tone(a, m, 'sawtooth', 52, now, 0.35, 0.028, 38);
+        swish(a, m, 'lowpass', 300, 900, now, 0.3, 0.04, 0.08);
+        tone(a, m, 'sine', 60, now + 0.32, 0.18, 0.09, undefined, 0.006);
+        swish(a, m, 'highpass', 3800, 3800, now + 0.38, 0.02, 0.02, 0.003);
+        swish(a, m, 'highpass', 4400, 4400, now + 0.45, 0.018, 0.018, 0.003);
+        swish(a, m, 'highpass', 3500, 3500, now + 0.53, 0.02, 0.02, 0.003);
+        bellTone(a, m, 196, now + 0.5, 1.1, 0.05);
+        bellTone(a, m, 293.66, now + 0.62, 0.9, 0.035);
+        break;
+      case 'ringHalt': // rings grind to a stop: drag, heavy settle, faint tick
+        swish(a, m, 'lowpass', 900, 140, now, 0.16, 0.05, 0.01);
+        tone(a, m, 'sine', 58, now + 0.05, 0.12, 0.06, undefined, 0.006);
+        tone(a, m, 'triangle', 1568, now + 0.1, 0.03, 0.016, undefined, 0.002);
         break;
     }
   } catch { /* no-op */ }

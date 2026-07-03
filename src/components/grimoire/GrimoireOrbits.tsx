@@ -11,6 +11,8 @@ import {
   type Category,
   type Skill,
 } from '../../data/grimoire-data'
+import { play, startRingHum, stopRingHum, useMuted } from '../../lib/sound'
+import { REDUCED } from '../../lib/motion'
 
 const FULL_SIZE = 720
 const R_OUTER = 332
@@ -170,9 +172,27 @@ export default function GrimoireOrbits({ onSkillClick }: GrimoireOrbitsProps = {
   const scale = useContainerScale(FULL_SIZE)
   const [hoveredCategory, setHoveredCategory] = useState<Category | null>(null)
   const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null)
+  const muted = useMuted()
 
   // When a skill is hovered, infer category from it; falls back to ring-level hover.
   const activeCategory = hoveredSkill?.category ?? hoveredCategory
+
+  // Rings hum while they turn; hovering pauses them, so the hum grinds to a
+  // halt with it. Reduced motion means no spin, so no hum either.
+  const spinning = !isMobile && scale !== null && activeCategory === null
+  useEffect(() => {
+    if (REDUCED()) return
+    if (spinning && !muted) {
+      startRingHum()
+      return () => stopRingHum()
+    }
+  }, [spinning, muted])
+
+  useEffect(() => {
+    if (isMobile || REDUCED() || muted) return
+    if (activeCategory !== null) play('ringHalt')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCategory !== null])
 
   if (isMobile) {
     return (
