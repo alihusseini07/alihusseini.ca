@@ -22,7 +22,7 @@ export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
   projects: [
     {
       title: 'Compilot',
-      year: '2025',
+      year: '2026',
       description:
         'A tiered multi-agent platform that tracks and analyzes competitor companies across the web. Runs 3 parallel scraper agents across 6+ sources (GitHub, RSS, job boards, HN) and synthesizes LLM conclusions into daily, weekly, and monthly intelligence reports.',
       stack: ['Python', 'FastAPI', 'Celery', 'Redis', 'PostgreSQL', 'React', 'Vite', 'Docker', 'Kubernetes'],
@@ -32,7 +32,7 @@ export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
     },
     {
       title: 'Clarus',
-      year: '2025',
+      year: '2026',
       description:
         'A student dashboard that syncs course data from Brightspace, organizes deadlines and grade weights, and generates AI-ranked study action plans.',
       stack: ['TypeScript', 'Next.js', 'Fastify', 'Prisma', 'Playwright'],
@@ -43,7 +43,7 @@ export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
     },
     {
       title: 'ChefIt',
-      year: '2025',
+      year: '2026',
       description:
         'A full-stack social cooking app that scans pantry items, matches recipes by ingredient coverage, and supports posts, reviews, and smart shopping lists.',
       stack: ['SwiftUI', 'Node.js', 'Express', 'PostgreSQL', 'OpenAI Vision'],
@@ -54,7 +54,7 @@ export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
     },
     {
       title: 'WaterlooWorks+',
-      year: '2024',
+      year: '2026',
       description:
         'A Manifest V3 Chrome extension that parses resumes and job posts, scores candidate fit, and adds dashboards and overlays to streamline co-op job screening.',
       stack: ['JavaScript', 'Manifest V3', 'DOM APIs', 'Node.js', 'PDF.js'],
@@ -65,7 +65,7 @@ export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
     },
     {
       title: 'Joblyze',
-      year: '2024',
+      year: '2025',
       description:
         'An AI-powered job posting analyzer that extracts required skills, compares them with resumes, and highlights gaps for stronger applications.',
       stack: ['Python', 'Streamlit', 'LangChain', 'OpenAI'],
@@ -74,18 +74,8 @@ export const PORTFOLIO: Record<Category, PortfolioItem[]> = {
       image: '/assets/joblyze.jpg',
     },
     {
-      title: 'IoT-Enabled Electronic Safe',
-      year: '2024',
-      description:
-        'An ESP32 safe with keypad, LEDs, buzzer, and temperature sensing; the web interface mirrors lock state and controls access in real time.',
-      stack: ['C++', 'ESP32', 'PlatformIO', 'Web'],
-      demo: '#',
-      github: 'https://github.com/alihusseini07/web-esp32',
-      image: '/assets/esp32-safe.jpg',
-    },
-    {
       title: 'Dynamic Delivery Drone',
-      year: '2023',
+      year: '2025',
       description:
         'Designed and 3D-printed a delivery drone prototype in Fusion 360, iterating propeller arm connectors and custom axles into a functional scale model.',
       stack: ['Fusion 360', '3D Printing', 'Iteration'],

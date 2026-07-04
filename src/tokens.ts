@@ -51,7 +51,7 @@ export const PROFILE = {
   },
   bullets: [
     { color: '#e8a72e', text: 'interested in software & robotics' },
-    { color: '#3f8fd6', text: 'prev @ ATS360' },
+    { color: '#3f8fd6', text: 'i like kickboxing' },
     { color: '#5db84a', text: 'anime & show enjoyer' },
     { color: '#34302a', text: 'seeking fall 2026 opportunities', highlight: true },
   ] as { color: string; text: string; highlight?: boolean }[],
