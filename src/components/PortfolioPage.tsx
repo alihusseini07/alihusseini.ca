@@ -1,6 +1,7 @@
 import { type CSSProperties } from 'react';
 import PixelFolder from './PixelFolder';
 import ContactBar from './ContactBar';
+import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
 import { useTransitionNavigate } from './PageTransition';
 import { enter } from '../lib/motion';
@@ -16,10 +17,11 @@ const stretch: CSSProperties = {
   transformOrigin: 'bottom',
 };
 
-/** yellow highlighter marker */
+/** yellow highlighter marker; pair with .hl-anim to sweep it in */
 const highlight: CSSProperties = {
-  background: `linear-gradient(${THEME.highlight}, ${THEME.highlight})`,
-  boxShadow: `0 0 0 2px ${THEME.highlight}`,
+  backgroundImage: `linear-gradient(${THEME.highlight}, ${THEME.highlight})`,
+  padding: 2,
+  margin: -2,
 };
 
 const PIXEL = "'Press Start 2P', monospace";
@@ -166,13 +168,13 @@ export default function PortfolioPage() {
 
           <p className="enter-rise" style={{ ...affiliation, ...enter(2) }}>
             <span style={stretch}>
-              <span style={highlight}>{PROFILE.affiliation.label}</span>{' '}
+              <span className="hl-anim" style={{ ...highlight, animationDelay: '420ms' }}>{PROFILE.affiliation.label}</span>{' '}
               <span style={{ color: THEME.accentBlue, marginLeft: 10 }}>{PROFILE.affiliation.school}</span>
             </span>
           </p>
 
           <p className="enter-rise" style={{ ...tagline, ...enter(3) }}>
-            <span style={stretch}>{PROFILE.tagline}</span>
+            <CyclingTagline lines={PROFILE.taglines} style={stretch} />
           </p>
 
           <div style={blank} />
@@ -181,7 +183,12 @@ export default function PortfolioPage() {
             {PROFILE.bullets.map((b, i) => (
               <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
                 <span style={marker(b.color)} />
-                <span style={b.highlight ? { ...highlight, ...stretch } : stretch}>{b.text}</span>
+                <span
+                  className={b.highlight ? 'hl-anim' : undefined}
+                  style={b.highlight ? { ...highlight, ...stretch, animationDelay: `${(4 + i) * 70 + 320}ms` } : stretch}
+                >
+                  {b.text}
+                </span>
               </li>
             ))}
           </ul>

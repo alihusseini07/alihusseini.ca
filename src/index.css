@@ -140,6 +140,47 @@ a {
   100% { transform: none; filter: none; }
 }
 
+/* highlighter marker sweeping left-to-right across a word */
+@keyframes hl-sweep {
+  from { background-size: 0% 100%; }
+  to { background-size: 100% 100%; }
+}
+
+.hl-anim {
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  animation: hl-sweep 1.2s steps(24, end) both;
+}
+
+/* pink pixel eraser that scrubs the tagline away */
+.tagline-eraser {
+  position: absolute;
+  top: -7px;
+  width: 26px;
+  height: 22px;
+  background: #e8837a;
+  /* lighter worn top band + chunky pixel outline */
+  box-shadow:
+    inset 0 7px 0 #f6bcb4,
+    0 0 0 2px #4a2f2a;
+}
+
+/* typewriter block cursor for the cycling tagline */
+.tw-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 12px;
+  margin-left: 6px;
+  background: currentColor;
+}
+
+@keyframes tw-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.tw-cursor-blink { animation: tw-blink 1s steps(1, end) infinite; }
+
 /* stepped/retro (micro) */
 @keyframes pop-step {
   0% { opacity: 0; transform: scale(.7); }

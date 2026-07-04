@@ -44,7 +44,14 @@ export const THEME: Theme = {
 
 export const PROFILE = {
   name: 'Ali Husseini',
-  tagline: "i build things that (hopefully) make people's lives easier",
+  // rotating taglines: the first is the "real" one, the rest cycle in via
+  // the erase/retype animation. Add more lines here any time.
+  taglines: [
+    "i build things that (hopefully) make people's lives easier",
+    'it works on my machine, i promise',
+    'i debug by staring at the code until it confesses',
+    'kickboxing is just debugging with your fists',
+  ],
   affiliation: {
     label: 'mechatronics engineering',
     school: '@ uwaterloo',
