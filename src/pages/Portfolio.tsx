@@ -8,17 +8,77 @@ import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
 import { PROFILE, THEME } from '../tokens';
 import { PROJECTS } from '../data/portfolio';
+import { TECH_ICONS } from '../data/tech-icons';
 
 const PIXEL = "'Press Start 2P', monospace";
-const ACCENTS = ['#e8a72e', '#3f8fd6', '#5db84a'];
 const stretch: CSSProperties = { display: 'inline-block', transform: 'scaleY(1.4)', transformOrigin: 'bottom' };
-const RULES = 'repeating-linear-gradient(#ece4d3 0px,#ece4d3 39px,#cdb994 39px,#cdb994 40px)';
 
-/** film rail geometry: the sprocketed strip that runs down the left margin */
-const RAIL_LEFT = 44;
-const RAIL_W = 28;
-const CONTENT_PAD_LEFT = 132;
 const MEDIA_H = 300;
+const CREAM = '#ece4d3';
+
+/* ---- design board background: clean cream with a faint pixel dot grid ---- */
+const DOT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><rect x="0" y="0" width="3" height="3" fill="#dcd0b4"/></svg>`;
+const svgUrl = (s: string) => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+
+/* pinned-polaroid pushpin heads, one per frame */
+const PINS = ['#d9564a', '#3f8fd6', '#5db84a', '#e8a72e'];
+
+/* washi-tape tints for the stack chips */
+const TAPES = ['rgba(255,224,138,.55)', 'rgba(143,199,240,.42)', 'rgba(166,224,122,.42)'];
+
+/* ---- side doodles: big pen sketches in the board's outer margins --------
+   each is a set of stroke paths; pathLength=1 + the .doodle-side CSS traces
+   them on like a pen once the frame reveals */
+const DOODLE_INK = '#9d8c6b';
+
+const DOODLE_PATHS: Record<string, string[]> = {
+  /* long arc curving up the margin, arrowhead aimed at the polaroid */
+  pointArrow: [
+    'M14 90 C 8 48, 28 20, 80 16',
+    'M64 6 L80 16 L66 30',
+  ],
+  /* three 4-point sparkles, big to small — "this one's good" */
+  sparkTrio: [
+    'M32 12 L38 32 L58 38 L38 44 L32 64 L26 44 L6 38 L26 32 Z',
+    'M72 26 L75 36 L85 39 L75 42 L72 52 L69 42 L59 39 L69 36 Z',
+    'M62 66 L64 74 L72 76 L64 78 L62 86 L60 78 L52 76 L60 74 Z',
+  ],
+  /* hand-drawn exclamation mark — emphasis beside the title */
+  bang: [
+    'M50 10 C 45 32, 46 46, 50 60',
+    'M50 74 a5 5 0 1 1 -0.1 0',
+  ],
+};
+
+function SideDoodle({
+  kind, style, size = 110, delay = 450,
+  color = kind === 'sparkTrio' ? '#dcaa3a' : kind === 'bang' ? '#c9685c' : DOODLE_INK,
+}: {
+  kind: keyof typeof DOODLE_PATHS;
+  style?: CSSProperties;
+  size?: number;
+  delay?: number;
+  color?: string;
+}) {
+  return (
+    <span className="doodle-wrap" aria-hidden style={{ position: 'absolute', pointerEvents: 'none', zIndex: 1, ...style }}>
+      <svg className="doodle-side" width={size} height={size} viewBox="0 0 100 100" fill="none" style={{ display: 'block' }}>
+        {DOODLE_PATHS[kind].map((d, pi) => (
+          <path
+            key={d}
+            d={d}
+            pathLength={1}
+            stroke={color}
+            strokeWidth={5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ animationDelay: `${delay + pi * 220}ms` }}
+          />
+        ))}
+      </svg>
+    </span>
+  );
+}
 
 /** ref callback: reserve the extra height a scaleY-stretched block needs so
     the content below it doesn't get overlapped */
@@ -29,30 +89,41 @@ function fit(k: number) {
   };
 }
 
-const tape = (side: 'left' | 'right', rot: number): CSSProperties => ({
-  position: 'absolute',
-  top: -11,
-  [side]: 30,
-  width: 74,
-  height: 22,
-  background: 'rgba(255,224,138,.72)',
-  border: '1px solid rgba(201,180,143,.5)',
-  transform: `rotate(${rot}deg)`,
-  zIndex: 2,
-});
+/** brand colors too pale to read on the light chip get darkened */
+function legible(hex: string) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  if (lum > 200) return `rgb(${Math.round(r * 0.62)}, ${Math.round(g * 0.62)}, ${Math.round(b * 0.62)})`;
+  return hex;
+}
+
+function TechGlyph({ name }: { name: string }) {
+  const ic = TECH_ICONS[name];
+  if (!ic) return null;
+  if (ic.kind === 'image') {
+    return <img src={ic.src} alt="" draggable={false} style={{ width: 15, height: 15, objectFit: 'contain', flex: 'none' }} />;
+  }
+  return (
+    <svg width={14} height={14} viewBox="0 0 24 24" fill={legible(ic.color)} style={{ flex: 'none' }} aria-hidden>
+      <path d={ic.path} />
+    </svg>
+  );
+}
 
 export default function Portfolio() {
   const navigate = useTransitionNavigate();
   const frameRefs = useRef<(HTMLElement | null)[]>([]);
   const [shown, setShown] = useState<boolean[]>(() => PROJECTS.map(() => false));
 
-  // scroll-triggered reveal: each frame rises in as the reel scrolls past it
+  // scroll-triggered reveal: each frame slides in as it scrolls into view
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) => {
         for (const en of entries) {
           if (!en.isIntersecting) continue;
           const i = Number((en.target as HTMLElement).dataset.frame);
+          play('frameWhoosh'); // unobserved right after, so this fires once per frame
           setShown((s) => (s[i] ? s : s.map((v, j) => (j === i ? true : v))));
           io.unobserve(en.target);
         }
@@ -63,18 +134,37 @@ export default function Portfolio() {
     return () => io.disconnect();
   }, []);
 
-  const goHome = () => { play('click'); navigate('/', { zoom: 'out' }); };
+  const goHome = () => { play('shutter'); navigate('/', { zoom: 'out' }); };
 
-  const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#ece4d3', fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
+  const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: CREAM, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
   const header: CSSProperties = { position: 'sticky', top: 0, zIndex: 30, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px', height: 58, background: '#e6dcc6', borderBottom: '2px solid #34302a', boxShadow: '0 2px 0 rgba(52,48,42,.12)' };
   const crumbMuted: CSSProperties = { ...stretch, fontSize: 11, letterSpacing: 1, color: '#857c6b', textTransform: 'uppercase', cursor: 'pointer' };
   const slash: CSSProperties = { ...stretch, fontSize: 11, color: '#c3b393' };
   const crumbActive: CSSProperties = { ...stretch, fontSize: 11, letterSpacing: 1, color: '#34302a', textTransform: 'uppercase', background: 'linear-gradient(#ffe08a,#ffe08a)', boxShadow: '0 0 0 2px #ffe08a' };
 
   const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: '#857c6b', textTransform: 'uppercase' };
-  const yearTag: CSSProperties = { ...stretch, fontSize: 10, color: '#7a7060', padding: '6px 9px', border: '2px solid #cdb994', background: '#fffdf6' };
-  const chip: CSSProperties = { display: 'inline-flex', alignItems: 'flex-end', padding: '8px 10px 7px', background: '#fffdf6', border: '2px solid #34302a', boxShadow: '2px 2px 0 rgba(52,48,42,.18)' };
-  const btn = (bg: string, fg: string): CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '13px 17px', background: bg, border: '2px solid #34302a', color: fg, textDecoration: 'none', boxShadow: '3px 3px 0 rgba(52,48,42,.22)' });
+  /* rubber date stamp: dashed red outline, tilted, slightly faded ink */
+  const yearStamp: CSSProperties = {
+    display: 'inline-block',
+    fontSize: 9,
+    color: '#c25b50',
+    padding: '7px 9px 6px',
+    border: '2px dashed rgba(194,91,80,.75)',
+    transform: 'scaleY(1.4) rotate(-3deg)',
+    transformOrigin: 'bottom',
+    opacity: .9,
+  };
+  const sticker = (bg: string, fg: string): CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '13px 17px',
+    background: bg,
+    color: fg,
+    textDecoration: 'none',
+  });
+
+  const polaroidRest = (i: number) => `rotate(${i % 2 ? 1.1 : -1.1}deg)`;
 
   return (
     <div style={page}>
@@ -90,14 +180,9 @@ export default function Portfolio() {
         </div>
       </header>
 
-      {/* SHEET */}
-      <div style={{ flex: 1, position: 'relative', backgroundColor: '#ece4d3', backgroundImage: RULES }}>
-        {/* film rail: dark strip with sprocket holes punched out of it */}
-        <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, left: RAIL_LEFT, width: RAIL_W, background: '#34302a', display: 'flex', justifyContent: 'center', boxShadow: '2px 0 0 rgba(52,48,42,.15)' }}>
-          <div style={{ width: 12, height: '100%', backgroundImage: 'repeating-linear-gradient(#ece4d3 0px,#ece4d3 12px,transparent 12px,transparent 32px)', backgroundPosition: '0 10px' }} />
-        </div>
-
-        <div style={{ position: 'relative', zIndex: 2, padding: `0 72px 0 ${CONTENT_PAD_LEFT}px`, maxWidth: 1300 }}>
+      {/* DESIGN BOARD */}
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: CREAM, backgroundImage: svgUrl(DOT_SVG) }}>
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: '0 72px' }}>
           {/* TITLE */}
           <div className="enter-rise" style={{ ...enter(1), paddingTop: 74, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
             <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 26, color: '#34302a' }}>
@@ -108,7 +193,6 @@ export default function Portfolio() {
           {/* FRAMES */}
           <div style={{ paddingTop: 84, paddingBottom: 40 }}>
             {PROJECTS.map((d, i) => {
-              const accent = ACCENTS[i % 3];
               const flip = i % 2 === 1;
               const demoOk = d.demo && d.demo !== '#';
               const ghOk = d.github && d.github !== '#';
@@ -118,54 +202,99 @@ export default function Portfolio() {
                   data-frame={i}
                   ref={(el) => { frameRefs.current[i] = el; }}
                   className={`reveal${shown[i] ? ' on' : ''}`}
-                  style={{ position: 'relative', display: 'flex', flexDirection: flip ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: '44px 60px', marginBottom: 110 }}
+                  style={{ position: 'relative', display: 'flex', flexDirection: flip ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: '44px 60px', marginBottom: 120 }}
                 >
-                  {/* frame number, pinned to the rail */}
-                  <div aria-hidden style={{ position: 'absolute', top: 4, left: RAIL_LEFT + RAIL_W / 2 - CONTENT_PAD_LEFT - 19, width: 38, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', background: accent, border: '2px solid #34302a', boxShadow: '2px 2px 0 rgba(52,48,42,.3)' }}>
-                    <span style={{ ...stretch, fontSize: 10, color: '#fffdf6' }}>{String(i + 1).padStart(2, '0')}</span>
-                  </div>
+                  {/* margin pen doodles, placed with intent: an arrow in the
+                      media-side margin aims at the polaroid; emphasis marks sit
+                      in the text-side margin at title height */}
+                  <SideDoodle
+                    kind="pointArrow"
+                    size={118}
+                    delay={520}
+                    style={{ top: '6%', ...(flip ? { right: -106, transform: 'scaleX(-1) rotate(-6deg)' } : { left: -106, transform: 'rotate(-6deg)' }) }}
+                  />
+                  <SideDoodle
+                    kind={i % 2 ? 'bang' : 'sparkTrio'}
+                    size={92}
+                    delay={880}
+                    style={{ top: -10, ...(flip ? { left: -94, transform: 'rotate(-8deg)' } : { right: -94, transform: 'rotate(8deg)' }) }}
+                  />
 
-                  {/* MEDIA: taped photo mat */}
-                  <div style={{ flex: '1 1 460px', maxWidth: 560, position: 'relative', background: '#fffdf6', padding: '12px 12px 14px', border: '1px solid #e4d9bf', boxShadow: '0 13px 26px rgba(52,48,42,.2)', transform: `rotate(${flip ? 0.8 : -0.8}deg)` }}>
-                    <div style={tape('left', -3)} />
-                    <div style={tape('right', 2)} />
-                    <div style={{ position: 'relative', width: '100%', height: MEDIA_H, background: '#ece4d3', overflow: 'hidden' }}>
-                      {d.video ? (
-                        <VideoSlot id={`proj-${i}-media`} src={d.video} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: MEDIA_H }} />
-                      ) : (
-                        <ImageSlot id={`proj-${i}-media`} src={d.image} placeholder="drop cover" style={{ display: 'block', width: '100%', height: MEDIA_H }} />
-                      )}
+                  {/* MEDIA: pinned polaroid print */}
+                  <div className={flip ? 'from-right' : 'from-left'} style={{ flex: '1 1 460px', maxWidth: 560 }}>
+                    <div
+                      style={{
+                        position: 'relative',
+                        background: '#fffdf6',
+                        padding: '16px 16px 0',
+                        border: '2px solid #34302a',
+                        borderRadius: 3,
+                        boxShadow: '0 12px 24px rgba(52,48,42,.22), 5px 5px 0 rgba(52,48,42,.12)',
+                        transform: polaroidRest(i),
+                        transition: 'transform .16s steps(3, end)',
+                      }}
+                      onMouseEnter={(ev) => { play('lensWhir'); ev.currentTarget.style.transform = 'translateY(-6px) rotate(0deg)'; }}
+                      onMouseLeave={(ev) => { play('lensBack'); ev.currentTarget.style.transform = polaroidRest(i); }}
+                    >
+                      {/* pushpin holding the print to the board */}
+                      <div aria-hidden style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -8, width: 16, height: 16, borderRadius: '50%', background: PINS[i % PINS.length], border: '2px solid #34302a', boxShadow: 'inset 3px 3px 0 rgba(255,255,255,.4), inset -3px -3px 0 rgba(0,0,0,.25), 0 3px 3px rgba(52,48,42,.3)', zIndex: 3 }} />
+                      {/* photo window: dark like undeveloped film until the media loads */}
+                      <div style={{ position: 'relative', width: '100%', height: MEDIA_H, background: '#241f19', overflow: 'hidden' }}>
+                        {d.video ? (
+                          <VideoSlot id={`proj-${i}-media`} src={d.video} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: MEDIA_H }} />
+                        ) : (
+                          <ImageSlot id={`proj-${i}-media`} src={d.image} placeholder="drop cover" style={{ display: 'block', width: '100%', height: MEDIA_H }} />
+                        )}
+                        {/* film gloss streak */}
+                        <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.16) 9%, transparent 9%, transparent 13%, rgba(255,255,255,.08) 13%, rgba(255,255,255,.08) 16%, transparent 16%)' }} />
+                      </div>
+                      {/* deep polaroid chin with a marker caption */}
+                      <div style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ ...stretch, fontSize: 9, letterSpacing: 2, color: '#57503f', transform: 'scaleY(1.4) rotate(-1deg)' }}>{d.title.toLowerCase()}</span>
+                      </div>
                     </div>
                   </div>
 
                   {/* TEXT */}
-                  <div style={{ flex: '1 1 340px', minWidth: 300, paddingTop: 6 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                      <div style={{ width: 8, height: 8, background: accent }} />
-                      <span style={eyebrow}>frame {String(i + 1).padStart(2, '0')}</span>
-                      <span style={yearTag}>{d.year}</span>
+                  <div className={flip ? 'from-left' : 'from-right'} style={{ flex: '1 1 340px', minWidth: 300, paddingTop: 6, animationDelay: '100ms' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
+                      <h2 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 19, color: '#34302a' }}>{d.title}</h2>
+                      <span style={yearStamp}>{d.year}</span>
                     </div>
-                    <h2 style={{ margin: '24px 0 0', ...stretch, transformOrigin: 'bottom left', fontSize: 19, color: '#34302a' }}>{d.title}</h2>
                     <p ref={fit(1.32)} style={{ margin: '26px 0 0', maxWidth: '58ch', display: 'inline-block', transform: 'scaleY(1.32)', transformOrigin: 'top left', fontSize: 11, lineHeight: 2.36, color: '#4a443a' }}>
                       {d.description}
                     </p>
-                    <div style={{ marginTop: 30, display: 'flex', flexWrap: 'wrap', gap: 9 }}>
-                      {d.stack.map((tech) => (
-                        <span key={tech} style={chip}>
-                          <span style={{ ...stretch, fontSize: 9, color: '#34302a' }}>{tech}</span>
+                    {/* stack: washi-tape strips torn onto the board */}
+                    <div style={{ marginTop: 30, display: 'flex', flexWrap: 'wrap', gap: '10px 8px' }}>
+                      {d.stack.map((tech, ti) => (
+                        <span
+                          key={tech}
+                          className="from-up chip-tape"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '9px 14px',
+                            background: TAPES[ti % TAPES.length],
+                            ['--tilt' as string]: `${ti % 2 ? 0.9 : -0.9}deg`,
+                            animationDelay: `${200 + ti * 35}ms`,
+                          }}
+                        >
+                          <TechGlyph name={tech} />
+                          <span style={{ ...stretch, fontSize: 9, color: '#413b30' }}>{tech}</span>
                         </span>
                       ))}
                     </div>
                     {(demoOk || ghOk) && (
-                      <div style={{ marginTop: 32, display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+                      <div style={{ marginTop: 36, display: 'flex', flexWrap: 'wrap', gap: 18 }}>
                         {demoOk && (
-                          <a href={d.demo} target="_blank" rel="noopener" draggable={false} style={btn('#3f8fd6', '#fffdf6')} onMouseEnter={() => play('tick')}>
+                          <a href={d.demo} target="_blank" rel="noopener" draggable={false} className="btn-sticker" style={sticker('#3f8fd6', '#fffdf6')} onMouseEnter={() => play('focusBeep')} onClick={() => play('shutter')}>
                             <div style={{ width: 0, height: 0, borderLeft: '10px solid #fffdf6', borderTop: '6px solid transparent', borderBottom: '6px solid transparent' }} />
                             <span style={{ ...stretch, fontSize: 10 }}>live demo</span>
                           </a>
                         )}
                         {ghOk && (
-                          <a href={d.github} target="_blank" rel="noopener" draggable={false} style={btn('#e6dcc6', '#34302a')} onMouseEnter={() => play('tick')}>
+                          <a href={d.github} target="_blank" rel="noopener" draggable={false} className="btn-sticker" style={sticker('#34302a', '#ece4d3')} onMouseEnter={() => play('focusBeep')} onClick={() => play('shutter')}>
                             <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.21 3.44 9.63 8.21 11.19.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.72-4.04-1.59-4.04-1.59-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.22 1.84 1.22 1.07 1.81 2.81 1.29 3.49.99.11-.77.42-1.29.76-1.59-2.67-.3-5.47-1.32-5.47-5.86 0-1.29.47-2.35 1.23-3.18-.12-.3-.53-1.51.12-3.15 0 0 1.01-.32 3.3 1.21.96-.26 1.98-.39 3-.4 1.02.01 2.04.14 3 .4 2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.85.12 3.15.77.83 1.23 1.89 1.23 3.18 0 4.55-2.81 5.56-5.49 5.85.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z" /></svg>
                             <span style={{ ...stretch, fontSize: 10 }}>github</span>
                           </a>
@@ -177,13 +306,13 @@ export default function Portfolio() {
               );
             })}
 
-            {/* END OF REEL */}
+            {/* END OF THE BOARD */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26, paddingBottom: 80 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 8, height: 8, background: '#34302a' }} />
-                <span style={eyebrow}>end of reel</span>
+                <span style={eyebrow}>end of the board</span>
               </div>
-              <button onClick={goHome} onMouseEnter={() => play('tick')} style={{ ...btn('#ffe08a', '#34302a'), cursor: 'pointer', fontFamily: PIXEL }}>
+              <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={{ ...sticker('#ffe08a', '#34302a'), cursor: 'pointer', fontFamily: PIXEL }}>
                 <span style={{ ...stretch, fontSize: 10 }}>← back to the desk</span>
               </button>
             </div>

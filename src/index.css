@@ -188,9 +188,85 @@ a {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* scroll-triggered reveal (portfolio film strip frames) */
-.reveal { opacity: 0; }
-.reveal.on { animation: rise-in .38s cubic-bezier(.2,.85,.3,1) both; }
+/* scroll-triggered reveal (portfolio frames): media and text slam in from
+   opposite sides with an overshoot bounce as each frame scrolls into view */
+@keyframes slide-in-left {
+  0% { opacity: 0; transform: translateX(-140px); }
+  55% { opacity: 1; transform: translateX(14px); }
+  78% { transform: translateX(-5px); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes slide-in-right {
+  0% { opacity: 0; transform: translateX(140px); }
+  55% { opacity: 1; transform: translateX(-14px); }
+  78% { transform: translateX(5px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* stack chips pop up with a squash-overshoot; --tilt preserves each chip's
+   resting rotation through the animation's fill */
+@keyframes chip-in {
+  0% { opacity: 0; transform: translateY(24px) scale(.75) rotate(var(--tilt, 0deg)); }
+  65% { opacity: 1; transform: translateY(-4px) scale(1.05) rotate(var(--tilt, 0deg)); }
+  100% { opacity: 1; transform: rotate(var(--tilt, 0deg)); }
+}
+
+.reveal .from-left,
+.reveal .from-right,
+.reveal .from-up { opacity: 0; }
+.reveal.on .from-left { animation: slide-in-left .58s cubic-bezier(.22,.9,.3,1) both; }
+.reveal.on .from-right { animation: slide-in-right .58s cubic-bezier(.22,.9,.3,1) both; }
+.reveal.on .from-up { animation: chip-in .34s cubic-bezier(.25,.9,.3,1) both; }
+
+/* design-board doodles: pen strokes drawn onto the board after the frame
+   reveals. Every path carries pathLength=1, so dash 1→0 traces it live. */
+@keyframes doodle-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.doodle-side path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.reveal.on .doodle-side path {
+  animation: doodle-draw .9s cubic-bezier(.45,.05,.55,.95) forwards;
+}
+
+/* side doodles live in the outer margins; drop them when there's no room */
+@media (max-width: 1439px) {
+  .doodle-wrap { display: none; }
+}
+
+/* washi-tape stack chip: translucent tape strip with torn zigzag ends */
+.chip-tape {
+  clip-path: polygon(
+    0% 0%, 100% 0%, 97% 12%, 100% 25%, 97% 37%, 100% 50%, 97% 62%, 100% 75%, 97% 87%, 100% 100%,
+    0% 100%, 3% 87%, 0% 75%, 3% 62%, 0% 50%, 3% 37%, 0% 25%, 3% 12%
+  );
+}
+
+/* pixel sticker badge: die-cut white edge, dark outline, hard shadow;
+   hover tilts the sticker and peels its bottom-right corner */
+.btn-sticker {
+  position: relative;
+  border: 3px solid #fffdf6;
+  box-shadow: 0 0 0 2px #34302a, 4px 5px 0 rgba(52, 48, 42, .22);
+  transition: transform .12s steps(3, end);
+}
+.btn-sticker::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 0;
+  height: 0;
+  background: linear-gradient(315deg, #ece4d3 45%, #b9ab87 45% 55%, #fffdf6 55%);
+  box-shadow: -1px -1px 0 rgba(52, 48, 42, .25);
+  transition: width .12s steps(3, end), height .12s steps(3, end);
+}
+.btn-sticker:hover { transform: rotate(-2deg) translateY(-2px); }
+.btn-sticker:hover::after { width: 22px; height: 22px; }
 
 .enter-rise { animation: rise-in .32s cubic-bezier(.2,.85,.3,1) both; }
 .enter-drop { animation: drop-in .28s cubic-bezier(.2,.85,.3,1) both; }

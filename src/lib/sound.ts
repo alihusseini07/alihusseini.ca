@@ -6,7 +6,8 @@ export type SoundName =
   | 'paperIn' | 'paperOut'
   | 'warpIn' | 'warpOut'
   | 'bell' | 'chime' | 'pageTurn' | 'chantHover'
-  | 'bookOpen' | 'ringHalt';
+  | 'bookOpen' | 'ringHalt'
+  | 'focusBeep' | 'shutter' | 'frameWhoosh' | 'lensWhir' | 'lensBack';
 
 const MUTE_KEY = 'ah:sound-muted';
 
@@ -331,6 +332,31 @@ export function play(name: SoundName): void {
         swish(a, m, 'lowpass', 900, 140, now, 0.16, 0.05, 0.01);
         tone(a, m, 'sine', 58, now + 0.05, 0.12, 0.06, undefined, 0.006);
         tone(a, m, 'triangle', 1568, now + 0.1, 0.03, 0.016, undefined, 0.002);
+        break;
+      case 'focusBeep': // camera AF confirm: two tiny high beeps on hover
+        tone(a, m, 'sine', 1245, now, 0.025, 0.022, undefined, 0.002);
+        tone(a, m, 'sine', 1245, now + 0.045, 0.025, 0.018, undefined, 0.002);
+        break;
+      case 'shutter': // SLR snapshot: mirror clack, body thump, curtain re-click
+        swish(a, m, 'highpass', 4500, 4500, now, 0.012, 0.05, 0.001);
+        tone(a, m, 'triangle', 170, now + 0.004, 0.05, 0.05, 120, 0.002);
+        swish(a, m, 'bandpass', 1800, 900, now + 0.02, 0.04, 0.03, 0.004);
+        swish(a, m, 'highpass', 5000, 5000, now + 0.075, 0.012, 0.04, 0.001);
+        tone(a, m, 'triangle', 140, now + 0.08, 0.04, 0.03, 100, 0.002);
+        break;
+      case 'frameWhoosh': // project frame sweeps in from the side: layered air whoosh
+        swish(a, m, 'bandpass', 250, 1800, now, 0.32, 0.045, 0.09);
+        swish(a, m, 'bandpass', 120, 600, now + 0.02, 0.3, 0.03, 0.1);
+        tone(a, m, 'triangle', 120, now + 0.3, 0.05, 0.03, 95, 0.004);
+        break;
+      case 'lensWhir': // zoom motor spins up as the print lifts off the board
+        swish(a, m, 'bandpass', 700, 1500, now, 0.11, 0.035, 0.02);
+        tone(a, m, 'sawtooth', 92, now, 0.11, 0.014, 120, 0.01);
+        swish(a, m, 'highpass', 4500, 4500, now + 0.11, 0.01, 0.02, 0.002);
+        break;
+      case 'lensBack': // motor eases back down as the print settles
+        swish(a, m, 'bandpass', 1400, 650, now, 0.09, 0.028, 0.015);
+        tone(a, m, 'sawtooth', 115, now, 0.09, 0.01, 88, 0.01);
         break;
     }
   } catch { /* no-op */ }
