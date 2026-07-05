@@ -48,7 +48,7 @@ function ctx(): { ac: AudioContext; master: GainNode } | null {
   if (!ac) {
     ac = new Ctx();
     master = ac.createGain();
-    master.gain.value = 0.5;
+    master.gain.value = 1.4;
     master.connect(ac.destination);
   }
   if (ac.state === 'suspended') void ac.resume();
