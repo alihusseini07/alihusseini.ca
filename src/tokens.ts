@@ -47,7 +47,7 @@ export const PROFILE = {
   // rotating taglines: the first is the "real" one, the rest cycle in via
   // the erase/retype animation. Add more lines here any time.
   taglines: [
-    "i build things that (hopefully) make people's lives easier",
+    "i build things that make people's lives easier",
     'it works on my machine, i promise',
     'i debug by staring at the code until it confesses',
     'kickboxing is just debugging with your fists',
