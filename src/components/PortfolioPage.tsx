@@ -4,8 +4,9 @@ import ContactBar from './ContactBar';
 import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
 import { useTransitionNavigate } from './PageTransition';
+import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
-import { FOLDER_COLORS, FOLDERS, PROFILE, THEME } from '../tokens';
+import { EXPERIENCE, FOLDER_COLORS, FOLDERS, PROFILE, THEME } from '../tokens';
 
 /** ruled-paper line spacing, in px */
 const RULE = 40;
@@ -142,6 +143,21 @@ export default function PortfolioPage() {
     gap: 64,
   };
 
+  /** translucent tape strip pinning a card's top corners */
+  const tape = (side: 'left' | 'right', rot: number): CSSProperties => ({
+    position: 'absolute',
+    top: -11,
+    [side]: 26,
+    width: 68,
+    height: 22,
+    background: 'rgba(255,224,138,.72)',
+    border: '1px solid rgba(201,180,143,.5)',
+    transform: `rotate(${rot}deg)`,
+    zIndex: 2,
+  });
+
+  const cardRest = (i: number) => `rotate(${i % 2 ? 1 : -1.2}deg)`;
+
   return (
     <div style={page}>
       <header className="enter-drop" style={header}>
@@ -160,38 +176,88 @@ export default function PortfolioPage() {
         <div style={content}>
           <div style={blank} />
 
-          <h1 className="enter-rise" style={{ ...name, ...enter(1) }}>
-            <span style={stretch}>{PROFILE.name}</span>
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', columnGap: 72, rowGap: 40 }}>
+            <div style={{ flex: '1 1 480px', minWidth: 320 }}>
+              <h1 className="enter-rise" style={{ ...name, ...enter(1) }}>
+                <span style={stretch}>{PROFILE.name}</span>
+              </h1>
 
-          <div style={blank} />
+              <div style={blank} />
 
-          <p className="enter-rise" style={{ ...affiliation, ...enter(2) }}>
-            <span style={stretch}>
-              <span className="hl-anim" style={{ ...highlight, animationDelay: '420ms' }}>{PROFILE.affiliation.label}</span>{' '}
-              <span style={{ color: THEME.accentBlue, marginLeft: 10 }}>{PROFILE.affiliation.school}</span>
-            </span>
-          </p>
-
-          <p className="enter-rise" style={{ ...tagline, ...enter(3) }}>
-            <CyclingTagline lines={PROFILE.taglines} style={stretch} />
-          </p>
-
-          <div style={blank} />
-
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {PROFILE.bullets.map((b, i) => (
-              <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
-                <span style={marker(b.color)} />
-                <span
-                  className={b.highlight ? 'hl-anim' : undefined}
-                  style={b.highlight ? { ...highlight, ...stretch, animationDelay: `${(4 + i) * 70 + 320}ms` } : stretch}
-                >
-                  {b.text}
+              <p className="enter-rise" style={{ ...affiliation, ...enter(2) }}>
+                <span style={stretch}>
+                  <span className="hl-anim" style={{ ...highlight, animationDelay: '420ms' }}>{PROFILE.affiliation.label}</span>{' '}
+                  <span style={{ color: THEME.accentBlue, marginLeft: 10 }}>{PROFILE.affiliation.school}</span>
                 </span>
-              </li>
-            ))}
-          </ul>
+              </p>
+
+              <p className="enter-rise" style={{ ...tagline, ...enter(3) }}>
+                <CyclingTagline lines={PROFILE.taglines} style={stretch} />
+              </p>
+
+              <div style={blank} />
+
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                {PROFILE.bullets.map((b, i) => (
+                  <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
+                    <span style={marker(b.color)} />
+                    <span
+                      className={b.highlight ? 'hl-anim' : undefined}
+                      style={b.highlight ? { ...highlight, ...stretch, animationDelay: `${(4 + i) * 70 + 320}ms` } : stretch}
+                    >
+                      {b.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* EXPERIENCE: index cards taped beside the intro */}
+            <aside style={{ flex: '0 1 330px', paddingTop: RULE, display: 'flex', flexDirection: 'column' }}>
+              <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
+                <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
+                <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>where i've worked</span>
+              </div>
+              {EXPERIENCE.map((e, i) => (
+                <div
+                  key={e.company}
+                  className="enter-pop"
+                  style={{
+                    ...enter(6 + i),
+                    position: 'relative',
+                    width: 320,
+                    maxWidth: '100%',
+                    marginTop: i ? 36 : 0,
+                    marginLeft: i % 2 ? 22 : 0,
+                    background: '#fffdf6',
+                    border: '1px solid #e4d9bf',
+                    boxShadow: '0 10px 20px rgba(52,48,42,.18)',
+                    padding: '22px 20px 18px',
+                    transform: cardRest(i),
+                    transition: 'transform .16s steps(3, end)',
+                  }}
+                  onMouseEnter={(ev) => { play('tick'); ev.currentTarget.style.transform = 'translateY(-5px) rotate(0deg)'; }}
+                  onMouseLeave={(ev) => { ev.currentTarget.style.transform = cardRest(i); }}
+                >
+                  <div style={tape('left', -3)} />
+                  <div style={tape('right', 2)} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ flex: 'none', width: 48, height: 48, background: '#fffdf6', border: `2px solid ${THEME.headerBorder}`, boxShadow: '2px 2px 0 rgba(52,48,42,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                      <img src={e.logo} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 3, boxSizing: 'border-box' }} />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ ...stretch, transformOrigin: 'bottom left', fontSize: 11, lineHeight: 1.7, color: THEME.nameColor }}>{e.company}</div>
+                      <div style={{ marginTop: 8, ...stretch, transformOrigin: 'top left', fontSize: 9, lineHeight: 1.6, color: THEME.subTextColor }}>{e.role}</div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ width: 7, height: 7, background: e.accent, flex: 'none' }} />
+                    <span style={{ ...stretch, fontSize: 9, color: THEME.bodyColor }}>{e.dates}</span>
+                  </div>
+                </div>
+              ))}
+            </aside>
+          </div>
 
           <div style={foldersRow}>
             {FOLDERS.map((f, i) => (

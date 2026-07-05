@@ -70,8 +70,25 @@ export const PROFILE = {
   },
 };
 
-// Landing-page folders. "Projects" is now "Portfolio" (the bulletin board that
-// holds both Projects and Experiences); "Experiences" is now "Skills".
+// Landing-page experience cards, stacked to the right of the intro bullets.
+export const EXPERIENCE = [
+  {
+    company: 'ATS360 / Netdynamic',
+    role: 'software engineer co-op',
+    dates: 'jan – apr 2026',
+    logo: '/assets/ndi-logo.png',
+    accent: '#3f8fd6',
+  },
+  {
+    company: 'UW Formula Electric',
+    role: 'firmware developer',
+    dates: 'sept – dec 2025',
+    logo: '/assets/waterlooformulaelectric_logo.png',
+    accent: '#5db84a',
+  },
+];
+
+// Landing-page folders. "Projects" is now "Portfolio"; "Experiences" is now "Skills".
 export const FOLDERS = [
   { label: 'About Me',  color: 'amber' as const, route: '/about' },
   { label: 'Portfolio', color: 'blue'  as const, route: '/portfolio' },
