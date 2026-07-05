@@ -100,9 +100,6 @@ export default function CyclingTagline({ lines, style }: Props) {
           />
         )}
       </span>
-      {!erasing && (
-        <span aria-hidden="true" className={phase === 'idle' ? 'tw-cursor tw-cursor-blink' : 'tw-cursor'} />
-      )}
     </span>
   );
 }

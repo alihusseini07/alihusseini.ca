@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { getBlob, setBlob } from '../lib/mediaStore';
 
 const PIXEL = "'Press Start 2P', monospace";
@@ -14,9 +15,9 @@ export interface VideoSlotProps {
 
 /**
  * Demo-video placeholder. Drop a video (or click to browse); it plays inline
- * with NO native controls — autoplay on loop, muted by default, with a single
- * mute/unmute button that only appears on hover. Click the video to pause /
- * resume. The uploaded file persists in IndexedDB, keyed by `id`.
+ * as a silent looping preview with no controls. Click it to open a full-screen
+ * pop-up with native controls (mute, pause, rewind, etc). The uploaded file
+ * persists in IndexedDB, keyed by `id`.
  */
 export default function VideoSlot({ id, placeholder = 'Drop a video', src, style }: VideoSlotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -24,10 +25,23 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
   const urlRef = useRef<string | null>(null);
   const [url, setUrl] = useState<string | null>(src ?? null);
   const [filled, setFilled] = useState(!!src);
-  const [muted, setMuted] = useState(true);
   const [over, setOver] = useState(false);
   const [hover, setHover] = useState(false);
+  const [open, setOpen] = useState(false);
   const depth = useRef(0);
+
+  // lock the page while the pop-up is open — no scrolling or interacting behind it
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
   // Restore a previously dropped video.
   useEffect(() => {
@@ -45,27 +59,14 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
     };
   }, [id]);
 
-  // React can't reliably set `muted` via prop — drive it on the element.
-  useEffect(() => {
-    if (videoRef.current) videoRef.current.muted = muted;
-  }, [muted, url]);
-
   const ingest = async (file: File) => {
     if (!file || !/^video\//.test(file.type)) return;
     await setBlob(id, file);
     if (urlRef.current) URL.revokeObjectURL(urlRef.current);
     const u = URL.createObjectURL(file);
     urlRef.current = u;
-    setMuted(true);
     setUrl(u);
     setFilled(true);
-  };
-
-  const togglePlay = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) void v.play().catch(() => {});
-    else v.pause();
   };
 
   const frame: CSSProperties = {
@@ -98,13 +99,26 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
             src={url}
             autoPlay
             loop
+            muted
             playsInline
             draggable={false}
-            onClick={togglePlay}
-            onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
+            onClick={() => setOpen(true)}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#1c1a17', cursor: 'pointer' }}
           />
-        ) : (
+        ) : null}
+
+        {/* expand icon — hover cue that clicking opens the pop-up */}
+        {filled && hover && (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(20,18,15,.28)', pointerEvents: 'none' }}>
+            <span style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(52,48,42,.75)', border: '2px solid #fffdf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#fffdf6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+              </svg>
+            </span>
+          </div>
+        )}
+
+        {!url && (
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
@@ -130,24 +144,24 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
         )}
       </div>
 
-      {/* mute / unmute — hover only */}
-      {filled && hover && (
-        <button
-          type="button"
-          aria-label="Toggle sound"
-          title="Toggle sound"
-          onClick={() => { const v = videoRef.current; if (v) { v.muted = !v.muted; setMuted(v.muted); void v.play().catch(() => {}); } }}
-          style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, border: '2px solid #34302a', background: 'rgba(52,48,42,.82)', color: '#fffdf6', cursor: 'pointer', boxShadow: '2px 2px 0 rgba(52,48,42,.35)', zIndex: 3, padding: 0 }}
-        >
-          {muted ? (
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
-          ) : (
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" /></svg>
-          )}
-        </button>
-      )}
-
       <input ref={inputRef} type="file" accept="video/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void ingest(f); e.target.value = ''; }} />
+
+      {open && url && createPortal(
+        <div
+          onClick={() => setOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(20,18,15,.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}
+        >
+          <video
+            src={url}
+            controls
+            autoPlay
+            playsInline
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: 14, background: '#000', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}
+          />
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

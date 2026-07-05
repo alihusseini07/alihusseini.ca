@@ -188,6 +188,10 @@ a {
   100% { opacity: 1; transform: scale(1); }
 }
 
+/* scroll-triggered reveal (portfolio film strip frames) */
+.reveal { opacity: 0; }
+.reveal.on { animation: rise-in .38s cubic-bezier(.2,.85,.3,1) both; }
+
 .enter-rise { animation: rise-in .32s cubic-bezier(.2,.85,.3,1) both; }
 .enter-drop { animation: drop-in .28s cubic-bezier(.2,.85,.3,1) both; }
 .enter-pop { animation: pop-step .26s steps(4, end) both; }
