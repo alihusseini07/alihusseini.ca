@@ -1,5 +1,6 @@
 import { type CSSProperties } from 'react';
 import PixelFolder from './PixelFolder';
+import PixelName from './PixelName';
 import ContactBar from './ContactBar';
 import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
@@ -101,9 +102,7 @@ export default function PortfolioPage() {
 
   const name: CSSProperties = {
     ...row(),
-    height: RULE * 2,
-    paddingBottom: 13,
-    fontSize: 30,
+    height: 'auto',
     color: THEME.nameColor,
   };
 
@@ -179,7 +178,7 @@ export default function PortfolioPage() {
           <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', columnGap: 72, rowGap: 40 }}>
             <div style={{ flex: '1 1 480px', minWidth: 320 }}>
               <h1 className="enter-rise" style={{ ...name, ...enter(1) }}>
-                <span style={stretch}>{PROFILE.name}</span>
+                <PixelName lines={PROFILE.name.split(' ')} width={350} color={THEME.nameColor} squash={[0.62, 0.8]} snap={RULE} />
               </h1>
 
               <div style={blank} />
