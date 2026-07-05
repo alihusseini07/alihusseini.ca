@@ -15,6 +15,15 @@ const SWAP_PAUSE_MS = 420;
 
 type Phase = 'idle' | 'erasing' | 'writing';
 
+const shuffle = (items: number[]) => {
+  const next = [...items];
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [next[i], next[j]] = [next[j], next[i]];
+  }
+  return next;
+};
+
 interface Props {
   lines: string[];
   style?: CSSProperties;
@@ -35,9 +44,17 @@ export default function CyclingTagline({ lines, style }: Props) {
     if (lines.length < 2 || REDUCED()) return;
     let timer = 0;
     let current = 0;
+    let queue = shuffle(lines.map((_, index) => index).filter((index) => index !== current));
 
     const schedule = (fn: () => void, ms: number) => {
       timer = window.setTimeout(fn, ms);
+    };
+
+    const pickNextLine = (currentLine: number) => {
+      if (queue.length === 0) {
+        queue = shuffle(lines.map((_, index) => index).filter((index) => index !== currentLine));
+      }
+      return queue.shift() ?? currentLine;
     };
 
     const erase = (step: number) => {
@@ -46,8 +63,8 @@ export default function CyclingTagline({ lines, style }: Props) {
         setPhase('erasing');
         schedule(() => erase(step + 1), ERASE_STEP_MS);
       } else {
-        // line fully scrubbed: swap to the next one and get ready to write
-        current = (current + 1) % lines.length;
+        // line fully scrubbed: swap to a random new line and get ready to write
+        current = pickNextLine(current);
         setLine(current);
         setTyped(0);
         setPhase('writing');

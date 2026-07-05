@@ -4,18 +4,20 @@ interface IconLinkProps {
   href: string;
   label: string;
   external?: boolean;
+  download?: string | boolean;
   color: string;
   hoverColor: string;
   children: React.ReactNode;
 }
 
-function IconLink({ href, label, external = true, color, hoverColor, children }: IconLinkProps) {
+function IconLink({ href, label, external = true, download, color, hoverColor, children }: IconLinkProps) {
   const style: CSSProperties = { display: 'flex', color, transition: 'transform .16s steps(2, end), color .16s steps(2, end)' };
   return (
     <a
       href={href}
       aria-label={label}
       title={label}
+      {...(download ? { download } : {})}
       {...(external ? { target: '_blank', rel: 'noopener' } : {})}
       style={style}
       onMouseEnter={(e) => {
@@ -55,7 +57,7 @@ export default function ContactBar({ links, color, hoverColor }: ContactBarProps
         </svg>
       </IconLink>
 
-      <IconLink href={links.resume} label="Resume" color={color} hoverColor={hoverColor}>
+      <IconLink href={links.resume} label="Download My Resume" download color={color} hoverColor={hoverColor}>
         <svg width={S} height={S} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
           <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
           <path d="M14 3v5h5" />

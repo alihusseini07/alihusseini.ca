@@ -101,7 +101,7 @@ export default function Portfolio() {
           {/* TITLE */}
           <div className="enter-rise" style={{ ...enter(1), paddingTop: 74, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
             <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 26, color: '#34302a' }}>
-              <span className="hl-anim" style={{ backgroundImage: 'linear-gradient(#ffe08a,#ffe08a)', padding: 2, margin: -2, animationDelay: '380ms' }}>projects</span>
+              <span className="hl-anim" style={{ backgroundImage: 'linear-gradient(#ffe08a,#ffe08a)', padding: 2, margin: -2, animationDelay: '380ms' }}>featured projects</span>
             </h1>
           </div>
 

@@ -44,13 +44,16 @@ export const THEME: Theme = {
 
 export const PROFILE = {
   name: 'Ali Husseini',
-  // rotating taglines: the first is the "real" one, the rest cycle in via
-  // the erase/retype animation. Add more lines here any time.
   taglines: [
     "i build things that make people's lives easier",
-    'it works on my machine, i promise',
+    'it works on my computer, i promise',
     'i debug by staring at the code until it confesses',
     'kickboxing is just debugging with your fists',
+    'i like learning while building',
+    'currently watching bleach',
+    'hire me please',
+    'i spent a full night getting a robot arm to work',
+    'i procrastinate by building',
   ],
   affiliation: {
     label: 'mechatronics engineering',
@@ -65,7 +68,7 @@ export const PROFILE = {
   links: {
     linkedin: 'https://www.linkedin.com/in/ahusseini-profile/',
     github: 'https://github.com/alihusseini07',
-    resume: '#',
+    resume: '/ali_husseini_resume.pdf',
     email: 'mailto:ahusseini007@gmail.com',
   },
 };

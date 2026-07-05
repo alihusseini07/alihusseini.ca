@@ -55,24 +55,4 @@ export const PROJECTS: PortfolioItem[] = [
     image: '/assets/waterlooworksplus.png',
     video: '/assets/waterloo-works-plus-demo.mp4',
   },
-  {
-    title: 'Joblyze',
-    year: '2025',
-    description:
-      'An AI-powered job posting analyzer that extracts required skills, compares them with resumes, and highlights gaps for stronger applications.',
-    stack: ['Python', 'Streamlit', 'LangChain', 'OpenAI'],
-    demo: '#',
-    github: 'https://github.com/alihusseini07/joblyze',
-    image: '/assets/joblyze.jpg',
-  },
-  {
-    title: 'Dynamic Delivery Drone',
-    year: '2025',
-    description:
-      'Designed and 3D-printed a delivery drone prototype in Fusion 360, iterating propeller arm connectors and custom axles into a functional scale model.',
-    stack: ['Fusion 360', '3D Printing', 'Iteration'],
-    demo: 'https://drive.google.com/drive/folders/1SHUE_o_2eRWSIrl6BWkGlvkt_lDGdFTK?usp=drive_link',
-    github: '#',
-    image: '/assets/delivery-drone.jpg',
-  },
 ];
