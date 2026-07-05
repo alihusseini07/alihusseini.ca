@@ -68,6 +68,7 @@ export const PROFILE = {
   links: {
     linkedin: 'https://www.linkedin.com/in/ahusseini-profile/',
     github: 'https://github.com/alihusseini07',
+    devpost: 'https://devpost.com/ahusseini007',
     resume: '/ali_husseini_resume.pdf',
     email: 'mailto:ahusseini007@gmail.com',
   },

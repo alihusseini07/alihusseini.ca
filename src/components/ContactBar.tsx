@@ -35,9 +35,10 @@ function IconLink({ href, label, external = true, download, color, hoverColor, c
 }
 
 const S = 22;
+const SHOW_DEVPOST = false;
 
 export interface ContactBarProps {
-  links: { linkedin: string; github: string; resume: string; email: string };
+  links: { linkedin: string; github: string; devpost: string; resume: string; email: string };
   color: string;
   hoverColor: string;
 }
@@ -56,6 +57,14 @@ export default function ContactBar({ links, color, hoverColor }: ContactBarProps
           <path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.21 3.44 9.63 8.21 11.19.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.72-4.04-1.59-4.04-1.59-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.22 1.84 1.22 1.07 1.81 2.81 1.29 3.49.99.11-.77.42-1.29.76-1.59-2.67-.3-5.47-1.32-5.47-5.86 0-1.29.47-2.35 1.23-3.18-.12-.3-.53-1.51.12-3.15 0 0 1.01-.32 3.3 1.21.96-.26 1.98-.39 3-.4 1.02.01 2.04.14 3 .4 2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.85.12 3.15.77.83 1.23 1.89 1.23 3.18 0 4.55-2.81 5.56-5.49 5.85.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z" />
         </svg>
       </IconLink>
+
+      {SHOW_DEVPOST && (
+        <IconLink href={links.devpost} label="Devpost" color={color} hoverColor={hoverColor}>
+          <svg width={S} height={S} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.002 1.61L0 12.004 6.002 22.39h11.996L24 12.004 17.998 1.61zm1.593 4.084h3.947c3.605 0 6.276 1.695 6.276 6.31 0 4.436-3.21 6.302-6.456 6.302H7.595zm2.517 2.449v7.714h1.241c2.646 0 3.862-1.55 3.862-3.861.009-2.569-1.096-3.853-3.767-3.853Z" />
+          </svg>
+        </IconLink>
+      )}
 
       <IconLink href={links.resume} label="Download My Resume" download color={color} hoverColor={hoverColor}>
         <svg width={S} height={S} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
