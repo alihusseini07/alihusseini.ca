@@ -12,7 +12,11 @@ body {
   font-family: 'Press Start 2P', monospace;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: grayscale;
+  background: #ece4d3;
 }
+
+/* base page bg per theme — avoids a flash before the page mounts its own bg */
+html[data-theme='dark'] body { background: #17150f; }
 
 a {
   text-decoration: none;
@@ -149,7 +153,7 @@ a {
 .hl-anim {
   background-repeat: no-repeat;
   background-position: 0 0;
-  animation: hl-sweep 1.2s steps(24, end) both;
+  animation: hl-sweep .6s steps(18, end) both;
 }
 
 /* pink pixel eraser that scrubs the tagline away */

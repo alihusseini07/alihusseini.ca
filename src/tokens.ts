@@ -8,6 +8,29 @@ export const FOLDER_COLORS = {
   green: { base: '#5db84a', light: '#a6e07a', dark: '#3a8230', outline: '#1f4a18' },
 } satisfies Record<string, FolderColors>;
 
+/** dark-mode folder sprites: same hues stepped down so they sit on a dark page */
+export const FOLDER_COLORS_DARK = {
+  amber: { base: '#b8811f', light: '#d9a441', dark: '#7d4d10', outline: '#3a2410' },
+  blue:  { base: '#2f6ba8', light: '#5f9bcf', dark: '#194a7a', outline: '#0f2b45' },
+  green: { base: '#46903a', light: '#7ab85e', dark: '#2b6423', outline: '#163812' },
+} satisfies Record<string, FolderColors>;
+
+/** the three flat accent hues, mapped light -> dark for dark mode */
+const ACCENT_DARK: Record<string, string> = {
+  '#e8a72e': '#b8811f',
+  '#3f8fd6': '#2f6ba8',
+  '#5db84a': '#46903a',
+};
+
+/** darken a known accent hex for dark mode; unknown colors pass through */
+export const dimAccent = (hex: string, mode: ThemeMode) =>
+  mode === 'dark' ? ACCENT_DARK[hex.toLowerCase()] ?? hex : hex;
+
+export const folderPalettes = (mode: ThemeMode) =>
+  mode === 'dark' ? FOLDER_COLORS_DARK : FOLDER_COLORS;
+
+export type ThemeMode = 'light' | 'dark';
+
 export interface Theme {
   pageBg: string;
   ruleColor: string;
@@ -20,12 +43,19 @@ export interface Theme {
   bodyColor: string;
   accentBlue: string;
   highlight: string;
+  /** text color drawn over a highlighter marker — always dark for contrast */
+  highlightText: string;
   iconColor: string;
   iconHoverColor: string;
   labelColor: string;
+  /** paper/polaroid/card surface */
+  cardBg: string;
+  cardBorder: string;
+  /** faint dot-grid on the portfolio design board */
+  dotGrid: string;
 }
 
-export const THEME: Theme = {
+const LIGHT: Theme = {
   pageBg: '#ece4d3',
   ruleColor: '#cdb994',
   marginColor: '#d99b96',
@@ -37,10 +67,43 @@ export const THEME: Theme = {
   bodyColor: '#4a443a',
   accentBlue: '#3f8fd6',
   highlight: '#ffe08a',
+  highlightText: '#34302a',
   iconColor: '#857c6b',
   iconHoverColor: '#34302a',
   labelColor: '#4a443a',
+  cardBg: '#fffdf6',
+  cardBorder: '#e4d9bf',
+  dotGrid: '#dcd0b4',
 };
+
+const DARK: Theme = {
+  pageBg: '#17150f',
+  ruleColor: '#403829',
+  marginColor: '#8a544f',
+  headerBg: '#211d15',
+  headerBorder: '#5a5240',
+  nameColor: '#ece4d3',
+  nameShadow: '3px 3px 0 rgba(0,0,0,.4)',
+  subTextColor: '#9a8f7b',
+  bodyColor: '#c9c0ac',
+  accentBlue: '#2f6ba8',
+  highlight: '#a87f24',
+  highlightText: '#ece4d3',
+  iconColor: '#8f8571',
+  iconHoverColor: '#ece4d3',
+  labelColor: '#c9c0ac',
+  cardBg: '#26221b',
+  cardBorder: '#3a352b',
+  dotGrid: '#2c2820',
+};
+
+export const THEMES: Record<ThemeMode, Theme> = { light: LIGHT, dark: DARK };
+
+/** soften a highlighter marker color a touch so it reads less like solid ink */
+export const softHl = (c: string) => `color-mix(in srgb, ${c} 88%, transparent)`;
+
+/** default/light theme; kept for modules that don't consume the theme context */
+export const THEME: Theme = LIGHT;
 
 export const PROFILE = {
   name: 'Ali Husseini',

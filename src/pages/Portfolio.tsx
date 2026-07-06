@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import ContactBar from '../components/ContactBar';
 import SoundToggle from '../components/SoundToggle';
+import ThemeToggle from '../components/ThemeToggle';
 import PixelName from '../components/PixelName';
 import VideoSlot from '../components/VideoSlot';
 import ImageSlot from '../components/ImageSlot';
 import { useTransitionNavigate } from '../components/PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
-import { PROFILE } from '../tokens';
+import { useThemeCtx } from '../lib/theme';
+import { PROFILE, softHl } from '../tokens';
 import { PROJECTS } from '../data/portfolio';
 import { TECH_ICONS } from '../data/tech-icons';
 
@@ -15,14 +17,17 @@ const PIXEL = "'Press Start 2P', monospace";
 const stretch: CSSProperties = { display: 'inline-block', transform: 'scaleY(1.4)', transformOrigin: 'bottom' };
 
 const MEDIA_H = 300;
-const CREAM = '#ece4d3';
 
-/* ---- design board background: clean cream with a faint pixel dot grid ---- */
-const DOT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><rect x="0" y="0" width="3" height="3" fill="#dcd0b4"/></svg>`;
+/* ---- design board background: faint pixel dot grid over the page bg ---- */
 const svgUrl = (s: string) => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+const dotSvg = (fill: string) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><rect x="0" y="0" width="3" height="3" fill="${fill}"/></svg>`;
 
 /* pinned-polaroid pushpin heads, one per frame */
 const PINS = ['#d9564a', '#3f8fd6', '#5db84a', '#e8a72e'];
+
+/* highlighter sweep behind each project title — cycles the 3 accent colors */
+const TITLE_HL = ['#e8a72e', '#3f8fd6', '#5db84a'];
 
 /* washi-tape tints for the stack chips */
 const TAPES = ['rgba(255,224,138,.55)', 'rgba(143,199,240,.42)', 'rgba(166,224,122,.42)'];
@@ -114,6 +119,7 @@ function TechGlyph({ name }: { name: string }) {
 
 export default function Portfolio() {
   const navigate = useTransitionNavigate();
+  const { theme: THEME, accent } = useThemeCtx();
   const frameRefs = useRef<(HTMLElement | null)[]>([]);
   const [shown, setShown] = useState<boolean[]>(() => PROJECTS.map(() => false));
 
@@ -137,22 +143,11 @@ export default function Portfolio() {
 
   const goHome = () => { play('shutter'); navigate('/', { zoom: 'out' }); };
 
-  const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: CREAM, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
-  const returnBtn: CSSProperties = { position: 'fixed', top: 20, left: 28, zIndex: 40, display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 17px', background: '#ffe08a', color: '#34302a', cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
-  const footer: CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 240, padding: '24px 44px', background: '#e6dcc6', borderTop: '2px solid #34302a', boxShadow: '0 -2px 0 rgba(52,48,42,.12)', overflow: 'hidden' };
+  const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: THEME.pageBg, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
+  const returnBtn: CSSProperties = { position: 'fixed', top: 20, left: 28, zIndex: 40, display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 17px', background: THEME.highlight, color: THEME.highlightText, cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
+  const footer: CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 240, padding: '24px 44px', background: THEME.headerBg, borderTop: `2px solid ${THEME.headerBorder}`, boxShadow: '0 -2px 0 rgba(0,0,0,.12)', overflow: 'hidden' };
 
-  const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: '#857c6b', textTransform: 'uppercase' };
-  /* rubber date stamp: dashed red outline, tilted, slightly faded ink */
-  const yearStamp: CSSProperties = {
-    display: 'inline-block',
-    fontSize: 9,
-    color: '#c25b50',
-    padding: '7px 9px 6px',
-    border: '2px dashed rgba(194,91,80,.75)',
-    transform: 'scaleY(1.4) rotate(-3deg)',
-    transformOrigin: 'bottom',
-    opacity: .9,
-  };
+  const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.iconColor, textTransform: 'uppercase' };
   const sticker = (bg: string, fg: string): CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
@@ -171,13 +166,18 @@ export default function Portfolio() {
         <span style={{ ...stretch, fontSize: 10 }}>← return</span>
       </button>
 
+      <div className="enter-drop" style={{ position: 'fixed', top: 20, right: 28, zIndex: 40, display: 'flex', alignItems: 'center', gap: 22 }}>
+        <ThemeToggle />
+        <SoundToggle />
+      </div>
+
       {/* DESIGN BOARD */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: CREAM, backgroundImage: svgUrl(DOT_SVG) }}>
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: '0 72px' }}>
           {/* TITLE */}
-          <div className="enter-rise" style={{ ...enter(1), paddingTop: 74, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
-            <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 26, color: '#34302a' }}>
-              <span className="hl-anim" style={{ backgroundImage: 'linear-gradient(#ffe08a,#ffe08a)', padding: 2, margin: -2, animationDelay: '380ms' }}>featured projects</span>
+          <div className="enter-rise" style={{ ...enter(1), paddingTop: 128, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
+            <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 26, color: THEME.nameColor }}>
+              <span className="hl-anim" style={{ backgroundImage: `linear-gradient(${softHl(THEME.highlight)},${softHl(THEME.highlight)})`, color: THEME.highlightText, padding: 2, margin: -2, animationDelay: '380ms' }}>featured projects</span>
             </h1>
           </div>
 
@@ -187,6 +187,7 @@ export default function Portfolio() {
               const flip = i % 2 === 1;
               const demoOk = d.demo && d.demo !== '#';
               const ghOk = d.github && d.github !== '#';
+              const hl = accent(TITLE_HL[i % TITLE_HL.length]);
               return (
                 <article
                   key={d.title}
@@ -216,11 +217,12 @@ export default function Portfolio() {
                     <div
                       style={{
                         position: 'relative',
+                        // polaroid print stays its default white in every theme
                         background: '#fffdf6',
                         padding: '16px 16px 0',
                         border: '2px solid #34302a',
                         borderRadius: 3,
-                        boxShadow: '0 12px 24px rgba(52,48,42,.22), 5px 5px 0 rgba(52,48,42,.12)',
+                        boxShadow: '0 12px 24px rgba(0,0,0,.22), 5px 5px 0 rgba(0,0,0,.12)',
                         transform: polaroidRest(i),
                         transition: 'transform .16s steps(3, end)',
                       }}
@@ -228,7 +230,7 @@ export default function Portfolio() {
                       onMouseLeave={(ev) => { play('lensBack'); ev.currentTarget.style.transform = polaroidRest(i); }}
                     >
                       {/* pushpin holding the print to the board */}
-                      <div aria-hidden style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -8, width: 16, height: 16, borderRadius: '50%', background: PINS[i % PINS.length], border: '2px solid #34302a', boxShadow: 'inset 3px 3px 0 rgba(255,255,255,.4), inset -3px -3px 0 rgba(0,0,0,.25), 0 3px 3px rgba(52,48,42,.3)', zIndex: 3 }} />
+                      <div aria-hidden style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -8, width: 16, height: 16, borderRadius: '50%', background: accent(PINS[i % PINS.length]), border: '2px solid #34302a', boxShadow: 'inset 3px 3px 0 rgba(255,255,255,.4), inset -3px -3px 0 rgba(0,0,0,.25), 0 3px 3px rgba(52,48,42,.3)', zIndex: 3 }} />
                       {/* photo window: dark like undeveloped film until the media loads */}
                       <div style={{ position: 'relative', width: '100%', height: MEDIA_H, background: '#241f19', overflow: 'hidden' }}>
                         {d.video ? (
@@ -249,10 +251,24 @@ export default function Portfolio() {
                   {/* TEXT */}
                   <div className={flip ? 'from-left' : 'from-right'} style={{ flex: '1 1 340px', minWidth: 300, paddingTop: 6, animationDelay: '100ms' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
-                      <h2 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 19, color: '#34302a' }}>{d.title}</h2>
-                      <span style={yearStamp}>{d.year}</span>
+                      <h2 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 19, color: THEME.nameColor }}>
+                        <span
+                          className={shown[i] ? 'hl-anim' : undefined}
+                          style={{
+                            backgroundImage: `linear-gradient(${softHl(hl)},${softHl(hl)})`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: shown[i] ? undefined : '0% 100%',
+                            color: THEME.nameColor,
+                            padding: 2,
+                            margin: -2,
+                            animationDelay: '240ms',
+                          }}
+                        >
+                          {d.title}
+                        </span>
+                      </h2>
                     </div>
-                    <p ref={fit(1.32)} style={{ margin: '26px 0 0', maxWidth: '58ch', display: 'inline-block', transform: 'scaleY(1.32)', transformOrigin: 'top left', fontSize: 11, lineHeight: 2.36, color: '#4a443a' }}>
+                    <p ref={fit(1.32)} style={{ margin: '26px 0 0', maxWidth: '58ch', display: 'inline-block', transform: 'scaleY(1.32)', transformOrigin: 'top left', fontSize: 11, lineHeight: 2.36, color: THEME.bodyColor }}>
                       {d.description}
                     </p>
                     {/* stack: washi-tape strips torn onto the board */}
@@ -272,20 +288,20 @@ export default function Portfolio() {
                           }}
                         >
                           <TechGlyph name={tech} />
-                          <span style={{ ...stretch, fontSize: 9, color: '#413b30' }}>{tech}</span>
+                          <span style={{ ...stretch, fontSize: 9, color: THEME.bodyColor }}>{tech}</span>
                         </span>
                       ))}
                     </div>
                     {(demoOk || ghOk) && (
                       <div style={{ marginTop: 36, display: 'flex', flexWrap: 'wrap', gap: 18 }}>
                         {demoOk && (
-                          <a href={d.demo} target="_blank" rel="noopener" draggable={false} className="btn-sticker" style={sticker('#3f8fd6', '#fffdf6')} onMouseEnter={() => play('focusBeep')} onClick={() => play('shutter')}>
+                          <a href={d.demo} target="_blank" rel="noopener" draggable={false} className="btn-sticker" style={sticker(accent('#3f8fd6'), '#fffdf6')} onMouseEnter={() => play('focusBeep')} onClick={() => play('shutter')}>
                             <div style={{ width: 0, height: 0, borderLeft: '10px solid #fffdf6', borderTop: '6px solid transparent', borderBottom: '6px solid transparent' }} />
                             <span style={{ ...stretch, fontSize: 10 }}>live demo</span>
                           </a>
                         )}
                         {ghOk && (
-                          <a href={d.github} target="_blank" rel="noopener" draggable={false} className="btn-sticker" style={sticker('#34302a', '#ece4d3')} onMouseEnter={() => play('focusBeep')} onClick={() => play('shutter')}>
+                          <a href={d.github} target="_blank" rel="noopener" draggable={false} className="btn-sticker" style={sticker(THEME.nameColor, THEME.pageBg)} onMouseEnter={() => play('focusBeep')} onClick={() => play('shutter')}>
                             <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.21 3.44 9.63 8.21 11.19.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.72-4.04-1.59-4.04-1.59-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.22 1.84 1.22 1.07 1.81 2.81 1.29 3.49.99.11-.77.42-1.29.76-1.59-2.67-.3-5.47-1.32-5.47-5.86 0-1.29.47-2.35 1.23-3.18-.12-.3-.53-1.51.12-3.15 0 0 1.01-.32 3.3 1.21.96-.26 1.98-.39 3-.4 1.02.01 2.04.14 3 .4 2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.85.12 3.15.77.83 1.23 1.89 1.23 3.18 0 4.55-2.81 5.56-5.49 5.85.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z" /></svg>
                             <span style={{ ...stretch, fontSize: 10 }}>github</span>
                           </a>
@@ -300,10 +316,10 @@ export default function Portfolio() {
             {/* END OF THE BOARD */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26, paddingBottom: 80 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 8, height: 8, background: '#34302a' }} />
+                <div style={{ width: 8, height: 8, background: THEME.nameColor }} />
                 <span style={eyebrow}>the end</span>
               </div>
-              <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={{ ...sticker('#ffe08a', '#34302a'), cursor: 'pointer', fontFamily: PIXEL }}>
+              <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={{ ...sticker(THEME.highlight, THEME.highlightText), cursor: 'pointer', fontFamily: PIXEL }}>
                 <span style={{ ...stretch, fontSize: 10 }}>← return</span>
               </button>
             </div>
@@ -312,9 +328,10 @@ export default function Portfolio() {
       </div>
 
       <footer style={footer}>
-        <PixelName lines={PROFILE.name.split(' ')} width={230} color="#34302a" squash={[0.62, 0.8]} radius={38} />
+        <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
           <ContactBar links={PROFILE.links} />
+          <ThemeToggle />
           <SoundToggle />
         </div>
       </footer>

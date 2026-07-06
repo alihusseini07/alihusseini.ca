@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTransitionNavigate } from '../components/PageTransition';
 import GrimoireBookShell from '../components/grimoire/GrimoireBookShell';
 import NoiseOverlay from '../components/grimoire/NoiseOverlay';
+import SoundToggle from '../components/SoundToggle';
 import { play } from '../lib/sound';
 
 export default function Skills() {
@@ -97,6 +98,10 @@ export default function Skills() {
       <button className="grimoire-back-btn" onClick={() => navigate('/', { warp: 'out' })}>
         ← Return
       </button>
+
+      <div style={{ position: 'fixed', top: '2rem', right: '2rem', zIndex: 50 }}>
+        <SoundToggle />
+      </div>
 
       <div
         style={{

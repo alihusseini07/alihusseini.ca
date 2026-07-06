@@ -4,10 +4,12 @@ import PixelName from './PixelName';
 import ContactBar from './ContactBar';
 import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
+import ThemeToggle from './ThemeToggle';
 import { useTransitionNavigate } from './PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
-import { EXPERIENCE, FOLDER_COLORS, FOLDERS, PROFILE, THEME } from '../tokens';
+import { useThemeCtx } from '../lib/theme';
+import { EXPERIENCE, FOLDERS, PROFILE, softHl } from '../tokens';
 
 /** ruled-paper line spacing, in px */
 const RULE = 40;
@@ -19,17 +21,19 @@ const stretch: CSSProperties = {
   transformOrigin: 'bottom',
 };
 
-/** yellow highlighter marker; pair with .hl-anim to sweep it in */
-const highlight: CSSProperties = {
-  backgroundImage: `linear-gradient(${THEME.highlight}, ${THEME.highlight})`,
-  padding: 2,
-  margin: -2,
-};
-
 const PIXEL = "'Press Start 2P', monospace";
 
 export default function PortfolioPage() {
   const navigate = useTransitionNavigate();
+  const { theme: THEME, accent, folders } = useThemeCtx();
+
+  /** yellow highlighter marker; pair with .hl-anim to sweep it in */
+  const highlight: CSSProperties = {
+    backgroundImage: `linear-gradient(${softHl(THEME.highlight)}, ${softHl(THEME.highlight)})`,
+    color: THEME.highlightText,
+    padding: 2,
+    margin: -2,
+  };
 
   const page: CSSProperties = {
     minHeight: '100vh',
@@ -148,6 +152,7 @@ export default function PortfolioPage() {
     <div style={page}>
       <div className="enter-drop" style={floatCluster}>
         <ContactBar links={PROFILE.links} />
+        <ThemeToggle />
         <SoundToggle />
       </div>
 
@@ -181,7 +186,7 @@ export default function PortfolioPage() {
               <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                 {PROFILE.bullets.map((b, i) => (
                   <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
-                    <span style={marker(b.color)} />
+                    <span style={marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color))} />
                     <span
                       className={b.highlight ? 'hl-anim' : undefined}
                       style={b.highlight ? { ...highlight, ...stretch, animationDelay: `${(4 + i) * 70 + 320}ms` } : stretch}
@@ -210,9 +215,9 @@ export default function PortfolioPage() {
                     maxWidth: '100%',
                     marginTop: i ? 36 : 0,
                     marginLeft: i % 2 ? 22 : 0,
-                    background: '#fffdf6',
-                    border: '1px solid #e4d9bf',
-                    boxShadow: '0 10px 20px rgba(52,48,42,.18)',
+                    background: THEME.cardBg,
+                    border: `1px solid ${THEME.cardBorder}`,
+                    boxShadow: '0 10px 20px rgba(0,0,0,.18)',
                     padding: '22px 20px 18px',
                     transform: cardRest(i),
                     transition: 'transform .16s steps(3, end)',
@@ -223,7 +228,7 @@ export default function PortfolioPage() {
                   <div style={tape('left', -3)} />
                   <div style={tape('right', 2)} />
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ flex: 'none', width: 48, height: 48, background: '#fffdf6', border: `2px solid ${THEME.headerBorder}`, boxShadow: '2px 2px 0 rgba(52,48,42,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <div style={{ flex: 'none', width: 48, height: 48, background: THEME.cardBg, border: `2px solid ${THEME.headerBorder}`, boxShadow: '2px 2px 0 rgba(52,48,42,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                       <img src={e.logo} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 3, boxSizing: 'border-box' }} />
                     </div>
                     <div style={{ minWidth: 0 }}>
@@ -232,7 +237,7 @@ export default function PortfolioPage() {
                     </div>
                   </div>
                   <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ width: 7, height: 7, background: e.accent, flex: 'none' }} />
+                    <span style={{ width: 7, height: 7, background: accent(e.accent), flex: 'none' }} />
                     <span style={{ ...stretch, fontSize: 9, color: THEME.bodyColor }}>{e.dates}</span>
                   </div>
                 </div>
@@ -245,7 +250,7 @@ export default function PortfolioPage() {
               <div key={f.label} className="enter-pop" style={enter(8 + i)}>
                 <PixelFolder
                   label={f.label}
-                  palette={FOLDER_COLORS[f.color]}
+                  palette={folders[f.color]}
                   labelColor={THEME.labelColor}
                   onClick={(rect) => navigate(f.route, {
                     // skills folder tears open a new dimension; the rest zoom in

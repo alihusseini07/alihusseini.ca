@@ -88,6 +88,8 @@ export default function PageTransition({ children }: { children: ReactNode }) {
   const enter = enterRef.current;
   useEffect(() => {
     enterRef.current = { cls: 'page-enter' };
+    // land at the top of every page instead of inheriting the prior scroll
+    window.scrollTo(0, 0);
   }, [location.pathname]);
 
   return (
