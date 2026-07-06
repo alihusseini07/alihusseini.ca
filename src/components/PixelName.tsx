@@ -22,7 +22,7 @@ const WAVE = 24;
     the rest of the width is filled with letter-spacing */
 const MAX_LINE_RATIO = 1.8;
 
-/** cursor influence radius */
+/** default cursor influence radius (overridable via the `radius` prop) */
 const RADIUS = 65;
 /** compression: every dot inside RADIUS moves toward the cursor; dots outside
     never move. Displacement is graded — dots near the center compress as hard
@@ -57,6 +57,8 @@ interface Props {
   /** round the layout footprint height up to a multiple of this (px), so the
       block spans a whole number of ruled-paper lines; 0 = off */
   snap?: number;
+  /** cursor influence radius, px (smaller = tighter compression) */
+  radius?: number;
 }
 
 /**
@@ -65,7 +67,7 @@ interface Props {
  * at the corners). On hover the dots pinch and swirl into the cursor, and
  * spring back when it leaves.
  */
-export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineGap = 6, squash = [], snap = 0 }: Props) {
+export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineGap = 6, squash = [], snap = 0, radius = RADIUS }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const text = lines.join('\n');
   const squashKey = squash.join(',');
@@ -147,6 +149,9 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
             // S-wave: one sine period across the block, same phase at every
             // height — both edges go concave-down then concave-up
             const wave = -WAVE * Math.sin((2 * Math.PI * x) / tw);
+            // ALT: multiply by `* Math.cos((2 * Math.PI * y) / th)` to flip the
+            // seam between the two names to concave-up then concave-down while
+            // keeping the top and bottom edges concave-down then concave-up.
             const hx = cx + (x - cx) * mag + PAD;
             const hy = cy + (y - cy) * mag + wave + PAD;
             particles.push({
@@ -192,9 +197,9 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
             const dx = p.hx - mouse.x;
             const dy = p.hy - mouse.y;
             const d = Math.hypot(dx, dy);
-            if (d < RADIUS && d > 0.001) {
-              const u = d / RADIUS;
-              const nd = RADIUS * (CLUSTER * Math.pow(u, COMPRESS) + (EDGE - CLUSTER) * Math.pow(u, 4));
+            if (d < radius && d > 0.001) {
+              const u = d / radius;
+              const nd = radius * (CLUSTER * Math.pow(u, COMPRESS) + (EDGE - CLUSTER) * Math.pow(u, 4));
               tx = mouse.x + (dx / d) * nd;
               ty = mouse.y + (dy / d) * nd;
             }
@@ -238,7 +243,7 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('pointerleave', onLeave);
     };
-  }, [text, width, color, lineGap, squashKey, snap]);
+  }, [text, width, color, lineGap, squashKey, snap, radius]);
 
   return <canvas ref={canvasRef} role="img" aria-label={lines.join(' ')} style={{ display: 'block' }} />;
 }

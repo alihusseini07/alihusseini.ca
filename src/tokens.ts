@@ -50,7 +50,7 @@ export const PROFILE = {
     'i debug by staring at the code until it confesses',
     'kickboxing is just debugging with your fists',
     'i like learning while building',
-    'currently watching bleach',
+    //'currently watching bleach',
     'hire me please',
     'i spent a full night getting a robot arm to work',
     'i procrastinate by building',

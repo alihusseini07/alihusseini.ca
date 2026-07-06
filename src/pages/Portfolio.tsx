@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import ContactBar from '../components/ContactBar';
 import SoundToggle from '../components/SoundToggle';
+import PixelName from '../components/PixelName';
 import VideoSlot from '../components/VideoSlot';
 import ImageSlot from '../components/ImageSlot';
 import { useTransitionNavigate } from '../components/PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
-import { PROFILE, THEME } from '../tokens';
+import { PROFILE } from '../tokens';
 import { PROJECTS } from '../data/portfolio';
 import { TECH_ICONS } from '../data/tech-icons';
 
@@ -137,10 +138,8 @@ export default function Portfolio() {
   const goHome = () => { play('shutter'); navigate('/', { zoom: 'out' }); };
 
   const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: CREAM, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
-  const header: CSSProperties = { position: 'sticky', top: 0, zIndex: 30, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 34px', height: 58, background: '#e6dcc6', borderBottom: '2px solid #34302a', boxShadow: '0 2px 0 rgba(52,48,42,.12)' };
-  const crumbMuted: CSSProperties = { ...stretch, fontSize: 11, letterSpacing: 1, color: '#857c6b', textTransform: 'uppercase', cursor: 'pointer' };
-  const slash: CSSProperties = { ...stretch, fontSize: 11, color: '#c3b393' };
-  const crumbActive: CSSProperties = { ...stretch, fontSize: 11, letterSpacing: 1, color: '#34302a', textTransform: 'uppercase', background: 'linear-gradient(#ffe08a,#ffe08a)', boxShadow: '0 0 0 2px #ffe08a' };
+  const returnBtn: CSSProperties = { position: 'fixed', top: 20, left: 28, zIndex: 40, display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 17px', background: '#ffe08a', color: '#34302a', cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
+  const footer: CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 240, padding: '24px 44px', background: '#e6dcc6', borderTop: '2px solid #34302a', boxShadow: '0 -2px 0 rgba(52,48,42,.12)', overflow: 'hidden' };
 
   const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: '#857c6b', textTransform: 'uppercase' };
   /* rubber date stamp: dashed red outline, tilted, slightly faded ink */
@@ -168,17 +167,9 @@ export default function Portfolio() {
 
   return (
     <div style={page}>
-      <header className="enter-drop" style={header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
-          <span style={crumbMuted} onClick={goHome}>{PROFILE.name}</span>
-          <span style={slash}>/</span>
-          <span style={crumbActive}>portfolio</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          <ContactBar links={PROFILE.links} color={THEME.iconColor} hoverColor={THEME.iconHoverColor} />
-          <SoundToggle />
-        </div>
-      </header>
+      <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
+        <span style={{ ...stretch, fontSize: 10 }}>← return</span>
+      </button>
 
       {/* DESIGN BOARD */}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: CREAM, backgroundImage: svgUrl(DOT_SVG) }}>
@@ -310,15 +301,23 @@ export default function Portfolio() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26, paddingBottom: 80 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 8, height: 8, background: '#34302a' }} />
-                <span style={eyebrow}>end of the board</span>
+                <span style={eyebrow}>the end</span>
               </div>
               <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={{ ...sticker('#ffe08a', '#34302a'), cursor: 'pointer', fontFamily: PIXEL }}>
-                <span style={{ ...stretch, fontSize: 10 }}>← back to the desk</span>
+                <span style={{ ...stretch, fontSize: 10 }}>← return</span>
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      <footer style={footer}>
+        <PixelName lines={PROFILE.name.split(' ')} width={230} color="#34302a" squash={[0.62, 0.8]} radius={38} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <ContactBar links={PROFILE.links} />
+          <SoundToggle />
+        </div>
+      </footer>
     </div>
   );
 }

@@ -40,27 +40,14 @@ export default function PortfolioPage() {
     WebkitFontSmoothing: 'none',
   };
 
-  const header: CSSProperties = {
-    position: 'sticky',
-    top: 0,
-    zIndex: 30,
+  const floatCluster: CSSProperties = {
+    position: 'fixed',
+    top: 20,
+    right: 28,
+    zIndex: 40,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '0 34px',
-    height: 58,
-    background: THEME.headerBg,
-    borderBottom: `2px solid ${THEME.headerBorder}`,
-    boxShadow: '0 2px 0 rgba(52,48,42,.12)',
-  };
-
-  const headerName: CSSProperties = {
-    ...stretch,
-    fontFamily: PIXEL,
-    fontSize: 11,
-    letterSpacing: 1,
-    color: THEME.iconColor,
-    textTransform: 'uppercase',
+    gap: 22,
   };
 
   const sheet: CSSProperties = {
@@ -159,15 +146,10 @@ export default function PortfolioPage() {
 
   return (
     <div style={page}>
-      <header className="enter-drop" style={header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={headerName}>{PROFILE.name}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          <ContactBar links={PROFILE.links} color={THEME.iconColor} hoverColor={THEME.iconHoverColor} />
-          <SoundToggle />
-        </div>
-      </header>
+      <div className="enter-drop" style={floatCluster}>
+        <ContactBar links={PROFILE.links} />
+        <SoundToggle />
+      </div>
 
       <div style={sheet}>
         <div style={marginRule} />
