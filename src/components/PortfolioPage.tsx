@@ -198,12 +198,15 @@ export default function PortfolioPage() {
               </ul>
             </div>
 
-            {/* EXPERIENCE: index cards taped beside the intro */}
-            <aside style={{ flex: '0 1 330px', paddingTop: RULE, display: 'flex', flexDirection: 'column' }}>
-              <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
-                <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
-                <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>
-              </div>
+          </div>
+
+          {/* EXPERIENCE: index cards side by side, right above the folders */}
+          <div style={{ paddingTop: 48 }}>
+            <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
+              <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
+              <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 40 }}>
               {EXPERIENCE.map((e, i) => (
                 <div
                   key={e.company}
@@ -213,8 +216,6 @@ export default function PortfolioPage() {
                     position: 'relative',
                     width: 320,
                     maxWidth: '100%',
-                    marginTop: i ? 36 : 0,
-                    marginLeft: i % 2 ? 22 : 0,
                     background: THEME.cardBg,
                     border: `1px solid ${THEME.cardBorder}`,
                     boxShadow: '0 10px 20px rgba(0,0,0,.18)',
@@ -242,7 +243,7 @@ export default function PortfolioPage() {
                   </div>
                 </div>
               ))}
-            </aside>
+            </div>
           </div>
 
           <div style={foldersRow}>
