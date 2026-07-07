@@ -18,9 +18,38 @@ body {
 /* base page bg per theme — avoids a flash before the page mounts its own bg */
 html[data-theme='dark'] body { background: #17150f; }
 
+:root { --github-icon-color: #1F2328; }
+html[data-theme='dark'] { --github-icon-color: #ffffff; }
+
 a {
   text-decoration: none;
   color: inherit;
+}
+
+/* theme toggle: new theme sweeps out as a circle from the toggle button
+   (View Transitions API; browsers without it just switch instantly).
+   Duration + easing must match THEME_REVEAL_MS/themeRevealEase in
+   src/lib/theme.tsx — PixelName syncs its pixel wave to this front. */
+@keyframes theme-reveal {
+  from { clip-path: circle(0 at var(--theme-x, 100%) var(--theme-y, 0)); }
+  to { clip-path: circle(150% at var(--theme-x, 100%) var(--theme-y, 0)); }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal .5s cubic-bezier(.3,.6,.35,1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }
 
 /* smooth (big moves) */

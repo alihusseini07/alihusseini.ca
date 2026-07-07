@@ -1,4 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { THEME_REVEAL_MS, themeRevealEase } from '../lib/theme';
+
+/** theme-change ripple: the reveal circle's front triggers each dot as it
+    crosses it; the dot then swells and settles over RIPPLE_MS — a single wave
+    through the pixels, the block itself stays put. The front itself crosses
+    the name in a couple frames, so the per-dot pulse is what you see. */
+const RIPPLE_MS = 110;
+const RIPPLE_PULSE = 1.8;
 
 const FONT = "'Anton', 'Arial Black', sans-serif";
 
@@ -43,6 +51,8 @@ interface Particle {
   hx: number;
   hy: number;
   r: number;
+  /** performance.now() when the reveal front crossed this dot; 0 = untouched */
+  ws: number;
 }
 
 interface Props {
@@ -71,6 +81,17 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const text = lines.join('\n');
   const squashKey = squash.join(',');
+
+  // color lives in a ref so a theme change doesn't rebuild the particles
+  // (which would replay the assemble-in scatter); it repaints in place
+  const colorRef = useRef(color);
+  // reveal-circle state while a theme transition runs: start time, circle
+  // origin in canvas coords, and the circle's final radius
+  const rippleRef = useRef<{ start: number; ox: number; oy: number; maxR: number } | null>(null);
+
+  useEffect(() => {
+    colorRef.current = color;
+  }, [color]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -164,6 +185,7 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
               hy,
               // dots grow with the local magnification, like the reference
               r: DOT * Math.max(0.7, Math.min(mag, 1.25)),
+              ws: 0,
             });
           }
         }
@@ -185,8 +207,20 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
 
       const tick = () => {
         ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = color;
+        ctx.fillStyle = colorRef.current;
         ctx.beginPath();
+
+        // radius of the reveal circle right now, mirroring the CSS animation;
+        // dots get their pulse start stamped the frame the front reaches them
+        const now = performance.now();
+        const ripple = rippleRef.current;
+        let frontR = -1;
+        if (ripple) {
+          const t = (now - ripple.start) / THEME_REVEAL_MS;
+          if (t >= 1) rippleRef.current = null;
+          else frontR = ripple.maxR * themeRevealEase(t);
+        }
+
         for (const p of particles) {
           // target = home, remapped through a radial compression field around
           // the cursor: distance r becomes R·(r/R)^COMPRESS, angle unchanged.
@@ -204,15 +238,26 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
               ty = mouse.y + (dy / d) * nd;
             }
           }
-
           p.vx += (tx - p.x) * SPRING;
           p.vy += (ty - p.y) * SPRING;
           p.vx *= DAMPING;
           p.vy *= DAMPING;
           p.x += p.vx;
           p.y += p.vy;
-          ctx.moveTo(p.x + p.r, p.y);
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+
+          // front reached this dot: start its pulse
+          if (ripple && !p.ws && Math.hypot(p.hx - ripple.ox, p.hy - ripple.oy) <= frontR) {
+            p.ws = now;
+          }
+          // swell-and-settle after the front passes — the wave travels
+          // through the pixels without moving them
+          let r = p.r;
+          if (p.ws) {
+            const a = (now - p.ws) / RIPPLE_MS;
+            if (a < 1) r += p.r * RIPPLE_PULSE * Math.sin(Math.PI * a);
+          }
+          ctx.moveTo(p.x + r, p.y);
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         }
         ctx.fill();
         raf = requestAnimationFrame(tick);
@@ -231,8 +276,22 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
       mouse.x = -9999;
       mouse.y = -9999;
     };
+    // theme reveal started: capture the circle origin in canvas coords and its
+    // end radius (150% of the viewport diagonal ref, mirroring index.css)
+    const onReveal = (e: Event) => {
+      const { x, y } = (e as CustomEvent<{ x: number; y: number }>).detail;
+      const rect = canvas.getBoundingClientRect();
+      for (const p of particles) p.ws = 0;
+      rippleRef.current = {
+        start: performance.now(),
+        ox: x - rect.left,
+        oy: y - rect.top,
+        maxR: (1.5 * Math.hypot(window.innerWidth, window.innerHeight)) / Math.SQRT2,
+      };
+    };
     canvas.addEventListener('pointermove', onMove);
     canvas.addEventListener('pointerleave', onLeave);
+    window.addEventListener('theme-reveal', onReveal);
 
     // rasterizing before the display font arrives would sample a fallback font
     document.fonts.load(`80px ${FONT}`).then(build);
@@ -242,8 +301,9 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
       cancelAnimationFrame(raf);
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('pointerleave', onLeave);
+      window.removeEventListener('theme-reveal', onReveal);
     };
-  }, [text, width, color, lineGap, squashKey, snap, radius]);
+  }, [text, width, lineGap, squashKey, snap, radius]);
 
   return <canvas ref={canvasRef} role="img" aria-label={lines.join(' ')} style={{ display: 'block' }} />;
 }

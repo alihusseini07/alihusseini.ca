@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import ContactBar from '../components/ContactBar';
 import SoundToggle from '../components/SoundToggle';
 import ThemeToggle from '../components/ThemeToggle';
-import PixelName from '../components/PixelName';
+import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import VideoSlot from '../components/VideoSlot';
 import ImageSlot from '../components/ImageSlot';
 import { useTransitionNavigate } from '../components/PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
 import { useThemeCtx } from '../lib/theme';
-import { PROFILE, softHl } from '../tokens';
+import { softHl } from '../tokens';
 import { PROJECTS } from '../data/portfolio';
 import { TECH_ICONS } from '../data/tech-icons';
 
@@ -145,7 +144,6 @@ export default function Portfolio() {
 
   const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: THEME.pageBg, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
   const returnBtn: CSSProperties = { position: 'fixed', top: 20, left: 28, zIndex: 40, display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 17px', background: THEME.highlight, color: THEME.highlightText, cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
-  const footer: CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 240, padding: '24px 44px', background: THEME.headerBg, borderTop: `2px solid ${THEME.headerBorder}`, boxShadow: '0 -2px 0 rgba(0,0,0,.12)', overflow: 'hidden' };
 
   const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.iconColor, textTransform: 'uppercase' };
   const sticker = (bg: string, fg: string): CSSProperties => ({
@@ -171,8 +169,9 @@ export default function Portfolio() {
         <SoundToggle />
       </div>
 
-      {/* DESIGN BOARD */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
+      {/* DESIGN BOARD — sits above the fixed footer (z 1 vs 0) and leaves its
+          height in bottom margin, so scrolling past the end uncovers it */}
+      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: '0 72px' }}>
           {/* TITLE */}
           <div className="enter-rise" style={{ ...enter(1), paddingTop: 128, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
@@ -327,14 +326,7 @@ export default function Portfolio() {
         </div>
       </div>
 
-      <footer style={footer}>
-        <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          <ContactBar links={PROFILE.links} />
-          <ThemeToggle />
-          <SoundToggle />
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

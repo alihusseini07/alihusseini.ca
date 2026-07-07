@@ -5,6 +5,7 @@ import ContactBar from './ContactBar';
 import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
 import ThemeToggle from './ThemeToggle';
+import SiteFooter, { FOOTER_H } from './SiteFooter';
 import { useTransitionNavigate } from './PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
@@ -54,9 +55,14 @@ export default function PortfolioPage() {
     gap: 22,
   };
 
+  // sheet rides above the fixed footer (z 1 vs 0) and leaves its height in
+  // bottom margin, so scrolling past the end uncovers the footer
   const sheet: CSSProperties = {
     position: 'relative',
+    zIndex: 1,
     flex: 1,
+    marginBottom: FOOTER_H,
+    boxShadow: '0 18px 28px rgba(0,0,0,.3)',
     backgroundColor: THEME.pageBg,
     backgroundImage: `repeating-linear-gradient(${THEME.pageBg} 0px, ${THEME.pageBg} ${RULE - 1}px, ${THEME.ruleColor} ${RULE - 1}px, ${THEME.ruleColor} ${RULE}px)`,
   };
@@ -264,6 +270,8 @@ export default function PortfolioPage() {
           </div>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

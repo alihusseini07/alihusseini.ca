@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTransitionNavigate } from '../components/PageTransition';
 import GrimoireBookShell from '../components/grimoire/GrimoireBookShell';
 import NoiseOverlay from '../components/grimoire/NoiseOverlay';
+import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
 import { play } from '../lib/sound';
 
@@ -18,6 +19,7 @@ export default function Skills() {
   }, []);
 
   return (
+    <>
     <div
       style={{
         // @ts-expect-error -- CSS custom properties
@@ -32,6 +34,9 @@ export default function Skills() {
         padding: '0.5rem',
         position: 'relative',
         zIndex: 1,
+        // ride above the fixed footer; scrolling past the end uncovers it
+        marginBottom: FOOTER_H,
+        boxShadow: '0 18px 28px rgba(0,0,0,.45)',
         background: '#2b251f',
         cursor: 'crosshair',
       }}
@@ -42,7 +47,7 @@ export default function Skills() {
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
@@ -57,7 +62,7 @@ export default function Skills() {
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
@@ -72,7 +77,7 @@ export default function Skills() {
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
@@ -87,7 +92,7 @@ export default function Skills() {
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
@@ -231,5 +236,8 @@ export default function Skills() {
         }
       `}</style>
     </div>
+
+    <SiteFooter />
+    </>
   );
 }

@@ -6,7 +6,11 @@ export default function ThemeToggle() {
   const dark = mode === 'dark';
   return (
     <button
-      onClick={() => { play('tick'); toggle(); }}
+      onClick={(e) => {
+        play('tick');
+        const r = e.currentTarget.getBoundingClientRect();
+        toggle(r.left + r.width / 2, r.top + r.height / 2);
+      }}
       aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
       style={{

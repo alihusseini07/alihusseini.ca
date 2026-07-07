@@ -29,11 +29,12 @@ export default function NoiseOverlay() {
         </defs>
       </svg>
 
-      {/* Subtle light vignette */}
+      {/* Subtle light vignette — absolute, so it stays on the page sheet and
+          off the footer revealed beneath it */}
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
           pointerEvents: 'none',
           zIndex: 2,
@@ -45,7 +46,7 @@ export default function NoiseOverlay() {
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
           pointerEvents: 'none',
           zIndex: 3,
