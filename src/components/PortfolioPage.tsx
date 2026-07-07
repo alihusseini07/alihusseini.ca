@@ -131,14 +131,6 @@ export default function PortfolioPage() {
     marginBottom: 5,
   });
 
-  const foldersRow: CSSProperties = {
-    paddingTop: 56,
-    paddingBottom: 72,
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 64,
-  };
-
   /** translucent tape strip pinning a card's top corners */
   const tape = (side: 'left' | 'right', rot: number): CSSProperties => ({
     position: 'absolute',
@@ -204,10 +196,26 @@ export default function PortfolioPage() {
               </ul>
             </div>
 
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingTop: 80 }}>
+              {FOLDERS.map((f, i) => (
+                <div key={f.label} className="enter-pop" style={enter(8 + i)}>
+                  <PixelFolder
+                    label={f.label}
+                    palette={folders[f.color]}
+                    labelColor={THEME.labelColor}
+                    onClick={(rect) => navigate(f.route, {
+                      // skills folder tears open a new dimension; the rest zoom in
+                      ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
+                      origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
+                    })}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* EXPERIENCE: index cards side by side, right above the folders */}
-          <div style={{ paddingTop: 48 }}>
+          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -80 }}>
             <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
               <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
               <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>
@@ -227,10 +235,17 @@ export default function PortfolioPage() {
                     boxShadow: '0 10px 20px rgba(0,0,0,.18)',
                     padding: '22px 20px 18px',
                     transform: cardRest(i),
-                    transition: 'transform .16s steps(3, end)',
+                    transition: 'transform .16s steps(3, end), box-shadow .16s steps(3, end)',
                   }}
-                  onMouseEnter={(ev) => { play('tick'); ev.currentTarget.style.transform = 'translateY(-5px) rotate(0deg)'; }}
-                  onMouseLeave={(ev) => { ev.currentTarget.style.transform = cardRest(i); }}
+                  onMouseEnter={(ev) => {
+                    play('tick');
+                    ev.currentTarget.style.transform = 'translateY(-8px) scale(1.03) rotate(0deg)';
+                    ev.currentTarget.style.boxShadow = '0 18px 28px rgba(0,0,0,.28)';
+                  }}
+                  onMouseLeave={(ev) => {
+                    ev.currentTarget.style.transform = cardRest(i);
+                    ev.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,.18)';
+                  }}
                 >
                   <div style={tape('left', -3)} />
                   <div style={tape('right', 2)} />
@@ -252,22 +267,6 @@ export default function PortfolioPage() {
             </div>
           </div>
 
-          <div style={foldersRow}>
-            {FOLDERS.map((f, i) => (
-              <div key={f.label} className="enter-pop" style={enter(8 + i)}>
-                <PixelFolder
-                  label={f.label}
-                  palette={folders[f.color]}
-                  labelColor={THEME.labelColor}
-                  onClick={(rect) => navigate(f.route, {
-                    // skills folder tears open a new dimension; the rest zoom in
-                    ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
-                    origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
-                  })}
-                />
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
