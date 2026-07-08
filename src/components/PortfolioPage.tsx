@@ -228,7 +228,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* EXPERIENCE: index cards side by side, right above the folders */}
-          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -80 + RULE }}>
+          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -40 + RULE }}>
             <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
               <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
               <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>
