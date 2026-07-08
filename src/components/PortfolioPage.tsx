@@ -4,6 +4,7 @@ import PixelName from './PixelName';
 import ContactBar from './ContactBar';
 // import CursorTrail from './CursorTrail'; // disabled for now
 import CyclingTagline from './CyclingTagline';
+import LinkPreviewLink from './LinkPreviewLink';
 import SoundToggle from './SoundToggle';
 import ThemeToggle from './ThemeToggle';
 // import TrailToggle from './TrailToggle'; // disabled for now
@@ -28,7 +29,7 @@ const PIXEL = "'Press Start 2P', monospace";
 
 export default function PortfolioPage() {
   const navigate = useTransitionNavigate();
-  const { theme: THEME, accent, folders } = useThemeCtx();
+  const { theme: THEME, accent, folders, mode } = useThemeCtx();
 
   /** yellow highlighter marker; pair with .hl-anim to sweep it in */
   const highlight: CSSProperties = {
@@ -183,7 +184,15 @@ export default function PortfolioPage() {
 
               <p className="enter-rise" style={{ ...affiliation, ...enter(2) }}>
                 <span style={stretch}>
-                  <span className="hl-anim" style={{ ...highlight, animationDelay: '420ms' }}>{PROFILE.affiliation.label}</span>{' '}
+                  <LinkPreviewLink
+                    href={PROFILE.affiliation.link}
+                    preview={PROFILE.affiliation.preview}
+                    caption={PROFILE.affiliation.previewCaption}
+                    className="hl-anim"
+                    style={{ ...highlight, animationDelay: '420ms', textDecoration: 'none' }}
+                  >
+                    {PROFILE.affiliation.label}
+                  </LinkPreviewLink>{' '}
                   <span style={{ color: THEME.accentBlue, marginLeft: 10 }}>{PROFILE.affiliation.school}</span>
                 </span>
               </p>
@@ -197,15 +206,36 @@ export default function PortfolioPage() {
               <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                 {PROFILE.bullets.map((b, i) => {
                   const parts = b.highlightPart ? b.text.split(b.highlightPart) : null;
+                  // custom-color bullets: soften in light mode, keep full strength in dark
+                  const hlInk = b.highlightColor
+                    ? (mode === 'light'
+                        ? `color-mix(in srgb, ${b.highlightColor} 52%, transparent)`
+                        : softHl(b.highlightColor))
+                    : null;
+                  const hlStyle = hlInk
+                    ? { ...highlight, backgroundImage: `linear-gradient(${hlInk}, ${hlInk})` }
+                    : highlight;
                   return (
                     <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
                       <span style={marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color))} />
                       {parts ? (
                         <span style={stretch}>
                           {parts[0]}
-                          <span className="hl-anim" style={{ ...highlight, animationDelay: `${(4 + i) * 70 + 320}ms` }}>
-                            {b.highlightPart}
-                          </span>
+                          {b.link && b.preview ? (
+                            <LinkPreviewLink
+                              href={b.link}
+                              preview={b.preview}
+                              caption={b.previewCaption}
+                              className="hl-anim"
+                              style={{ ...highlight, animationDelay: `${(4 + i) * 70 + 320}ms`, textDecoration: 'none' }}
+                            >
+                              {b.highlightPart}
+                            </LinkPreviewLink>
+                          ) : (
+                            <span className="hl-anim" style={{ ...hlStyle, animationDelay: `${(4 + i) * 70 + 320}ms` }}>
+                              {b.highlightPart}
+                            </span>
+                          )}
                           {parts[1]}
                         </span>
                       ) : (
@@ -247,48 +277,75 @@ export default function PortfolioPage() {
               <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 40 }}>
-              {EXPERIENCE.map((e, i) => (
-                <div
-                  key={e.company}
-                  className="enter-pop"
-                  style={{
-                    ...enter(6 + i),
-                    position: 'relative',
-                    width: 320,
-                    maxWidth: '100%',
-                    background: THEME.cardBg,
-                    border: `1px solid ${THEME.cardBorder}`,
-                    boxShadow: '0 10px 20px rgba(0,0,0,.18)',
-                    padding: '22px 20px 18px',
-                    transform: cardRest(i),
-                    transition: 'transform .16s steps(3, end), box-shadow .16s steps(3, end)',
-                  }}
-                  onMouseEnter={(ev) => {
-                    ev.currentTarget.style.transform = 'translateY(-8px) scale(1.03) rotate(0deg)';
-                    ev.currentTarget.style.boxShadow = '0 18px 28px rgba(0,0,0,.28)';
-                  }}
-                  onMouseLeave={(ev) => {
-                    ev.currentTarget.style.transform = cardRest(i);
-                    ev.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,.18)';
-                  }}
-                >
-                  <div style={tape('left', -3)} />
-                  <div style={tape('right', 2)} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ flex: 'none', width: 48, height: 48, background: THEME.cardBg, border: `2px solid ${THEME.headerBorder}`, boxShadow: '2px 2px 0 rgba(52,48,42,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                      <img src={e.logo} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 3, boxSizing: 'border-box' }} />
+              {EXPERIENCE.map((e, i) => {
+                const cardStyle: CSSProperties = {
+                  ...enter(6 + i),
+                  display: 'block',
+                  position: 'relative',
+                  width: 320,
+                  maxWidth: '100%',
+                  background: THEME.cardBg,
+                  border: `1px solid ${THEME.cardBorder}`,
+                  boxShadow: '0 10px 20px rgba(0,0,0,.18)',
+                  padding: '22px 20px 18px',
+                  transform: cardRest(i),
+                  transition: 'transform .16s steps(3, end), box-shadow .16s steps(3, end)',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                };
+                const lift = (el: HTMLElement) => {
+                  el.style.transform = 'translateY(-8px) scale(1.03) rotate(0deg)';
+                  el.style.boxShadow = '0 18px 28px rgba(0,0,0,.28)';
+                };
+                const rest = (el: HTMLElement) => {
+                  el.style.transform = cardRest(i);
+                  el.style.boxShadow = '0 10px 20px rgba(0,0,0,.18)';
+                };
+                const inner = (
+                  <>
+                    <div style={tape('left', -3)} />
+                    <div style={tape('right', 2)} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ flex: 'none', width: 48, height: 48, background: THEME.cardBg, border: `2px solid ${THEME.headerBorder}`, boxShadow: '2px 2px 0 rgba(52,48,42,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                        <img src={e.logo} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 3, boxSizing: 'border-box' }} />
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ ...stretch, transformOrigin: 'bottom left', fontSize: 11, lineHeight: 1.7, color: THEME.nameColor }}>{e.company}</div>
+                        <div style={{ marginTop: 8, ...stretch, transformOrigin: 'top left', fontSize: 9, lineHeight: 1.6, color: THEME.subTextColor }}>{e.role}</div>
+                      </div>
                     </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ ...stretch, transformOrigin: 'bottom left', fontSize: 11, lineHeight: 1.7, color: THEME.nameColor }}>{e.company}</div>
-                      <div style={{ marginTop: 8, ...stretch, transformOrigin: 'top left', fontSize: 9, lineHeight: 1.6, color: THEME.subTextColor }}>{e.role}</div>
+                    <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ width: 7, height: 7, background: accent(e.accent), flex: 'none' }} />
+                      <span style={{ ...stretch, fontSize: 9, color: THEME.bodyColor }}>{e.dates}</span>
                     </div>
+                  </>
+                );
+
+                return e.link && e.preview ? (
+                  <LinkPreviewLink
+                    key={e.company}
+                    href={e.link}
+                    preview={e.preview}
+                    caption={e.previewCaption}
+                    className="enter-pop"
+                    style={cardStyle}
+                    onEnter={(ev) => lift(ev.currentTarget)}
+                    onLeave={(ev) => rest(ev.currentTarget)}
+                  >
+                    {inner}
+                  </LinkPreviewLink>
+                ) : (
+                  <div
+                    key={e.company}
+                    className="enter-pop"
+                    style={cardStyle}
+                    onMouseEnter={(ev) => lift(ev.currentTarget)}
+                    onMouseLeave={(ev) => rest(ev.currentTarget)}
+                  >
+                    {inner}
                   </div>
-                  <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ width: 7, height: 7, background: accent(e.accent), flex: 'none' }} />
-                    <span style={{ ...stretch, fontSize: 9, color: THEME.bodyColor }}>{e.dates}</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

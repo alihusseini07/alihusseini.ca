@@ -121,13 +121,16 @@ export const PROFILE = {
   affiliation: {
     label: 'mechatronics engineering',
     school: '@ uwaterloo',
+    link: 'https://uwaterloo.ca/future-students/programs/mechatronics-engineering',
+    preview: '/assets/tron-preview.png',
+    previewCaption: 'uwaterloo.ca',
   },
   bullets: [
-    { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs' },
+    { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs', link: 'https://axl.vc/', preview: '/assets/axl-preview.png', previewCaption: 'axl.vc' },
     { color: '#3f8fd6', text: 'interested in software & robotics' },
     { color: '#5db84a', text: 'i like kickboxing, anime, and movies' },
-    { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027' },
-  ] as { color: string; text: string; highlight?: boolean; highlightPart?: string }[],
+    { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027', highlightColor: '#e0409a' },
+  ] as { color: string; text: string; highlight?: boolean; highlightPart?: string; highlightColor?: string; link?: string; preview?: string; previewCaption?: string }[],
   links: {
     linkedin: 'https://www.linkedin.com/in/ahusseini-profile/',
     github: 'https://github.com/alihusseini07',
@@ -144,6 +147,9 @@ export const EXPERIENCE = [
     dates: 'jan – apr 2026',
     logo: '/assets/ndi-logo.png',
     accent: '#3f8fd6',
+    link: 'https://netdynamicconsulting.com/ats360/',
+    preview: '/assets/ats360-preview.png',
+    previewCaption: 'ats360.com',
   },
   {
     company: 'UW Formula Electric',
@@ -151,8 +157,14 @@ export const EXPERIENCE = [
     dates: 'sept – dec 2025',
     logo: '/assets/waterlooformulaelectric_logo.png',
     accent: '#5db84a',
+    link: 'https://www.uwfsae.ca/',
+    preview: '/assets/uwfe-preview.png',
+    previewCaption: 'uwfsae.ca',
   },
-];
+] as {
+  company: string; role: string; dates: string; logo: string; accent: string;
+  link?: string; preview?: string; previewCaption?: string;
+}[];
 
 // Landing-page folders. "Projects" is now "Portfolio"; "Experiences" is now "Skills".
 export const FOLDERS = [
