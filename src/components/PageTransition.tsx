@@ -94,13 +94,53 @@ export default function PageTransition({ children }: { children: ReactNode }) {
 
   return (
     <TransitionCtx.Provider value={go}>
-      <div
+      <PageFrame
         key={location.pathname}
-        className={exit ? exit.cls : enter.cls}
-        style={{ transformOrigin: exit ? exit.origin : enter.origin }}
+        exit={exit}
+        enterCls={enter.cls}
+        enterOrigin={enter.origin}
       >
         {children}
-      </div>
+      </PageFrame>
     </TransitionCtx.Provider>
+  );
+}
+
+/**
+ * Wraps a page and plays its enter animation, then strips the animation class
+ * once it finishes. Keyed by pathname, so the `settled` state resets on every
+ * navigation. Dropping the class matters: a finished-but-filling
+ * transform/filter animation keeps the wrapper as a containing block for
+ * position:fixed descendants (Chrome holds the compositing layer while the
+ * animation stays applied), which would trap the fixed footer against the
+ * wrapper instead of the viewport. Removing the class reverts it to a plain
+ * div so the footer anchors to the viewport and reveals correctly on scroll.
+ */
+function PageFrame({
+  exit,
+  enterCls,
+  enterOrigin,
+  children,
+}: {
+  exit: { cls: string; origin?: string } | null;
+  enterCls: string;
+  enterOrigin?: string;
+  children: ReactNode;
+}) {
+  const [settled, setSettled] = useState(false);
+  const exiting = !!exit;
+  const className = exiting ? exit!.cls : settled ? '' : enterCls;
+  return (
+    <div
+      className={className}
+      style={{ transformOrigin: exiting ? exit!.origin : enterOrigin }}
+      onAnimationEnd={(e) => {
+        // ignore animations bubbling up from children — only this wrapper's
+        // own enter animation should settle it
+        if (!exiting && e.target === e.currentTarget) setSettled(true);
+      }}
+    >
+      {children}
+    </div>
   );
 }
