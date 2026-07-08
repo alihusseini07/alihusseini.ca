@@ -274,9 +274,11 @@ export function play(name: SoundName): void {
       case 'toggleOff':
         tone(a, m, 'sine', 780, now, 0.045, 0.05, 520);
         break;
-      case 'navigate':
-        tone(a, m, 'square', 620, now, 0.07, 0.06, undefined, 0.005);
-        tone(a, m, 'square', 930, now + 0.075, 0.07, 0.06, undefined, 0.005);
+      case 'navigate': // page flip: paper riffle sweep + soft settle tap
+        swish(a, m, 'bandpass', 700, 2600, now, 0.14, 0.05, 0.015);
+        swish(a, m, 'highpass', 3200, 6500, now + 0.01, 0.07, 0.05, 0.004);
+        swish(a, m, 'highpass', 4200, 4200, now + 0.06, 0.02, 0.03, 0.003);
+        tone(a, m, 'triangle', 150, now + 0.12, 0.05, 0.03);
         break;
       case 'paperIn': // rising whoosh + paper rustle taps
         swish(a, m, 'bandpass', 500, 1900, now, 0.35, 0.055, 0.07);
