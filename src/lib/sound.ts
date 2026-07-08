@@ -238,7 +238,7 @@ export function play(name: SoundName): void {
         tone(a, m, 'triangle', 320, now, 0.045, 0.05);
         break;
       case 'tick':
-        tone(a, m, 'triangle', 1800, now, 0.015, 0.02, undefined, 0.003);
+        tone(a, m, 'triangle', 1800, now, 0.015, 0.055, undefined, 0.003);
         break;
       case 'whooshOpen':
         swish(a, m, 'bandpass', 400, 1600, now, 0.3, 0.05, 0.06);

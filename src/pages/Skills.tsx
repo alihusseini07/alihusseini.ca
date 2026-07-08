@@ -21,6 +21,7 @@ export default function Skills() {
   return (
     <>
     <div
+      className="skills-dim"
       style={{
         // @ts-expect-error -- CSS custom properties
         '--font-display': "'Pixelify Sans', monospace",
@@ -38,7 +39,9 @@ export default function Skills() {
         marginBottom: FOOTER_H,
         boxShadow: '0 18px 28px rgba(0,0,0,.45)',
         background: '#2b251f',
-        cursor: 'crosshair',
+        // always a dark surface no matter the site theme, so hardcode the
+        // light-ink pixel crosshair instead of inheriting the themed one
+        cursor: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='11' y='1' width='1' height='21'/><rect x='1' y='11' width='21' height='1'/></g></svg>") 11 11, crosshair`,
       }}
     >
       <NoiseOverlay />

@@ -26,6 +26,15 @@ export default function TrailToggle() {
         cursor: 'pointer',
         color: theme.iconHoverColor,
         padding: 0,
+        transition: 'transform .16s steps(2, end), filter .16s steps(2, end)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.filter = 'brightness(1.12)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.filter = 'none';
       }}
     >
       {/* highlighter marker; slashed when the trail is off */}

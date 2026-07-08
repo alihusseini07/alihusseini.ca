@@ -10,9 +10,9 @@ const TILT = 0.24;
 /** half-thickness of the physical tip, for stroke caps / minimum width */
 const TIP_W = 3;
 /** fresh ink sits at full strength this long before fading, ms */
-const HOLD_MS = 400;
+const HOLD_MS = 200;
 /** then fades out over this long, ms */
-const FADE_MS = 800;
+const FADE_MS = 500;
 /** peak opacity of fresh ink */
 const MAX_ALPHA = 0.5;
 /** fade quantization levels — needed to batch quads into shared fills */

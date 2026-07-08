@@ -132,7 +132,7 @@ export const PROFILE = {
     linkedin: 'https://www.linkedin.com/in/ahusseini-profile/',
     github: 'https://github.com/alihusseini07',
     devpost: 'https://devpost.com/ahusseini007',
-    resume: '/ali_husseini_resume.pdf',
+    x: 'https://x.com/ahusseini07',
     email: 'mailto:ahusseini007@gmail.com',
   },
 };

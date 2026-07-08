@@ -42,13 +42,15 @@ export default function PortfolioPage() {
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
     background: THEME.pageBg,
     fontFamily: PIXEL,
     WebkitFontSmoothing: 'none',
   };
 
+  // pinned to the page's top-right corner, scrolls away with the content
   const floatCluster: CSSProperties = {
-    position: 'fixed',
+    position: 'absolute',
     top: 20,
     right: 28,
     zIndex: 40,
@@ -249,7 +251,6 @@ export default function PortfolioPage() {
                     transition: 'transform .16s steps(3, end), box-shadow .16s steps(3, end)',
                   }}
                   onMouseEnter={(ev) => {
-                    play('tick');
                     ev.currentTarget.style.transform = 'translateY(-8px) scale(1.03) rotate(0deg)';
                     ev.currentTarget.style.boxShadow = '0 18px 28px rgba(0,0,0,.28)';
                   }}

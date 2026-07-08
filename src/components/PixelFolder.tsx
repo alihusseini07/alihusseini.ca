@@ -57,7 +57,9 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
 
   const papersStyle: CSSProperties = {
     ...PIXELATED, position: 'absolute', left: r(7), top: r(28), width: r(168), height: r(105), zIndex: 1,
-    transform: `translateY(${open ? r(-34) : 0}px)`, transition: 'transform .24s cubic-bezier(.2,.85,.3,1)',
+    transform: `translateY(${open ? r(-34) : 0}px)`,
+    clipPath: open ? 'inset(0 0 0 0)' : `inset(${r(16)}px 0 0 0)`,
+    transition: 'transform .24s cubic-bezier(.2,.85,.3,1), clip-path .24s cubic-bezier(.2,.85,.3,1)',
   };
 
   const frontStyle: CSSProperties = {

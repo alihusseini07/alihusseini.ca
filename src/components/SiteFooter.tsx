@@ -54,13 +54,24 @@ export default function SiteFooter() {
       <span data-trail-block style={{ display: 'contents' }}>
         <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
       </span>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      {/* page links on top, social/controls row tucked under (reverse of
+          source order); the small upward nudge keeps the pair from sitting
+          visually low */}
+      <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', gap: 18, transform: 'translateY(-6px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <ContactBar links={PROFILE.links} />
+          <TrailToggle />
+          <ThemeToggle />
+          <SoundToggle />
+        </div>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         {links.map((l, i) => (
           <span key={l.path} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {i > 0 && <span style={{ width: 4, height: 4, background: THEME.iconColor, opacity: 0.5 }} />}
             <Link
               to={l.path}
               onClick={(e) => {
+                play('click');
                 if (l.path === '/skills') {
                   e.preventDefault();
                   const r = e.currentTarget.getBoundingClientRect();
@@ -96,12 +107,7 @@ export default function SiteFooter() {
             </Link>
           </span>
         ))}
-      </nav>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-        <ContactBar links={PROFILE.links} />
-        <TrailToggle />
-        <ThemeToggle />
-        <SoundToggle />
+        </nav>
       </div>
     </footer>
   );

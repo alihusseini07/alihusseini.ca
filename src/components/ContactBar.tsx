@@ -1,5 +1,4 @@
 import { type CSSProperties } from 'react';
-import { play } from '../lib/sound';
 
 interface IconLinkProps {
   href: string;
@@ -21,7 +20,6 @@ function IconLink({ href, label, external = true, download, color, children }: I
       {...(external ? { target: '_blank', rel: 'noopener' } : {})}
       style={style}
       onMouseEnter={(e) => {
-        play('tick'); // subtle blip on hover
         e.currentTarget.style.transform = 'translateY(-3px)';
         e.currentTarget.style.filter = 'brightness(1.12)';
       }}
@@ -43,12 +41,12 @@ const BRAND = {
   linkedin: '#0A66C2',
   github: '#1F2328',
   devpost: '#003E54',
-  resume: '#E8A72E',
+  x: 'var(--github-icon-color)',
   email: '#EA4335',
 };
 
 export interface ContactBarProps {
-  links: { linkedin: string; github: string; devpost: string; resume: string; email: string };
+  links: { linkedin: string; github: string; devpost: string; x: string; email: string };
 }
 
 export default function ContactBar({ links }: ContactBarProps) {
@@ -74,12 +72,9 @@ export default function ContactBar({ links }: ContactBarProps) {
         </IconLink>
       )}
 
-      <IconLink href={links.resume} label="Download My Resume" download color={BRAND.resume}>
-        <svg width={S} height={S} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-          <path d="M14 3v5h5" />
-          <line x1="9" y1="13" x2="15" y2="13" />
-          <line x1="9" y1="17" x2="14" y2="17" />
+      <IconLink href={links.x} label="X (Twitter)" color={BRAND.x}>
+        <svg width={S} height={S} viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </svg>
       </IconLink>
 
