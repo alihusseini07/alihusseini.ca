@@ -2,11 +2,11 @@ import { type CSSProperties } from 'react';
 import PixelFolder from './PixelFolder';
 import PixelName from './PixelName';
 import ContactBar from './ContactBar';
-import CursorTrail from './CursorTrail';
+// import CursorTrail from './CursorTrail'; // disabled for now
 import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
 import ThemeToggle from './ThemeToggle';
-import TrailToggle from './TrailToggle';
+// import TrailToggle from './TrailToggle'; // disabled for now
 import SiteFooter, { FOOTER_H } from './SiteFooter';
 import { useTransitionNavigate } from './PageTransition';
 import { play } from '../lib/sound';
@@ -155,7 +155,7 @@ export default function PortfolioPage() {
     <div style={page}>
       <div className="enter-drop" style={floatCluster}>
         <ContactBar links={PROFILE.links} />
-        <TrailToggle />
+        {/* <TrailToggle /> disabled for now */}
         <ThemeToggle />
         <SoundToggle />
       </div>
@@ -163,7 +163,7 @@ export default function PortfolioPage() {
       <div style={sheet}>
         {/* highlighter ink: z:-1 keeps it above the ruled paper but under
             everything in-flow, and it scrolls with the sheet */}
-        <CursorTrail />
+        {/* <CursorTrail /> disabled for now */}
         <div style={marginRule} />
 
         <div style={content}>
