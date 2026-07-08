@@ -1,7 +1,10 @@
 import { toggleMute, useMuted } from '../lib/sound';
+import { useThemeCtx } from '../lib/theme';
 
 export default function SoundToggle() {
   const muted = useMuted();
+  const { mode, theme } = useThemeCtx();
+  const dark = mode === 'dark';
   return (
     <button
       onClick={toggleMute}
@@ -13,11 +16,11 @@ export default function SoundToggle() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#e6dcc6',
-        border: '2px solid #34302a',
-        boxShadow: '2px 2px 0 rgba(52,48,42,.25)',
+        background: theme.headerBg,
+        border: `2px solid ${theme.headerBorder}`,
+        boxShadow: `2px 2px 0 ${dark ? 'rgba(0,0,0,.4)' : 'rgba(52,48,42,.25)'}`,
         cursor: 'pointer',
-        color: '#34302a',
+        color: theme.iconHoverColor,
         padding: 0,
       }}
     >

@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import ContactBar from './ContactBar';
+import CursorTrail from './CursorTrail';
 import { useTransitionNavigate } from './PageTransition';
 import PixelName from './PixelName';
 import SoundToggle from './SoundToggle';
 import ThemeToggle from './ThemeToggle';
+import TrailToggle from './TrailToggle';
 import { play } from '../lib/sound';
 import { useThemeCtx } from '../lib/theme';
 import { PROFILE } from '../tokens';
@@ -47,7 +49,11 @@ export default function SiteFooter() {
         overflow: 'hidden',
       }}
     >
-      <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
+      <CursorTrail />
+      {/* data-trail-block: the marker lifts off while hovering the name */}
+      <span data-trail-block style={{ display: 'contents' }}>
+        <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
+      </span>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         {links.map((l, i) => (
           <span key={l.path} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -93,6 +99,7 @@ export default function SiteFooter() {
       </nav>
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
         <ContactBar links={PROFILE.links} />
+        <TrailToggle />
         <ThemeToggle />
         <SoundToggle />
       </div>

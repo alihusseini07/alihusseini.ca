@@ -2,9 +2,11 @@ import { type CSSProperties } from 'react';
 import PixelFolder from './PixelFolder';
 import PixelName from './PixelName';
 import ContactBar from './ContactBar';
+import CursorTrail from './CursorTrail';
 import CyclingTagline from './CyclingTagline';
 import SoundToggle from './SoundToggle';
 import ThemeToggle from './ThemeToggle';
+import TrailToggle from './TrailToggle';
 import SiteFooter, { FOOTER_H } from './SiteFooter';
 import { useTransitionNavigate } from './PageTransition';
 import { play } from '../lib/sound';
@@ -151,11 +153,15 @@ export default function PortfolioPage() {
     <div style={page}>
       <div className="enter-drop" style={floatCluster}>
         <ContactBar links={PROFILE.links} />
+        <TrailToggle />
         <ThemeToggle />
         <SoundToggle />
       </div>
 
       <div style={sheet}>
+        {/* highlighter ink: z:-1 keeps it above the ruled paper but under
+            everything in-flow, and it scrolls with the sheet */}
+        <CursorTrail />
         <div style={marginRule} />
 
         <div style={content}>
@@ -164,7 +170,10 @@ export default function PortfolioPage() {
           <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', columnGap: 72, rowGap: 40 }}>
             <div style={{ flex: '1 1 480px', minWidth: 320 }}>
               <h1 className="enter-rise" style={{ ...name, ...enter(1) }}>
-                <PixelName lines={PROFILE.name.split(' ')} width={350} color={THEME.nameColor} squash={[0.62, 0.8]} snap={RULE} />
+                {/* data-trail-block: the marker lifts off while hovering the name */}
+                <span data-trail-block style={{ display: 'contents' }}>
+                  <PixelName lines={PROFILE.name.split(' ')} width={350} color={THEME.nameColor} squash={[0.62, 0.8]} snap={RULE} />
+                </span>
               </h1>
 
               <div style={blank} />
