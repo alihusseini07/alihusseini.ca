@@ -7,7 +7,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={(e) => {
-        play('tick');
+        play(dark ? 'waterDropLight' : 'waterDropDark');
         const r = e.currentTarget.getBoundingClientRect();
         toggle(r.left + r.width / 2, r.top + r.height / 2);
       }}

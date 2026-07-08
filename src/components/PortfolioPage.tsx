@@ -61,6 +61,7 @@ export default function PortfolioPage() {
     position: 'relative',
     zIndex: 1,
     flex: 1,
+    minHeight: '100vh',
     marginBottom: FOOTER_H,
     boxShadow: '0 18px 28px rgba(0,0,0,.3)',
     backgroundColor: THEME.pageBg,
@@ -167,6 +168,7 @@ export default function PortfolioPage() {
               </h1>
 
               <div style={blank} />
+              <div style={blank} />
 
               <p className="enter-rise" style={{ ...affiliation, ...enter(2) }}>
                 <span style={stretch}>
@@ -215,7 +217,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* EXPERIENCE: index cards side by side, right above the folders */}
-          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -80 }}>
+          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -80 + RULE }}>
             <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
               <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
               <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>

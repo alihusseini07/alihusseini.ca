@@ -16,7 +16,7 @@ body {
 }
 
 /* base page bg per theme — avoids a flash before the page mounts its own bg */
-html[data-theme='dark'] body { background: #17150f; }
+html[data-theme='dark'] body { background: #000000; }
 
 :root { --github-icon-color: #1F2328; }
 html[data-theme='dark'] { --github-icon-color: #ffffff; }

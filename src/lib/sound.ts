@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react';
 
 export type SoundName =
   | 'click' | 'tick' | 'whooshOpen' | 'whooshClose'
-  | 'pickup' | 'drop' | 'tab' | 'toggleOn' | 'toggleOff' | 'navigate'
+  | 'pickup' | 'drop' | 'waterDropDark' | 'waterDropLight' | 'tab' | 'toggleOn' | 'toggleOff' | 'navigate'
   | 'paperIn' | 'paperOut'
   | 'warpIn' | 'warpOut'
   | 'bell' | 'chime' | 'pageTurn' | 'chantHover'
@@ -253,6 +253,18 @@ export function play(name: SoundName): void {
         tone(a, m, 'triangle', 170, now, 0.07, 0.07);
         swish(a, m, 'highpass', 3000, 3000, now, 0.008, 0.03, 0.002);
         break;
+      case 'waterDropDark': { // droplet hits water, low: deeper pluck + heavier plop body
+        swish(a, m, 'highpass', 4000, 1800, now, 0.015, 0.02, 0.001);
+        tone(a, m, 'sine', 1300, now, 0.06, 0.055, 400, 0.001);
+        tone(a, m, 'sine', 320, now + 0.018, 0.22, 0.065, 95, 0.004);
+        break;
+      }
+      case 'waterDropLight': { // droplet hits water, high: bright pluck + lighter plop body
+        swish(a, m, 'highpass', 5600, 2600, now, 0.015, 0.02, 0.001);
+        tone(a, m, 'sine', 2500, now, 0.06, 0.05, 800, 0.001);
+        tone(a, m, 'sine', 640, now + 0.018, 0.18, 0.055, 190, 0.004);
+        break;
+      }
       case 'tab':
         tone(a, m, 'square', 880, now, 0.03, 0.035);
         break;
