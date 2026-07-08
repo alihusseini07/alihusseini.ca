@@ -195,17 +195,30 @@ export default function PortfolioPage() {
               <div style={blank} />
 
               <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                {PROFILE.bullets.map((b, i) => (
-                  <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
-                    <span style={marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color))} />
-                    <span
-                      className={b.highlight ? 'hl-anim' : undefined}
-                      style={b.highlight ? { ...highlight, ...stretch, animationDelay: `${(4 + i) * 70 + 320}ms` } : stretch}
-                    >
-                      {b.text}
-                    </span>
-                  </li>
-                ))}
+                {PROFILE.bullets.map((b, i) => {
+                  const parts = b.highlightPart ? b.text.split(b.highlightPart) : null;
+                  return (
+                    <li key={b.text} className="enter-rise" style={{ ...bullet, ...enter(4 + i) }}>
+                      <span style={marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color))} />
+                      {parts ? (
+                        <span style={stretch}>
+                          {parts[0]}
+                          <span className="hl-anim" style={{ ...highlight, animationDelay: `${(4 + i) * 70 + 320}ms` }}>
+                            {b.highlightPart}
+                          </span>
+                          {parts[1]}
+                        </span>
+                      ) : (
+                        <span
+                          className={b.highlight ? 'hl-anim' : undefined}
+                          style={b.highlight ? { ...highlight, ...stretch, animationDelay: `${(4 + i) * 70 + 320}ms` } : stretch}
+                        >
+                          {b.text}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 

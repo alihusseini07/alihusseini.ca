@@ -123,11 +123,11 @@ export const PROFILE = {
     school: '@ uwaterloo',
   },
   bullets: [
-    { color: '#e8a72e', text: 'incoming @ axl labs', highlight: true },
+    { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs' },
     { color: '#3f8fd6', text: 'interested in software & robotics' },
     { color: '#5db84a', text: 'i like kickboxing, anime, and movies' },
-    { color: '#34302a', text: 'seeking summer 2027 opportunities', highlight: true },
-  ] as { color: string; text: string; highlight?: boolean }[],
+    { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027' },
+  ] as { color: string; text: string; highlight?: boolean; highlightPart?: string }[],
   links: {
     linkedin: 'https://www.linkedin.com/in/ahusseini-profile/',
     github: 'https://github.com/alihusseini07',
