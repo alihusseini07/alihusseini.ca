@@ -57,7 +57,7 @@ export default function PortfolioPage() {
     zIndex: 40,
     display: 'flex',
     alignItems: 'center',
-    gap: 22,
+    gap: 12,
   };
 
   // sheet rides above the fixed footer (z 1 vs 0) and leaves its height in

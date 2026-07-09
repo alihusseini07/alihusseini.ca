@@ -1,4 +1,5 @@
 import { type CSSProperties } from 'react';
+import { useThemeCtx } from '../lib/theme';
 
 interface IconLinkProps {
   href: string;
@@ -10,7 +11,21 @@ interface IconLinkProps {
 }
 
 function IconLink({ href, label, external = true, download, color, children }: IconLinkProps) {
-  const style: CSSProperties = { display: 'flex', color, transition: 'transform .16s steps(2, end), filter .16s steps(2, end)' };
+  const { mode, theme } = useThemeCtx();
+  const dark = mode === 'dark';
+  const style: CSSProperties = {
+    width: 30,
+    height: 30,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: theme.headerBg,
+    border: `2px solid ${theme.headerBorder}`,
+    boxShadow: `2px 2px 0 ${dark ? 'rgba(0,0,0,.4)' : 'rgba(52,48,42,.25)'}`,
+    color,
+    padding: 0,
+    transition: 'transform .16s steps(2, end), filter .16s steps(2, end)',
+  };
   return (
     <a
       href={href}
@@ -33,7 +48,7 @@ function IconLink({ href, label, external = true, download, color, children }: I
   );
 }
 
-const S = 22;
+const S = 16;
 const SHOW_DEVPOST = false;
 
 /** each icon wears its own brand's color instead of one flat tint */
@@ -51,7 +66,7 @@ export interface ContactBarProps {
 
 export default function ContactBar({ links }: ContactBarProps) {
   return (
-    <nav style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+    <nav style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <IconLink href={links.linkedin} label="LinkedIn" color={BRAND.linkedin}>
         <svg width={S} height={S} viewBox="0 0 24 24" fill="currentColor">
           <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0z" />

@@ -58,7 +58,7 @@ export default function SiteFooter() {
           source order); the small upward nudge keeps the pair from sitting
           visually low */}
       <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', gap: 18, transform: 'translateY(-6px)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <ContactBar links={PROFILE.links} />
           {/* <TrailToggle /> disabled for now */}
           <ThemeToggle />
