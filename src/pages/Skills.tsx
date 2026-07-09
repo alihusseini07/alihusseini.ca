@@ -24,8 +24,8 @@ export default function Skills() {
       className="skills-dim"
       style={{
         // @ts-expect-error -- CSS custom properties
-        '--font-display': "'Pixelify Sans', monospace",
-        '--font-mono': "'VT323', monospace",
+        '--font-display': "'Press Start 2P', monospace",
+        '--font-mono': "'Press Start 2P', monospace",
         '--accent-frost': '#7ed4a4',
         minHeight: '100vh',
         display: 'flex',
@@ -150,7 +150,7 @@ export default function Skills() {
           top: 2rem;
           left: 2rem;
           font-family: var(--font-display);
-          font-size: 0.95rem;
+          font-size: 0.6rem;
           font-weight: 400;
           color: #f0e4c8;
           background:

@@ -97,7 +97,7 @@ export default function GrimoireSigil({ activeCategory, size = 140 }: GrimoireSi
               top: 0,
               transform: `translate(-50%, -50%) rotate(${-deg}deg)`,
               fontFamily: 'var(--font-display)',
-              fontSize: size * 0.11,
+              fontSize: size * 0.075,
               color: '#2a1c10',
               opacity: 0.7,
               lineHeight: 1,
@@ -127,7 +127,7 @@ export default function GrimoireSigil({ activeCategory, size = 140 }: GrimoireSi
         <div
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize: isMultiline ? size * 0.13 : size * 0.16,
+            fontSize: isMultiline ? size * 0.085 : size * 0.105,
             fontWeight: 700,
             lineHeight: 1.05,
             color: '#1af',

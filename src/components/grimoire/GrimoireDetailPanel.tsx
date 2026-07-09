@@ -82,7 +82,7 @@ function EmptyState() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <h2 style={{
         fontFamily: 'var(--font-display)',
-        fontSize: '1.9rem',
+        fontSize: '1.15rem',
         fontWeight: 600,
         color: HEADING_COLOR,
         margin: 0,
@@ -94,7 +94,7 @@ function EmptyState() {
       <div style={{ height: 1, background: RULE_COLOR }} />
       <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
         {legend.map(({ category, position }) => (
-          <li key={category} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', color: BODY_COLOR }}>
+          <li key={category} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.5rem', lineHeight: 1.5, color: BODY_COLOR }}>
             <span aria-hidden="true" style={{
               width: 7, height: 7, borderRadius: '50%',
               background: HEADING_COLOR,
@@ -109,12 +109,13 @@ function EmptyState() {
       <div style={{ height: 1, background: RULE_COLOR, opacity: 0.6 }} />
       <p style={{
         margin: 0,
-        fontSize: '0.78rem',
+        fontSize: '0.5rem',
+        lineHeight: 1.6,
         color: BODY_COLOR,
         fontStyle: 'italic',
         letterSpacing: '0.03em',
       }}>
-        tap a sigil to inscribe its lore here
+        Select a skill to view details
       </p>
     </div>
   )
@@ -153,14 +154,14 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
           color: '#e8c88a',
           textShadow: '0 0 6px rgba(217,176,121,0.7)',
           fontFamily: 'var(--font-display)',
-          fontSize: '0.95rem',
+          fontSize: '0.7rem',
           lineHeight: 1,
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: 0,
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease',
+          transition: 'transform .16s steps(2, end), filter .16s steps(2, end)',
         }}
       >
         ×
@@ -173,7 +174,7 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: 0 }}>
           <h3 style={{
             fontFamily: 'var(--font-display)',
-            fontSize: '1.8rem',
+            fontSize: '1.1rem',
             fontWeight: 600,
             color: HEADING_COLOR,
             margin: 0,
@@ -184,7 +185,7 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
           </h3>
           <span style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.7rem',
+            fontSize: '0.45rem',
             color: SUBTITLE_COLOR,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
@@ -197,8 +198,8 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
       <p style={{
         margin: 0,
         fontFamily: 'var(--font-mono)',
-        fontSize: '0.88rem',
-        lineHeight: 1.55,
+        fontSize: '0.55rem',
+        lineHeight: 1.7,
         color: BODY_COLOR,
       }}>
         {skill.blurb}
@@ -210,12 +211,12 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <span style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.68rem',
+              fontSize: '0.45rem',
               color: SUBTITLE_COLOR,
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
             }}>
-              Related Arts
+              Related Skills
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
               {relatedSkills.map((rel) => (
@@ -235,7 +236,7 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
                       'inset 0 0 0 1px rgba(176,137,79,0.6), inset 0 0 10px rgba(176,137,79,0.18), 2px 2px 0 rgba(58,42,24,0.4)',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.78rem',
+                    fontSize: '0.5rem',
                     color: HEADING_COLOR,
                     letterSpacing: '0.02em',
                     transition:
@@ -274,18 +275,10 @@ function DetailState({ skill, onSelect, onClose, closeBtnRef }: DetailStateProps
           outline: 2px solid #b0894f;
           outline-offset: 3px;
         }
-        /* rune-seal: the sigil turns and flares when touched */
+        /* match the footer toggle buttons: lift + brighten on hover */
         .grim-close-btn:hover {
-          color: #fff3d6 !important;
-          transform: rotate(90deg);
-          box-shadow:
-            inset 0 0 0 1px #8a6a38,
-            inset 0 0 10px rgba(217,176,121,0.45),
-            2px 2px 0 rgba(20,12,4,0.5),
-            0 0 12px rgba(217,176,121,0.55) !important;
-        }
-        .grim-close-btn:active {
-          transform: rotate(90deg) scale(0.92);
+          transform: translateY(-3px);
+          filter: brightness(1.12);
         }
         .grim-close-btn:focus-visible {
           outline: 2px solid #b0894f;

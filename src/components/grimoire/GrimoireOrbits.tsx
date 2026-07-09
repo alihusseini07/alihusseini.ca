@@ -122,14 +122,14 @@ function MobileStrips({ onItemHover, onItemClick }: MobileStripsProps) {
         }
         .strip-rune {
           font-family: var(--font-display);
-          font-size: 1.4rem;
+          font-size: 0.85rem;
           color: #e8dfc8;
           line-height: 1;
           text-shadow: 0 0 10px rgba(217,176,121,0.55);
         }
         .strip-label {
           font-family: var(--font-display);
-          font-size: 0.9rem;
+          font-size: 0.55rem;
           letter-spacing: 0.08em;
           color: #e8dfc8;
           text-transform: uppercase;

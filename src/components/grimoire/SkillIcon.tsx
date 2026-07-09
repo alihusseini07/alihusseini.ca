@@ -116,7 +116,7 @@ export default function SkillIcon({ skill, size = 52, onHover, onClick }: SkillI
         >
           <div style={{
             fontFamily: 'var(--font-display)',
-            fontSize: '1rem',
+            fontSize: '0.65rem',
             fontWeight: 700,
             color: '#2a1c10',
             letterSpacing: '0.02em',
