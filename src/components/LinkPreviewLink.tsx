@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { play } from '../lib/sound';
 
@@ -24,6 +24,19 @@ const CARD_W = 190;
 export default function LinkPreviewLink({ href, preview, caption, className, style, children, onEnter, onLeave }: Props) {
   const [hover, setHover] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [ready, setReady] = useState(false);
+
+  // Decode the screenshot ahead of hover so the card renders at full height on
+  // its first paint — otherwise height=0 places it below the cursor, then it
+  // jumps up once the image loads.
+  useEffect(() => {
+    let live = true;
+    const img = new Image();
+    img.src = preview;
+    img.decode?.().then(() => { if (live) setReady(true); }).catch(() => { if (live) setReady(true); });
+    if (img.complete) setReady(true);
+    return () => { live = false; };
+  }, [preview]);
 
   return (
     <>
@@ -40,7 +53,7 @@ export default function LinkPreviewLink({ href, preview, caption, className, sty
         {children}
       </a>
 
-      {hover && createPortal(
+      {hover && ready && createPortal(
         <div
           aria-hidden
           style={{
