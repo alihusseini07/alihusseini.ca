@@ -142,7 +142,7 @@ export const PROFILE = {
 // Landing-page experience cards, stacked to the right of the intro bullets.
 export const EXPERIENCE = [
   {
-    company: 'ATS360 / Netdynamic',
+    company: 'ATS360 (Netdynamic)',
     role: 'software engineer co-op',
     dates: 'jan – apr 2026',
     logo: '/assets/ndi-logo.png',
