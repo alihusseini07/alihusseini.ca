@@ -27,7 +27,7 @@ const stretch: CSSProperties = {
 
 const PIXEL = "'Press Start 2P', monospace";
 
-export default function PortfolioPage() {
+export default function LandingPage() {
   const navigate = useTransitionNavigate();
   const { theme: THEME, accent, folders, mode } = useThemeCtx();
 
