@@ -160,21 +160,22 @@ export default function Portfolio() {
 
   return (
     <div style={page}>
-      {/* top bar: return + toggles stay in the page flow, scroll with content */}
-      <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
-        <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
-          <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
-        </button>
-
-        <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          <ThemeToggle />
-          <SoundToggle />
-        </div>
-      </header>
-
       {/* DESIGN BOARD — sits above the fixed footer (z 1 vs 0) and leaves its
-          height in bottom margin, so scrolling past the end uncovers it */}
+          height in bottom margin, so scrolling past the end uncovers it. the
+          top bar rides on the same dotted board so there's no blank strip */}
       <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
+        {/* top bar: return + toggles stay in the page flow, scroll with content */}
+        <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
+          <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
+            <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
+          </button>
+
+          <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <ThemeToggle />
+            <SoundToggle />
+          </div>
+        </header>
+
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: '0 72px' }}>
           {/* TITLE */}
           <div className="enter-rise" style={{ ...enter(1), paddingTop: 56, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
