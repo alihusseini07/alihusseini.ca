@@ -22,11 +22,11 @@ body {
    View Transition the ::view-transition overlay covers the page, and it
    only inherits the root's cursor — on body it flashed the OS default. */
 html {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%2334302a'><rect x='11' y='1' width='1' height='21'/><rect x='1' y='11' width='21' height='1'/></g></svg>") 11 11, crosshair;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%2334302a'><rect x='10' y='3' width='2' height='17'/><rect x='3' y='10' width='17' height='2'/></g></svg>") 11 11, crosshair;
 }
 
 html[data-theme='dark'] {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='11' y='1' width='1' height='21'/><rect x='1' y='11' width='21' height='1'/></g></svg>") 11 11, crosshair;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='10' y='3' width='2' height='17'/><rect x='3' y='10' width='17' height='2'/></g></svg>") 11 11, crosshair;
 }
 
 /* base page bg per theme — avoids a flash before the page mounts its own bg */
@@ -46,14 +46,14 @@ a {
    buttons/cards. Hotspot at center. */
 a, button, [role='button'],
 [style*='cursor:pointer'], [style*='cursor: pointer'] {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%2334302a'><rect x='11' y='1' width='1' height='7'/><rect x='11' y='15' width='1' height='7'/><rect x='1' y='11' width='7' height='1'/><rect x='15' y='11' width='7' height='1'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23e8a72e'/></svg>") 11 11, crosshair !important;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%2334302a'><rect x='10' y='2' width='2' height='6'/><rect x='10' y='15' width='2' height='6'/><rect x='2' y='10' width='6' height='2'/><rect x='15' y='10' width='6' height='2'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23d1362f'/></svg>") 11 11, crosshair !important;
 }
 
 html[data-theme='dark'] a, html[data-theme='dark'] button,
 html[data-theme='dark'] [role='button'],
 html[data-theme='dark'] [style*='cursor:pointer'],
 html[data-theme='dark'] [style*='cursor: pointer'] {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='11' y='1' width='1' height='7'/><rect x='11' y='15' width='1' height='7'/><rect x='1' y='11' width='7' height='1'/><rect x='15' y='11' width='7' height='1'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23e8a72e'/></svg>") 11 11, crosshair !important;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='10' y='2' width='2' height='6'/><rect x='10' y='15' width='2' height='6'/><rect x='2' y='10' width='6' height='2'/><rect x='15' y='10' width='6' height='2'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23d1362f'/></svg>") 11 11, crosshair !important;
 }
 
 /* the skills dimension is always dark, whatever the site theme — force the
@@ -61,7 +61,7 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
    (the dark-theme rule above already matches when the site is dark) */
 .skills-dim a, .skills-dim button, .skills-dim [role='button'],
 .skills-dim [style*='cursor:pointer'], .skills-dim [style*='cursor: pointer'] {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='11' y='1' width='1' height='7'/><rect x='11' y='15' width='1' height='7'/><rect x='1' y='11' width='7' height='1'/><rect x='15' y='11' width='7' height='1'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23e8a72e'/></svg>") 11 11, crosshair !important;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='10' y='2' width='2' height='6'/><rect x='10' y='15' width='2' height='6'/><rect x='2' y='10' width='6' height='2'/><rect x='15' y='10' width='6' height='2'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23d1362f'/></svg>") 11 11, crosshair !important;
 }
 
 /* theme toggle: new theme sweeps out as a circle from the toggle button

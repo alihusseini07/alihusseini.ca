@@ -41,7 +41,7 @@ export default function Skills() {
         background: '#2b251f',
         // always a dark surface no matter the site theme, so hardcode the
         // light-ink pixel crosshair instead of inheriting the themed one
-        cursor: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='11' y='1' width='1' height='21'/><rect x='1' y='11' width='21' height='1'/></g></svg>") 11 11, crosshair`,
+        cursor: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='10' y='3' width='2' height='17'/><rect x='3' y='10' width='17' height='2'/></g></svg>") 11 11, crosshair`,
       }}
     >
       <NoiseOverlay />

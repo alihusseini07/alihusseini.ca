@@ -143,7 +143,7 @@ export default function Portfolio() {
   const goHome = () => { play('shutter'); navigate('/', { zoom: 'out' }); };
 
   const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: THEME.pageBg, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
-  const returnBtn: CSSProperties = { position: 'fixed', top: 20, left: 28, zIndex: 40, display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 17px', background: THEME.highlight, color: THEME.highlightText, cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
+  const returnBtn: CSSProperties = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 118, padding: '9px 0', background: THEME.highlight, color: THEME.highlightText, cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
 
   const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.iconColor, textTransform: 'uppercase' };
   const sticker = (bg: string, fg: string): CSSProperties => ({
@@ -160,21 +160,24 @@ export default function Portfolio() {
 
   return (
     <div style={page}>
-      <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
-        <span style={{ ...stretch, fontSize: 10 }}>← return</span>
-      </button>
+      {/* top bar: return + toggles stay in the page flow, scroll with content */}
+      <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
+        <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
+          <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
+        </button>
 
-      <div className="enter-drop" style={{ position: 'fixed', top: 20, right: 28, zIndex: 40, display: 'flex', alignItems: 'center', gap: 22 }}>
-        <ThemeToggle />
-        <SoundToggle />
-      </div>
+        <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <ThemeToggle />
+          <SoundToggle />
+        </div>
+      </header>
 
       {/* DESIGN BOARD — sits above the fixed footer (z 1 vs 0) and leaves its
           height in bottom margin, so scrolling past the end uncovers it */}
       <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: '0 72px' }}>
           {/* TITLE */}
-          <div className="enter-rise" style={{ ...enter(1), paddingTop: 128, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
+          <div className="enter-rise" style={{ ...enter(1), paddingTop: 56, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
             <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 26, color: THEME.nameColor }}>
               <span className="hl-anim" style={{ backgroundImage: `linear-gradient(${softHl(THEME.highlight)},${softHl(THEME.highlight)})`, color: THEME.highlightText, padding: 2, margin: -2, animationDelay: '380ms' }}>featured projects</span>
             </h1>
@@ -318,8 +321,8 @@ export default function Portfolio() {
                 <div style={{ width: 8, height: 8, background: THEME.nameColor }} />
                 <span style={eyebrow}>the end</span>
               </div>
-              <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={{ ...sticker(THEME.highlight, THEME.highlightText), cursor: 'pointer', fontFamily: PIXEL }}>
-                <span style={{ ...stretch, fontSize: 10 }}>← return</span>
+              <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={returnBtn}>
+                <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
               </button>
             </div>
           </div>
