@@ -4,10 +4,8 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 import GrimoireRing from './GrimoireRing'
 import GrimoireSigil from './GrimoireSigil'
-import SkillIcon from './SkillIcon'
 import {
   byCategory,
-  categoryMeta,
   type Category,
   type Skill,
 } from '../../data/grimoire-data'
@@ -53,108 +51,6 @@ function useContainerScale(targetSize: number) {
   return scale
 }
 
-interface MobileStripsProps {
-  onItemHover: (s: Skill | null) => void
-  onItemClick?: (s: Skill) => void
-}
-
-function MobileStrips({ onItemHover, onItemClick }: MobileStripsProps) {
-  const rows: Array<{ category: Category; direction: 'left' | 'right'; duration: number }> = [
-    { category: 'languages',  direction: 'left',  duration: 38 },
-    { category: 'frameworks', direction: 'right', duration: 44 },
-    { category: 'tools',      direction: 'left',  duration: 56 },
-  ]
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', width: '100%' }}>
-      {rows.map(({ category, direction, duration }) => {
-        const items = byCategory(category)
-        const doubled = [...items, ...items]
-        const meta = categoryMeta[category]
-        return (
-          <div key={category} className="strip-wrap">
-            <div className="strip-header">
-              <span className="strip-rune">{meta.rune}</span>
-              <span className="strip-label">{meta.label}</span>
-              <span className="strip-line" />
-            </div>
-            <div
-              className="strip-mask"
-              onMouseEnter={(e) => e.currentTarget.classList.add('paused')}
-              onMouseLeave={(e) => e.currentTarget.classList.remove('paused')}
-            >
-              <div
-                className="strip-track"
-                style={{
-                  animation: `${direction === 'left' ? 'scroll-left' : 'scroll-right'} ${duration}s linear infinite`,
-                }}
-              >
-                {doubled.map((skill, i) => (
-                  <div key={`${skill.name}-${i}`} className="strip-item">
-                    <SkillIcon skill={skill} size={56} onHover={onItemHover} onClick={onItemClick} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      })}
-
-      <style>{`
-        .strip-wrap {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        .strip-header {
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          padding: 0 0.25rem;
-        }
-        .strip-rune {
-          font-family: var(--font-display);
-          font-size: 0.85rem;
-          color: #e8dfc8;
-          line-height: 1;
-          text-shadow: 0 0 10px rgba(217,176,121,0.55);
-        }
-        .strip-label {
-          font-family: var(--font-display);
-          font-size: 0.55rem;
-          letter-spacing: 0.08em;
-          color: #e8dfc8;
-          text-transform: uppercase;
-        }
-        .strip-line {
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(90deg, rgba(176,137,79,0.55), rgba(176,137,79,0));
-        }
-        .strip-mask {
-          overflow: hidden;
-          padding: 1rem 0;
-          mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-        }
-        .strip-mask.paused .strip-track { animation-play-state: paused; }
-        .strip-track {
-          display: flex;
-          gap: 1.25rem;
-          width: max-content;
-          will-change: transform;
-        }
-        .strip-item {
-          flex: 0 0 auto;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .strip-track { animation: none !important; }
-        }
-      `}</style>
-    </div>
-  )
-}
-
 interface GrimoireOrbitsProps {
   onSkillClick?: (skill: Skill) => void
 }
@@ -185,17 +81,6 @@ export default function GrimoireOrbits({ onSkillClick }: GrimoireOrbitsProps = {
     if (activeCategory !== null) play('ringHalt')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory !== null])
-
-  if (isMobile) {
-    return (
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0 1rem' }}>
-          <GrimoireSigil activeCategory={activeCategory} size={110} />
-        </div>
-        <MobileStrips onItemHover={setHoveredSkill} onItemClick={onSkillClick} />
-      </div>
-    )
-  }
 
   if (scale === null) {
     // Reserve space (max possible size) but render invisibly until measured

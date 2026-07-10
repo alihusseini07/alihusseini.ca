@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useTransitionNavigate } from '../components/PageTransition';
 import GrimoireBookShell from '../components/grimoire/GrimoireBookShell';
+import GrimoireNav from '../components/grimoire/GrimoireNav';
 import NoiseOverlay from '../components/grimoire/NoiseOverlay';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
@@ -107,11 +108,15 @@ export default function Skills() {
         }}
       />
 
-      <button className="grimoire-back-btn" onClick={() => navigate('/', { warp: 'out' })}>
-        ← Return
-      </button>
+      {isMobile ? (
+        <GrimoireNav />
+      ) : (
+        <button className="grimoire-back-btn" onClick={() => navigate('/', { warp: 'out' })}>
+          ← Return
+        </button>
+      )}
 
-      <div style={{ position: 'fixed', top: '2rem', right: '2rem', zIndex: 50 }}>
+      <div style={{ position: 'fixed', top: isMobile ? '1.25rem' : '2rem', right: isMobile ? '1.25rem' : '2rem', zIndex: 50 }}>
         <SoundToggle />
       </div>
 
@@ -136,14 +141,6 @@ export default function Skills() {
         @keyframes frost-in {
           from { opacity: 0; transform: scale(0.92); }
           to   { opacity: 1; transform: scale(1); }
-        }
-        @keyframes scroll-left {
-          from { transform: translate3d(0, 0, 0); }
-          to   { transform: translate3d(-50%, 0, 0); }
-        }
-        @keyframes scroll-right {
-          from { transform: translate3d(-50%, 0, 0); }
-          to   { transform: translate3d(0, 0, 0); }
         }
         /* bound like the grimoire itself: dark leather rim, antique gold
            fillet, then stacked parchment page-edge bands (the book's
