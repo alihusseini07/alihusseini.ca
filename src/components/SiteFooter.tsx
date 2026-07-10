@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import ContactBar from './ContactBar';
 // import CursorTrail from './CursorTrail'; // disabled for now
+import FooterSea from './FooterSea';
 import { useTransitionNavigate } from './PageTransition';
 import PixelName from './PixelName';
 import SoundToggle from './SoundToggle';
@@ -18,8 +19,9 @@ const NAV_LINKS = [
 ];
 
 /** footer height; pages leave this much bottom margin so scrolling to the
-    end slides the content sheet up and uncovers the footer beneath it */
-export const FOOTER_H = 240;
+    end slides the content sheet up and uncovers the footer beneath it.
+    Kept a multiple of the sea's 3px pixel unit so the canvas maps 1:1. */
+export const FOOTER_H = 342;
 
 /**
  * Site-wide footer, fixed behind the page (z 0). The page content sits above
@@ -40,24 +42,32 @@ export default function SiteFooter() {
         right: 0,
         zIndex: 0,
         display: 'flex',
-        alignItems: 'center',
+        // content hugs the top band; the sea + ship own the bottom of the
+        // footer, so neither ever covers the name
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         minHeight: FOOTER_H,
-        padding: '24px 44px',
+        // extra top padding: the pixel-name canvas bleeds ~48px above its
+        // layout box (warp + hover room) — without it the page sheet's edge
+        // slices the top of the letters
+        padding: '48px 44px 24px',
         background: THEME.headerBg,
         borderTop: `2px solid ${THEME.headerBorder}`,
         overflow: 'hidden',
       }}
     >
       {/* <CursorTrail /> disabled for now */}
-      {/* data-trail-block: the marker lifts off while hovering the name */}
-      <span data-trail-block style={{ display: 'contents' }}>
+      {/* the One Piece sea: interactive pixel ocean behind the content */}
+      <FooterSea />
+      {/* data-trail-block: the marker lifts off while hovering the name;
+          zIndex 1 keeps the name above the sea canvas */}
+      <span data-trail-block style={{ position: 'relative', zIndex: 1 }}>
         <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
       </span>
       {/* page links on top, social/controls row tucked under (reverse of
-          source order); the small upward nudge keeps the pair from sitting
-          visually low */}
-      <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', gap: 18, transform: 'translateY(-6px)' }}>
+          source order); the small downward nudge lines the pair up with the
+          name's cap height */}
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', gap: 18, transform: 'translateY(10px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <ContactBar links={PROFILE.links} />
           {/* <TrailToggle /> disabled for now */}

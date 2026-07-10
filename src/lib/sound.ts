@@ -7,7 +7,8 @@ export type SoundName =
   | 'warpIn' | 'warpOut'
   | 'bell' | 'chime' | 'pageTurn' | 'chantHover'
   | 'bookOpen' | 'ringHalt'
-  | 'focusBeep' | 'shutter' | 'frameWhoosh' | 'lensWhir' | 'lensBack';
+  | 'focusBeep' | 'shutter' | 'frameWhoosh' | 'lensWhir' | 'lensBack'
+  | 'cannon' | 'seagull' | 'splash' | 'luffyStretch';
 
 const MUTE_KEY = 'ah:sound-muted';
 
@@ -104,6 +105,69 @@ function swish(
   src.connect(f).connect(g).connect(out);
   src.start(at);
   src.stop(at + dur + 0.01);
+}
+
+/* ---- sampled sounds: mp3 files in /sounds, decoded once, cached ---- */
+
+const SAMPLE_SRCS = {
+  splash: [1, 2, 3].map((n) => `${import.meta.env.BASE_URL}sounds/splash${n}.mp3`),
+  luffyStretch: [`${import.meta.env.BASE_URL}sounds/luffy-arm-stretch.mp3`],
+};
+type SampleName = keyof typeof SAMPLE_SRCS;
+
+const sampleBufs: Record<SampleName, (AudioBuffer | null)[]> = {
+  splash: SAMPLE_SRCS.splash.map(() => null),
+  luffyStretch: SAMPLE_SRCS.luffyStretch.map(() => null),
+};
+const sampleLoadStarted: Record<SampleName, boolean> = { splash: false, luffyStretch: false };
+
+/** per-file playback rates, indexed like SAMPLE_SRCS; missing = 1 */
+const SAMPLE_RATES: Partial<Record<SampleName, number[]>> = {
+  splash: [1.5, 1, 1], // splash1 runs long: speed it up
+};
+
+function loadSamples(a: AudioContext, name: SampleName): void {
+  if (sampleLoadStarted[name]) return;
+  sampleLoadStarted[name] = true;
+  SAMPLE_SRCS[name].forEach((src, i) => {
+    fetch(src)
+      .then((r) => r.arrayBuffer())
+      .then((data) => a.decodeAudioData(data))
+      .then((buf) => { sampleBufs[name][i] = buf; })
+      .catch(() => { /* no-op: callers fall back to synth or silence */ });
+  });
+}
+
+/** kick off sample decoding ahead of the first play */
+export function preloadSamples(): void {
+  try {
+    const c = ctx();
+    if (!c) return;
+    (Object.keys(SAMPLE_SRCS) as SampleName[]).forEach((n) => loadSamples(c.ac, n));
+  } catch { /* no-op */ }
+}
+
+/** last-played index per sample set, so picks never repeat back to back */
+const lastPlayed: Partial<Record<SampleName, number>> = {};
+
+/** play one of a sample set at random (never the same twice in a row);
+    false while still decoding */
+function playSample(a: AudioContext, m: GainNode, name: SampleName, gain: number): boolean {
+  loadSamples(a, name);
+  const bufs = sampleBufs[name];
+  let readyIdx = bufs.map((b, i) => (b ? i : -1)).filter((i) => i >= 0);
+  if (!readyIdx.length) return false;
+  if (readyIdx.length > 1) readyIdx = readyIdx.filter((i) => i !== lastPlayed[name]);
+  const idx = readyIdx[(Math.random() * readyIdx.length) | 0];
+  lastPlayed[name] = idx;
+  const src = a.createBufferSource();
+  src.buffer = bufs[idx]!;
+  src.playbackRate.value = SAMPLE_RATES[name]?.[idx] ?? 1;
+  const g = a.createGain();
+  g.gain.value = gain;
+  src.connect(g).connect(m);
+  src.start(a.currentTime);
+  return true;
 }
 
 /** struck bell: inharmonic sine partials with long decay (medieval church bell) */
@@ -371,6 +435,25 @@ export function play(name: SoundName): void {
       case 'lensBack': // motor eases back down as the print settles
         swish(a, m, 'bandpass', 1400, 650, now, 0.09, 0.028, 0.015);
         tone(a, m, 'sawtooth', 115, now, 0.09, 0.01, 88, 0.01);
+        break;
+      case 'cannon': // deck cannon: powder crack, deep rolling boom, rumble tail
+        swish(a, m, 'highpass', 2400, 900, now, 0.05, 0.1, 0.002);
+        tone(a, m, 'sine', 110, now + 0.005, 0.55, 0.28, 30, 0.005);
+        tone(a, m, 'triangle', 75, now + 0.02, 0.4, 0.12, 36, 0.008);
+        swish(a, m, 'lowpass', 600, 90, now + 0.02, 0.6, 0.1, 0.02);
+        break;
+      case 'seagull': // two falling gull cries, distant
+        tone(a, m, 'sawtooth', 1800, now, 0.1, 0.014, 1150, 0.012);
+        tone(a, m, 'sawtooth', 1950, now + 0.13, 0.12, 0.012, 1200, 0.014);
+        break;
+      case 'splash': // sampled water splash, one of three picked at random
+        if (!playSample(a, m, 'splash', 0.5)) { // still decoding: synth plop stand-in
+          swish(a, m, 'highpass', 4000, 1800, now, 0.015, 0.02, 0.001);
+          tone(a, m, 'sine', 320, now + 0.018, 0.22, 0.065, 95, 0.004);
+        }
+        break;
+      case 'luffyStretch': // Gomu Gomu no Pistol, sampled
+        playSample(a, m, 'luffyStretch', 0.6);
         break;
     }
   } catch { /* no-op */ }
