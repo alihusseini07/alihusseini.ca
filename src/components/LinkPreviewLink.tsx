@@ -46,7 +46,13 @@ export default function LinkPreviewLink({ href, preview, caption, className, sty
         rel="noopener noreferrer"
         className={className}
         style={{ ...style, cursor: 'pointer' }}
-        onMouseEnter={(e) => { play('lensWhir'); setPos({ x: e.clientX, y: e.clientY }); setHover(true); onEnter?.(e); }}
+        onMouseEnter={(e) => {
+          // touch devices have no hover — skip the polaroid so a stray
+          // synthetic mouseenter doesn't leave a floating card behind; the tap
+          // just follows the link
+          if (window.matchMedia('(hover: none)').matches) { onEnter?.(e); return; }
+          play('lensWhir'); setPos({ x: e.clientX, y: e.clientY }); setHover(true); onEnter?.(e);
+        }}
         onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
         onMouseLeave={(e) => { setHover(false); onLeave?.(e); }}
       >

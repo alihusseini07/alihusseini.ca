@@ -5,9 +5,11 @@ import NoiseOverlay from '../components/grimoire/NoiseOverlay';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
 import { play } from '../lib/sound';
+import { useIsMobile } from '../lib/useIsMobile';
 
 export default function Skills() {
   const navigate = useTransitionNavigate();
+  const isMobile = useIsMobile();
 
   // the grimoire heaves open as the page materializes (once — StrictMode
   // double-mounts effects in dev)
@@ -32,11 +34,13 @@ export default function Skills() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '0.5rem',
+        // clear the fixed back / sound buttons on phones where the grimoire
+        // content starts near the top instead of centered in a wide spread
+        padding: isMobile ? '4.5rem 0.75rem 2.5rem' : '0.5rem',
         position: 'relative',
         zIndex: 1,
         // ride above the fixed footer; scrolling past the end uncovers it
-        marginBottom: FOOTER_H,
+        marginBottom: isMobile ? '100dvh' : FOOTER_H,
         boxShadow: '0 18px 28px rgba(0,0,0,.45)',
         background: '#2b251f',
         // always a dark surface no matter the site theme, so hardcode the

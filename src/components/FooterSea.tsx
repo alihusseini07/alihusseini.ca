@@ -762,7 +762,10 @@ export default function FooterSea() {
         width: '100%',
         height: '100%',
         imageRendering: 'pixelated',
-        touchAction: 'none',
+        // allow vertical page scroll to pass through (so you can scroll back up
+        // from anywhere in the footer); horizontal drags still reach the canvas
+        // to sail the ship
+        touchAction: 'pan-y',
         zIndex: 0,
       }}
     />

@@ -7,7 +7,7 @@ export default function AboutMe() {
   const navigate = useNavigate();
   const THEME = useTheme();
   return (
-    <div style={{ background: THEME.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
+    <div style={{ background: THEME.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32, padding: '24px', textAlign: 'center' }}>
       <div style={{ position: 'fixed', top: 20, right: 28, zIndex: 40, display: 'flex', alignItems: 'center', gap: 22 }}>
         <ThemeToggle />
         <SoundToggle />

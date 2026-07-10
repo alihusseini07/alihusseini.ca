@@ -1,4 +1,4 @@
-import { type CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import PixelFolder from './PixelFolder';
 import PixelName from './PixelName';
 import ContactBar from './ContactBar';
@@ -13,6 +13,7 @@ import { useTransitionNavigate } from './PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
 import { useThemeCtx } from '../lib/theme';
+import { useIsMobile } from '../lib/useIsMobile';
 import { EXPERIENCE, FOLDERS, PROFILE, softHl } from '../tokens';
 
 /** ruled-paper line spacing, in px */
@@ -30,6 +31,8 @@ const PIXEL = "'Press Start 2P', monospace";
 export default function LandingPage() {
   const navigate = useTransitionNavigate();
   const { theme: THEME, accent, folders, mode } = useThemeCtx();
+  const isMobile = useIsMobile();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   /** yellow highlighter marker; pair with .hl-anim to sweep it in */
   const highlight: CSSProperties = {
@@ -151,6 +154,259 @@ export default function LandingPage() {
   });
 
   const cardRest = (i: number) => `rotate(${i % 2 ? 1 : -1.2}deg)`;
+
+  if (isMobile) {
+    const mSheet: CSSProperties = {
+      ...sheet,
+      minHeight: 'auto',
+      // full-viewport footer needs a matching bottom margin so scrolling to
+      // the end uncovers the whole thing
+      marginBottom: '100dvh',
+    };
+    const mBody: CSSProperties = {
+      position: 'relative',
+      zIndex: 2,
+      padding: '20px 20px 44px 32px',
+      display: 'flex',
+      flexDirection: 'column',
+    };
+    // resolve the highlighter ink for a bullet exactly as the desktop path does
+    const bulletInk = (b: (typeof PROFILE.bullets)[number]): CSSProperties => {
+      const hlInk = b.highlightColor
+        ? (mode === 'light'
+            ? `color-mix(in srgb, ${b.highlightColor} 52%, transparent)`
+            : softHl(b.highlightColor))
+        : null;
+      return hlInk
+        ? { ...highlight, backgroundImage: `linear-gradient(${hlInk}, ${hlInk})` }
+        : highlight;
+    };
+
+    return (
+      <div style={page}>
+        <div style={mSheet}>
+          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 16, width: 2, background: THEME.marginColor }} />
+
+          <div style={mBody}>
+            {/* top bar: hamburger left, contact + toggles right */}
+            <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 56 }}>
+              <button
+                type="button"
+                aria-label="Open menu"
+                aria-expanded={menuOpen}
+                onClick={() => { play('click'); setMenuOpen(true); }}
+                style={{
+                  flex: 'none',
+                  width: 34,
+                  height: 30,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  gap: 5,
+                  padding: '0 6px',
+                  background: THEME.headerBg,
+                  border: `2px solid ${THEME.headerBorder}`,
+                  boxShadow: `2px 2px 0 ${mode === 'dark' ? 'rgba(0,0,0,.4)' : 'rgba(52,48,42,.25)'}`,
+                  cursor: 'pointer',
+                }}
+              >
+                {[0, 1, 2].map((n) => (
+                  <span key={n} style={{ display: 'block', height: 3, background: THEME.nameColor }} />
+                ))}
+              </button>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+                <ContactBar links={PROFILE.links} />
+                <ThemeToggle />
+                <SoundToggle />
+              </div>
+            </div>
+
+            <h1 className="enter-rise" style={{ margin: 0, color: THEME.nameColor, ...enter(1) }}>
+              <PixelName lines={PROFILE.name.split(' ')} width={250} color={THEME.nameColor} squash={[0.62, 0.8]} interactive={false} />
+            </h1>
+
+            <p className="enter-rise" style={{ margin: '48px 0 0', fontSize: 12, lineHeight: 1.9, color: THEME.subTextColor, ...enter(2) }}>
+              <LinkPreviewLink
+                href={PROFILE.affiliation.link}
+                preview={PROFILE.affiliation.preview}
+                caption={PROFILE.affiliation.previewCaption}
+                className="hl-anim"
+                style={{ ...highlight, animationDelay: '420ms', textDecoration: 'none' }}
+              >
+                {PROFILE.affiliation.label}
+              </LinkPreviewLink>{' '}
+              <span style={{ color: THEME.accentBlue }}>{PROFILE.affiliation.school}</span>
+            </p>
+
+            <p className="enter-rise" style={{ margin: '14px 0 0', fontSize: 11, lineHeight: 1.8, color: THEME.bodyColor, ...enter(3) }}>
+              <CyclingTagline lines={PROFILE.taglines} />
+            </p>
+
+            <ul style={{ listStyle: 'none', margin: '26px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {PROFILE.bullets.map((b, i) => {
+                const parts = b.highlightPart ? b.text.split(b.highlightPart) : null;
+                return (
+                  <li key={b.text} className="enter-rise" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 11, lineHeight: 1.75, color: THEME.bodyColor, ...enter(4 + i) }}>
+                    <span style={{ ...marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color)), marginTop: 4, marginBottom: 0 }} />
+                    <span>
+                      {parts ? (
+                        <>
+                          {parts[0]}
+                          {b.link && b.preview ? (
+                            <LinkPreviewLink
+                              href={b.link}
+                              preview={b.preview}
+                              caption={b.previewCaption}
+                              className="hl-anim"
+                              style={{ ...highlight, animationDelay: `${(4 + i) * 70 + 320}ms`, textDecoration: 'none' }}
+                            >
+                              {b.highlightPart}
+                            </LinkPreviewLink>
+                          ) : (
+                            <span className="hl-anim" style={{ ...bulletInk(b), animationDelay: `${(4 + i) * 70 + 320}ms` }}>
+                              {b.highlightPart}
+                            </span>
+                          )}
+                          {parts[1]}
+                        </>
+                      ) : (
+                        <span className={b.highlight ? 'hl-anim' : undefined} style={b.highlight ? highlight : undefined}>
+                          {b.text}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* EXPERIENCE: cards stacked full width */}
+            <div style={{ marginTop: 40 }}>
+              <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+                <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
+                <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 30 }}>
+                {EXPERIENCE.map((e, i) => {
+                  const cardStyle: CSSProperties = {
+                    ...enter(6 + i),
+                    display: 'block',
+                    position: 'relative',
+                    width: '100%',
+                    background: THEME.cardBg,
+                    border: `1px solid ${THEME.cardBorder}`,
+                    boxShadow: '0 10px 20px rgba(0,0,0,.18)',
+                    padding: '22px 20px 18px',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                  };
+                  const inner = (
+                    <>
+                      <div style={tape('left', -3)} />
+                      <div style={tape('right', 2)} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ flex: 'none', width: 48, height: 48, background: THEME.cardBg, border: `2px solid ${THEME.headerBorder}`, boxShadow: '2px 2px 0 rgba(52,48,42,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                          <img src={e.logo} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 3, boxSizing: 'border-box' }} />
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ ...stretch, transformOrigin: 'bottom left', fontSize: 11, lineHeight: 1.7, color: THEME.nameColor }}>{e.company}</div>
+                          <div style={{ marginTop: 8, ...stretch, transformOrigin: 'top left', fontSize: 9, lineHeight: 1.6, color: THEME.subTextColor }}>{e.role}</div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ width: 7, height: 7, background: accent(e.accent), flex: 'none' }} />
+                        <span style={{ ...stretch, fontSize: 9, color: THEME.bodyColor }}>{e.dates}</span>
+                      </div>
+                    </>
+                  );
+                  return e.link && e.preview ? (
+                    <LinkPreviewLink key={e.company} href={e.link} preview={e.preview} caption={e.previewCaption} className="enter-pop" style={cardStyle}>
+                      {inner}
+                    </LinkPreviewLink>
+                  ) : (
+                    <div key={e.company} className="enter-pop" style={cardStyle}>
+                      {inner}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* slide-in nav drawer (folders live here on mobile) */}
+        <div
+          aria-hidden={!menuOpen}
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            background: 'rgba(0,0,0,.5)',
+            opacity: menuOpen ? 1 : 0,
+            pointerEvents: menuOpen ? 'auto' : 'none',
+            transition: 'opacity .2s ease',
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: 'min(78vw, 300px)',
+              padding: '24px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 28,
+              background: THEME.pageBg,
+              borderRight: `2px solid ${THEME.headerBorder}`,
+              boxShadow: '6px 0 24px rgba(0,0,0,.35)',
+              transform: menuOpen ? 'translateX(0)' : 'translateX(-100%)',
+              transition: 'transform .24s cubic-bezier(.2,.85,.3,1)',
+              overflowY: 'auto',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ ...stretch, fontSize: 10, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>navigate</span>
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => { play('click'); setMenuOpen(false); }}
+                style={{ width: 30, height: 30, flex: 'none', background: THEME.headerBg, border: `2px solid ${THEME.headerBorder}`, color: THEME.nameColor, fontSize: 14, lineHeight: 1, cursor: 'pointer' }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+              {FOLDERS.map((f) => (
+                <PixelFolder
+                  key={f.label}
+                  label={f.label}
+                  palette={folders[f.color]}
+                  labelColor={THEME.labelColor}
+                  onClick={(rect) => {
+                    setMenuOpen(false);
+                    navigate(f.route, {
+                      ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
+                      origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
+                    });
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <SiteFooter />
+      </div>
+    );
+  }
 
   return (
     <div style={page}>

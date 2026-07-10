@@ -8,6 +8,7 @@ import { useTransitionNavigate } from '../components/PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
 import { useThemeCtx } from '../lib/theme';
+import { useIsMobile } from '../lib/useIsMobile';
 import { softHl } from '../tokens';
 import { PROJECTS } from '../data/portfolio';
 import { TECH_ICONS } from '../data/tech-icons';
@@ -119,6 +120,7 @@ function TechGlyph({ name }: { name: string }) {
 export default function Portfolio() {
   const navigate = useTransitionNavigate();
   const { theme: THEME, accent } = useThemeCtx();
+  const isMobile = useIsMobile();
   const frameRefs = useRef<(HTMLElement | null)[]>([]);
   const [shown, setShown] = useState<boolean[]>(() => PROJECTS.map(() => false));
 
@@ -163,7 +165,7 @@ export default function Portfolio() {
       {/* DESIGN BOARD — sits above the fixed footer (z 1 vs 0) and leaves its
           height in bottom margin, so scrolling past the end uncovers it. the
           top bar rides on the same dotted board so there's no blank strip */}
-      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
+      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: isMobile ? '100dvh' : FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         {/* top bar: return + toggles stay in the page flow, scroll with content */}
         <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
           <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
@@ -176,16 +178,16 @@ export default function Portfolio() {
           </div>
         </header>
 
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: '0 72px' }}>
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: 1240, margin: '0 auto', padding: isMobile ? '0 16px' : '0 72px' }}>
           {/* TITLE */}
-          <div className="enter-rise" style={{ ...enter(1), paddingTop: 56, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
-            <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 26, color: THEME.nameColor }}>
+          <div className="enter-rise" style={{ ...enter(1), paddingTop: isMobile ? 32 : 56, display: 'flex', alignItems: 'flex-end', gap: 18, flexWrap: 'wrap' }}>
+            <h1 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: isMobile ? 18 : 26, color: THEME.nameColor }}>
               <span className="hl-anim" style={{ backgroundImage: `linear-gradient(${softHl(THEME.highlight)},${softHl(THEME.highlight)})`, color: THEME.highlightText, padding: 2, margin: -2, animationDelay: '380ms' }}>featured projects</span>
             </h1>
           </div>
 
           {/* FRAMES */}
-          <div style={{ paddingTop: 84, paddingBottom: 40 }}>
+          <div style={{ paddingTop: isMobile ? 48 : 84, paddingBottom: 40 }}>
             {PROJECTS.map((d, i) => {
               const flip = i % 2 === 1;
               const demoOk = d.demo && d.demo !== '#';
@@ -197,7 +199,7 @@ export default function Portfolio() {
                   data-frame={i}
                   ref={(el) => { frameRefs.current[i] = el; }}
                   className={`reveal${shown[i] ? ' on' : ''}`}
-                  style={{ position: 'relative', display: 'flex', flexDirection: flip ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: '44px 60px', marginBottom: 120 }}
+                  style={{ position: 'relative', display: 'flex', flexDirection: flip ? 'row-reverse' : 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: '44px 60px', marginBottom: isMobile ? 72 : 120 }}
                 >
                   {/* margin pen doodles, placed with intent: an arrow in the
                       media-side margin aims at the polaroid; emphasis marks sit
@@ -252,7 +254,7 @@ export default function Portfolio() {
                   </div>
 
                   {/* TEXT */}
-                  <div className={flip ? 'from-left' : 'from-right'} style={{ flex: '1 1 340px', minWidth: 300, paddingTop: 6, animationDelay: '100ms' }}>
+                  <div className={flip ? 'from-left' : 'from-right'} style={{ flex: '1 1 340px', minWidth: isMobile ? 0 : 300, paddingTop: 6, animationDelay: '100ms' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
                       <h2 style={{ margin: 0, ...stretch, transformOrigin: 'bottom left', fontSize: 19, color: THEME.nameColor }}>
                         <span

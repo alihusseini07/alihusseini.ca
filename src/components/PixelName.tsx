@@ -69,6 +69,8 @@ interface Props {
   snap?: number;
   /** cursor influence radius, px (smaller = tighter compression) */
   radius?: number;
+  /** when false, the dots ignore the pointer (no hover/touch warp) */
+  interactive?: boolean;
 }
 
 /**
@@ -77,7 +79,7 @@ interface Props {
  * at the corners). On hover the dots pinch and swirl into the cursor, and
  * spring back when it leaves.
  */
-export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineGap = 6, squash = [], snap = 0, radius = RADIUS }: Props) {
+export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineGap = 6, squash = [], snap = 0, radius = RADIUS, interactive = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const text = lines.join('\n');
   const squashKey = squash.join(',');
@@ -289,8 +291,10 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
         maxR: (1.5 * Math.hypot(window.innerWidth, window.innerHeight)) / Math.SQRT2,
       };
     };
-    canvas.addEventListener('pointermove', onMove);
-    canvas.addEventListener('pointerleave', onLeave);
+    if (interactive) {
+      canvas.addEventListener('pointermove', onMove);
+      canvas.addEventListener('pointerleave', onLeave);
+    }
     window.addEventListener('theme-reveal', onReveal);
 
     // rasterizing before the display font arrives would sample a fallback font
@@ -303,7 +307,7 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
       canvas.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('theme-reveal', onReveal);
     };
-  }, [text, width, lineGap, squashKey, snap, radius]);
+  }, [text, width, lineGap, squashKey, snap, radius, interactive]);
 
   return <canvas ref={canvasRef} role="img" aria-label={lines.join(' ')} style={{ display: 'block' }} />;
 }

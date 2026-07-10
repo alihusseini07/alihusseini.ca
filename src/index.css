@@ -6,6 +6,11 @@
 
 html, body {
   min-height: 100%;
+  /* never let a stray wide element hand the phone a horizontal scrollbar */
+  overflow-x: hidden;
+  /* stop mobile Safari/Chrome inflating our pixel type on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {

@@ -9,6 +9,7 @@ import ThemeToggle from './ThemeToggle';
 // import TrailToggle from './TrailToggle'; // disabled for now
 import { play } from '../lib/sound';
 import { useThemeCtx } from '../lib/theme';
+import { useIsMobile } from '../lib/useIsMobile';
 import { PROFILE } from '../tokens';
 
 const NAV_LINKS = [
@@ -32,6 +33,7 @@ export default function SiteFooter() {
   const { theme: THEME, mode } = useThemeCtx();
   const location = useLocation();
   const goWarp = useTransitionNavigate();
+  const isMobile = useIsMobile();
   const links = NAV_LINKS.filter((l) => l.path !== location.pathname);
   return (
     <footer
@@ -43,14 +45,19 @@ export default function SiteFooter() {
         zIndex: 0,
         display: 'flex',
         // content hugs the top band; the sea + ship own the bottom of the
-        // footer, so neither ever covers the name
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        minHeight: FOOTER_H,
+        // footer, so neither ever covers the name. On phones the two clusters
+        // stack and center instead of sitting on opposite edges.
+        flexDirection: isMobile ? 'column' : 'row',
+        alignItems: isMobile ? 'center' : 'flex-start',
+        justifyContent: isMobile ? 'flex-start' : 'space-between',
+        gap: isMobile ? 64 : 0,
+        // on mobile the footer takes the full viewport so the name, links and
+        // sea all get room without overlapping (see matching 100dvh page margins)
+        minHeight: isMobile ? '100dvh' : FOOTER_H,
         // extra top padding: the pixel-name canvas bleeds ~48px above its
         // layout box (warp + hover room) — without it the page sheet's edge
         // slices the top of the letters
-        padding: '48px 44px 24px',
+        padding: isMobile ? '40px 20px 24px' : '48px 44px 24px',
         background: THEME.headerBg,
         borderTop: `2px solid ${THEME.headerBorder}`,
         overflow: 'hidden',
@@ -60,27 +67,27 @@ export default function SiteFooter() {
       {/* nudge visitors toward the sea: sits just above the waterline, inked
           in the sea's backdrop blue (FooterSea SEA_PAL.back). Rendered before
           the canvas so the ship sails in front of it and covers it */}
-      <span style={{ position: 'absolute', left: 44, bottom: 112, fontSize: 9, color: mode === 'dark' ? '#25578a' : '#2f6ba8' }}>
-        click or drag the ship :)
+      <span style={{ position: 'absolute', left: isMobile ? 20 : 44, bottom: 112, fontSize: 9, color: mode === 'dark' ? '#25578a' : '#2f6ba8' }}>
+        {isMobile ? 'tap or drag the ship :)' : 'click or drag the ship :)'}
       </span>
       {/* the One Piece sea: interactive pixel ocean behind the content */}
       <FooterSea />
       {/* data-trail-block: the marker lifts off while hovering the name;
           zIndex 1 keeps the name above the sea canvas */}
       <span data-trail-block style={{ position: 'relative', zIndex: 1 }}>
-        <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} />
+        <PixelName lines={PROFILE.name.split(' ')} width={230} color={THEME.nameColor} squash={[0.62, 0.8]} radius={38} interactive={!isMobile} />
       </span>
       {/* page links on top, social/controls row tucked under (reverse of
           source order); the small downward nudge lines the pair up with the
           name's cap height */}
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', gap: 18, transform: 'translateY(10px)' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column-reverse', alignItems: isMobile ? 'center' : 'flex-end', gap: 18, transform: isMobile ? 'none' : 'translateY(10px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <ContactBar links={PROFILE.links} />
           {/* <TrailToggle /> disabled for now */}
           <ThemeToggle />
           <SoundToggle />
         </div>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 16 }}>
         {links.map((l, i) => (
           <span key={l.path} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {i > 0 && <span style={{ width: 4, height: 4, background: THEME.iconColor, opacity: 0.5 }} />}

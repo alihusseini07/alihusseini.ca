@@ -13,6 +13,10 @@ import {
 } from '../../data/grimoire-data'
 import { play, startRingHum, stopRingHum, useMuted } from '../../lib/sound'
 import { REDUCED } from '../../lib/motion'
+import { useIsMobile } from '../../lib/useIsMobile'
+
+// re-exported for callers that historically imported it from here
+export { useIsMobile }
 
 const FULL_SIZE = 720
 const R_OUTER = 332
@@ -33,18 +37,6 @@ const RINGS: Array<{
   { category: 'frameworks', radius: R_MIDDLE, duration: 65, direction: 'ccw', tile: 44 },
   { category: 'languages',  radius: R_INNER,  duration: 42, direction: 'cw',  tile: 38 },
 ]
-
-export function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`)
-    const apply = () => setIsMobile(mq.matches)
-    apply()
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
-  }, [breakpoint])
-  return isMobile
-}
 
 function useContainerScale(targetSize: number) {
   const [scale, setScale] = useState<number | null>(null)

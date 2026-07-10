@@ -13,7 +13,16 @@ export type SoundName =
 const MUTE_KEY = 'ah:sound-muted';
 
 let muted = (() => {
-  try { return localStorage.getItem(MUTE_KEY) === '1'; } catch { return false; }
+  try {
+    const stored = localStorage.getItem(MUTE_KEY);
+    if (stored === '1') return true;
+    if (stored === '0') return false;
+    // No saved choice yet. The OS silent/ring switch isn't exposed to the web,
+    // so we can't read it directly — default to muted on touch devices (phones/
+    // tablets) so the site never blasts audio unprompted. Desktop stays on.
+    // A stored preference (set by the toggle) always overrides this.
+    return window.matchMedia?.('(pointer: coarse)').matches ?? false;
+  } catch { return false; }
 })();
 
 const listeners = new Set<() => void>();

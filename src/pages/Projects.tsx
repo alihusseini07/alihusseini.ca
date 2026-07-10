@@ -4,7 +4,7 @@ import { THEME } from '../tokens';
 export default function Projects() {
   const navigate = useNavigate();
   return (
-    <div style={{ background: THEME.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
+    <div style={{ background: THEME.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32, padding: '24px', textAlign: 'center' }}>
       <h1 style={{ font: "400 20px 'Press Start 2P', monospace", color: THEME.nameColor, textShadow: THEME.nameShadow }}>
         Projects
       </h1>
