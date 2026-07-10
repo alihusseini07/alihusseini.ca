@@ -87,6 +87,13 @@ const GULL: string[][] = [
   ['.....', 'KK.KK', '..K..'],
 ];
 
+// tiny fish for Luffy to snatch: nose left, forked tail right
+const FISH = [
+  '.PP.P',
+  'PPPPP',
+  '.PP.P',
+];
+
 const SHIP_PAL: Record<ThemeMode, Record<string, string>> = {
   light: {
     K: '#3a2413', B: '#c2914f', L: '#e0b877', D: '#8f6430', T: '#a04b2b',
@@ -173,6 +180,10 @@ export default function FooterSea() {
       light: GULL.map((f) => buildSprite(f, { K: SKY_PAL.light.gull })),
       dark: GULL.map((f) => buildSprite(f, { K: SKY_PAL.dark.gull })),
     };
+    const fishes = {
+      light: buildSprite(FISH, { P: '#e8832e' }),
+      dark: buildSprite(FISH, { P: '#c9762a' }),
+    };
 
     // world state (canvas units)
     let W = 0;
@@ -199,8 +210,17 @@ export default function FooterSea() {
       fx, y: (i * 7) % 26, phase: i * 1.7,
     }));
     const gull = { active: false, x: 0, y: 0, vx: 0, vy: 0, frame: 0, t: 0, next: 0, squawked: false };
-    // Luffy's rubber arm: fires from the bow on a lucky ship-click
-    const luffy = { active: false, t: 0, dir: -1 as 1 | -1, len: 0, maxLen: 0, sag: 0 };
+    // Luffy's rubber arm: fires from the bow on a lucky ship-click.
+    // Modes: straight punch, fishing plunge, or snatching a passing gull.
+    const luffy = {
+      active: false, t: 0, dir: -1 as 1 | -1, p: 0, maxLen: 0, sag: 0,
+      mode: 'punch' as 'punch' | 'fish' | 'gull',
+      tx: 0, ty: 0, caught: false,
+    };
+    // the caught fish once it leaves the fist: airborne, then flopping on deck
+    const fish = { active: false, landed: false, x: 0, y: 0, vx: 0, vy: 0, offX: 0, life: 0 };
+    // consecutive ship-click outcomes, to cap repeat streaks
+    const clickStreak = { arm: 0, cannon: 0 };
     const mouse = { x: -1, y: -1, over: false };
 
     const reduced = REDUCED();
@@ -302,24 +322,43 @@ export default function FooterSea() {
       ctx.drawImage(ships[m], -SHIP_W / 2, -SHIP_WATERLINE);
       ctx.restore();
 
-      // --- Luffy's rubber arm, punching out over the bow ---
-      if (luffy.active && luffy.len > 0.5) {
+      // flung fish: mid-air arc, then flopping about on the deck
+      if (fish.active) {
+        const fxD = fish.landed ? Math.round(ship.x + fish.offX) : Math.round(fish.x);
+        // two bounce humps across the 44-frame flop: |sin| over one full cycle
+        const hop = Math.abs(Math.sin(((44 - fish.life) / 44) * Math.PI * 2)) * 2;
+        const fyD = fish.landed ? Math.round(ship.sy - 8 - hop) : Math.round(fish.y);
+        ctx.drawImage(fishes[m], fxD - 2, fyD - 1);
+      }
+
+      // --- Luffy's rubber arm, stretching out from the bow ---
+      if (luffy.active && luffy.p > 0.02) {
         const lp = LUFFY_PAL[m];
-        const ld = luffy.dir;
-        const shX = Math.round(ship.x + ld * 11);
+        const shX = Math.round(ship.x + luffy.dir * 11);
         const shY = Math.round(ship.sy - 10);
-        const n = Math.round(luffy.len);
+        const fistX = Math.round(shX + (luffy.tx - shX) * luffy.p);
+        const fistY = Math.round(shY + (luffy.ty - shY) * luffy.p);
+        const n = Math.max(1, Math.round(Math.hypot(fistX - shX, fistY - shY)));
         ctx.fillStyle = lp.skin;
         for (let i = 0; i < n; i++) {
-          const sag = Math.round(Math.sin((i / Math.max(1, n)) * Math.PI) * luffy.sag);
-          ctx.fillRect(shX + ld * i, shY + sag, 1, 2);
+          const q = i / n;
+          const sag = Math.sin(q * Math.PI) * luffy.sag;
+          ctx.fillRect(Math.round(shX + (fistX - shX) * q), Math.round(shY + (fistY - shY) * q + sag), 1, 2);
         }
         // fist at the tip
-        const fx = shX + ld * n;
-        ctx.fillRect(ld === 1 ? fx : fx - 2, shY - 1, 3, 4);
+        ctx.fillRect(fistX - 1, fistY - 1, 3, 4);
+        // the catch dangles under the fist on the way home
+        if (luffy.caught) {
+          if (luffy.mode === 'fish') {
+            const wig = Math.round(Math.sin(t * 0.03));
+            ctx.drawImage(fishes[m], fistX - 2 + wig, fistY + 3);
+          } else {
+            ctx.drawImage(gulls[m][Math.floor(t / 60) % 2], fistX - 2, fistY + 3);
+          }
+        }
         // red sleeve anchors the arm to the deck
         ctx.fillStyle = lp.sleeve;
-        ctx.fillRect(ld === 1 ? shX - 1 : shX - 2, shY - 1, 4, 4);
+        ctx.fillRect(luffy.dir === 1 ? shX - 1 : shX - 2, shY - 1, 4, 4);
       }
 
       // muzzle flashes + cannonballs (in front of the ship, behind the water)
@@ -411,25 +450,78 @@ export default function FooterSea() {
       if (luffy.active) {
         luffy.t += 1;
         const EXT = 14, HOLD = 22, RET = 14;
+        const shoulderX = ship.x + luffy.dir * 11;
+        if (luffy.mode === 'punch') {
+          // horizontal punch target rides with the ship, clamped to the canvas
+          const avail = luffy.dir === 1 ? W - 4 - shoulderX : shoulderX - 4;
+          luffy.tx = shoulderX + luffy.dir * Math.min(luffy.maxLen, Math.max(8, avail));
+          luffy.ty = ship.sy - 10;
+        } else if (luffy.mode === 'gull' && !luffy.caught && gull.active) {
+          // rubber arm homes in on the bird until the grab lands
+          luffy.tx = gull.x;
+          luffy.ty = gull.y;
+          luffy.dir = luffy.tx >= ship.x ? 1 : -1;
+        }
         if (luffy.t <= EXT) {
-          const p = luffy.t / EXT;
-          luffy.len = luffy.maxLen * (1 - (1 - p) ** 3); // cubic ease-out: the snap
+          const q = luffy.t / EXT;
+          luffy.p = 1 - (1 - q) ** 3; // cubic ease-out: the snap
           luffy.sag = 0;
         } else if (luffy.t <= EXT + HOLD) {
-          luffy.len = luffy.maxLen;
+          luffy.p = 1;
           luffy.sag = 2 * Math.sin(((luffy.t - EXT) / HOLD) * Math.PI); // rubbery droop
+          if (!luffy.caught) {
+            if (luffy.mode === 'fish') { // fist plunges in: splash, fish secured
+              disturb(luffy.tx, -3.5);
+              spawnDroplets(luffy.tx, surfaceAt(luffy.tx, t), 8, 1);
+              luffy.caught = true;
+            } else if (luffy.mode === 'gull' && gull.active) { // snatched mid-flight
+              gull.active = false;
+              gull.next = t + 15000 + Math.random() * 20000;
+              luffy.caught = true;
+              play('seagull');
+            }
+          }
         } else if (luffy.t <= EXT + HOLD + RET) {
-          const p = (luffy.t - EXT - HOLD) / RET;
-          luffy.len = luffy.maxLen * (1 - p * p); // accelerating snap back
+          const q = (luffy.t - EXT - HOLD) / RET;
+          luffy.p = 1 - q * q; // accelerating snap back
           luffy.sag = 0;
+          // fish breaks the surface on the way home: it leaps for the deck
+          if (luffy.mode === 'fish' && luffy.caught) {
+            const fistX = shoulderX + (luffy.tx - shoulderX) * luffy.p;
+            const fistY = ship.sy - 10 + (luffy.ty - (ship.sy - 10)) * luffy.p;
+            if (fistY < surfaceAt(fistX, t) - 3) {
+              luffy.caught = false;
+              fish.active = true;
+              fish.landed = false;
+              fish.x = fistX;
+              fish.y = fistY;
+              fish.vx = (ship.x - fistX) / 34; // aimed to come down on the deck
+              fish.vy = -1.7;
+            }
+          }
         } else {
-          luffy.active = false;
-          luffy.len = 0;
+          luffy.active = false; // the catch disappears with the arm
+          luffy.p = 0;
         }
-        // keep the fist on canvas if the ship drifts toward an edge mid-stretch
-        const shoulderX = ship.x + luffy.dir * 11;
-        const avail = luffy.dir === 1 ? W - 4 - shoulderX : shoulderX - 4;
-        luffy.len = Math.min(luffy.len, Math.max(8, avail));
+      }
+
+      // flung fish: ballistic hop, then a short flop on the deck
+      if (fish.active) {
+        if (!fish.landed) {
+          fish.x += fish.vx;
+          fish.y += fish.vy;
+          fish.vy += 0.09;
+          if (fish.vy > 0 && fish.y >= ship.sy - 6 && Math.abs(fish.x - ship.x) < 16) {
+            fish.landed = true;
+            fish.offX = Math.max(-12, Math.min(10, fish.x - ship.x));
+            fish.life = 44; // two quick bounces, then gone
+          } else if (fish.y > surfaceAt(fish.x, t)) {
+            disturb(fish.x, -2); // missed the deck: back into the sea
+            fish.active = false;
+          }
+        } else if (--fish.life <= 0) {
+          fish.active = false; // flopped its last
+        }
       }
 
       // cannonballs: fly, then splash down
@@ -535,12 +627,29 @@ export default function FooterSea() {
     const startLuffyArm = () => {
       luffy.active = true;
       luffy.t = 0;
-      luffy.dir = ship.dir;
-      const shoulderX = ship.x + ship.dir * 11;
-      const avail = ship.dir === 1 ? W - 4 - shoulderX : shoulderX - 4;
-      luffy.maxLen = Math.max(18, Math.min(75, avail));
-      luffy.len = 0;
+      luffy.p = 0;
       luffy.sag = 0;
+      luffy.caught = false;
+      const shoulderX = ship.x + ship.dir * 11;
+      if (gull.active && Math.random() < 0.5) {
+        // a passing gull is tempting: half the time, reach up and snatch it
+        luffy.mode = 'gull';
+        luffy.dir = gull.x >= ship.x ? 1 : -1;
+        luffy.tx = gull.x;
+        luffy.ty = gull.y;
+      } else if (Math.random() < 1 / 3) {
+        // plunge into the water ahead and grab a fish
+        luffy.mode = 'fish';
+        luffy.dir = ship.dir;
+        const avail = ship.dir === 1 ? W - 6 - shoulderX : shoulderX - 6;
+        luffy.tx = shoulderX + ship.dir * Math.max(16, Math.min(42, avail));
+        luffy.ty = seaLevel + 8;
+      } else {
+        luffy.mode = 'punch';
+        luffy.dir = ship.dir;
+        const avail = ship.dir === 1 ? W - 4 - shoulderX : shoulderX - 4;
+        luffy.maxLen = Math.max(18, Math.min(75, avail));
+      }
       play('luffyStretch');
     };
 
@@ -593,10 +702,19 @@ export default function FooterSea() {
       ship.dragging = false;
       ship.targetX = ship.x + ship.vx * 20; // keep the momentum as a heading
       ship.nextWander = performance.now() + 6000;
-      // press without a drag: usually the cannon, sometimes Luffy lends a hand
+      // press without a drag: usually the cannon, sometimes Luffy lends a
+      // hand. Streak caps: arm never 3+ in a row, cannon never 7+ in a row.
       if (!ship.dragMoved) {
-        if (Math.random() < 0.2 && !luffy.active) startLuffyArm();
-        else fireCannon();
+        const wantArm = clickStreak.cannon >= 6 || (Math.random() < 1 / 3 && clickStreak.arm < 2);
+        if (wantArm && !luffy.active) {
+          startLuffyArm();
+          clickStreak.arm += 1;
+          clickStreak.cannon = 0;
+        } else {
+          fireCannon();
+          clickStreak.cannon += 1;
+          clickStreak.arm = 0;
+        }
       }
       canvas.style.cursor = 'grab';
       try { canvas.releasePointerCapture(e.pointerId); } catch { /* no-op */ }

@@ -29,7 +29,7 @@ export const FOOTER_H = 342;
  * the visitor scrolls past the end — a curtain-reveal.
  */
 export default function SiteFooter() {
-  const { theme: THEME } = useThemeCtx();
+  const { theme: THEME, mode } = useThemeCtx();
   const location = useLocation();
   const goWarp = useTransitionNavigate();
   const links = NAV_LINKS.filter((l) => l.path !== location.pathname);
@@ -57,6 +57,12 @@ export default function SiteFooter() {
       }}
     >
       {/* <CursorTrail /> disabled for now */}
+      {/* nudge visitors toward the sea: sits just above the waterline, inked
+          in the sea's backdrop blue (FooterSea SEA_PAL.back). Rendered before
+          the canvas so the ship sails in front of it and covers it */}
+      <span style={{ position: 'absolute', left: 44, bottom: 112, fontSize: 9, color: mode === 'dark' ? '#25578a' : '#2f6ba8' }}>
+        click or drag the ship :)
+      </span>
       {/* the One Piece sea: interactive pixel ocean behind the content */}
       <FooterSea />
       {/* data-trail-block: the marker lifts off while hovering the name;

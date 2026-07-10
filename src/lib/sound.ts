@@ -437,23 +437,23 @@ export function play(name: SoundName): void {
         tone(a, m, 'sawtooth', 115, now, 0.09, 0.01, 88, 0.01);
         break;
       case 'cannon': // deck cannon: powder crack, deep rolling boom, rumble tail
-        swish(a, m, 'highpass', 2400, 900, now, 0.05, 0.1, 0.002);
-        tone(a, m, 'sine', 110, now + 0.005, 0.55, 0.28, 30, 0.005);
-        tone(a, m, 'triangle', 75, now + 0.02, 0.4, 0.12, 36, 0.008);
-        swish(a, m, 'lowpass', 600, 90, now + 0.02, 0.6, 0.1, 0.02);
+        swish(a, m, 'highpass', 2400, 900, now, 0.05, 0.075, 0.002);
+        tone(a, m, 'sine', 110, now + 0.005, 0.55, 0.21, 30, 0.005);
+        tone(a, m, 'triangle', 75, now + 0.02, 0.4, 0.09, 36, 0.008);
+        swish(a, m, 'lowpass', 600, 90, now + 0.02, 0.6, 0.075, 0.02);
         break;
       case 'seagull': // two falling gull cries, distant
-        tone(a, m, 'sawtooth', 1800, now, 0.1, 0.014, 1150, 0.012);
-        tone(a, m, 'sawtooth', 1950, now + 0.13, 0.12, 0.012, 1200, 0.014);
+        tone(a, m, 'sawtooth', 1800, now, 0.1, 0.011, 1150, 0.012);
+        tone(a, m, 'sawtooth', 1950, now + 0.13, 0.12, 0.009, 1200, 0.014);
         break;
       case 'splash': // sampled water splash, one of three picked at random
-        if (!playSample(a, m, 'splash', 0.5)) { // still decoding: synth plop stand-in
+        if (!playSample(a, m, 'splash', 0.38)) { // still decoding: synth plop stand-in
           swish(a, m, 'highpass', 4000, 1800, now, 0.015, 0.02, 0.001);
           tone(a, m, 'sine', 320, now + 0.018, 0.22, 0.065, 95, 0.004);
         }
         break;
       case 'luffyStretch': // Gomu Gomu no Pistol, sampled
-        playSample(a, m, 'luffyStretch', 0.6);
+        playSample(a, m, 'luffyStretch', 0.45);
         break;
     }
   } catch { /* no-op */ }
