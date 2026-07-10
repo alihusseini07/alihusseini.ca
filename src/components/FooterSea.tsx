@@ -661,14 +661,12 @@ export default function FooterSea() {
           play('pickup');
         }
         ship.targetX = p.x;
-        canvas.style.cursor = 'grabbing';
       } else {
         // swiping through the water stirs it
         if (mouse.over && p.y > seaLevel - 6) {
           const d = Math.min(3, Math.hypot(p.x - mouse.x, p.y - mouse.y));
           disturb(p.x, -d * 0.12);
         }
-        canvas.style.cursor = overShip(p) ? 'grab' : p.y > seaLevel - 6 ? 'pointer' : 'default';
       }
       mouse.x = p.x;
       mouse.y = p.y;
@@ -689,7 +687,6 @@ export default function FooterSea() {
         ship.targetX = ship.x;
         ship.nextWander = performance.now() + 5000;
         canvas.setPointerCapture(e.pointerId);
-        canvas.style.cursor = 'grabbing';
       } else if (p.y > seaLevel - 6) {
         disturb(p.x, -4.2);
         spawnDroplets(p.x, surfaceAt(p.x, performance.now()), 7, 0.9);
@@ -716,7 +713,6 @@ export default function FooterSea() {
           clickStreak.arm = 0;
         }
       }
-      canvas.style.cursor = 'grab';
       try { canvas.releasePointerCapture(e.pointerId); } catch { /* no-op */ }
     };
 
