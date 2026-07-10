@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useTransitionNavigate } from '../components/PageTransition';
 import GrimoireBookShell from '../components/grimoire/GrimoireBookShell';
-import GrimoireNav from '../components/grimoire/GrimoireNav';
+import MobileNav from '../components/MobileNav';
 import NoiseOverlay from '../components/grimoire/NoiseOverlay';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
@@ -109,7 +109,7 @@ export default function Skills() {
       />
 
       {isMobile ? (
-        <GrimoireNav />
+        <MobileNav currentRoute="/skills" variant="grimoire" fixed />
       ) : (
         <button className="grimoire-back-btn" onClick={() => navigate('/', { warp: 'out' })}>
           ← Return

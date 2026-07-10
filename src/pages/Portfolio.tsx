@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import MobileNav from '../components/MobileNav';
 import SoundToggle from '../components/SoundToggle';
 import ThemeToggle from '../components/ThemeToggle';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
@@ -168,9 +169,13 @@ export default function Portfolio() {
       <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: isMobile ? '100dvh' : FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         {/* top bar: return + toggles stay in the page flow, scroll with content */}
         <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
-          <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
-            <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
-          </button>
+          {isMobile ? (
+            <MobileNav currentRoute="/portfolio" variant="board" burgerClassName="enter-drop" />
+          ) : (
+            <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
+              <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
+            </button>
+          )}
 
           <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <ThemeToggle />
@@ -324,9 +329,11 @@ export default function Portfolio() {
                 <div style={{ width: 8, height: 8, background: THEME.nameColor }} />
                 <span style={eyebrow}>the end</span>
               </div>
-              <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={returnBtn}>
-                <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
-              </button>
+              {!isMobile && (
+                <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={returnBtn}>
+                  <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

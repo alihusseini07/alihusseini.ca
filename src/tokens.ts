@@ -3,16 +3,18 @@ import type { FolderPalette } from './sprites';
 export interface FolderColors extends FolderPalette {}
 
 export const FOLDER_COLORS = {
-  amber: { base: '#e8a72e', light: '#ffd76b', dark: '#b06f17', outline: '#4a2f10' },
-  blue:  { base: '#3f8fd6', light: '#8ec7f0', dark: '#225f9e', outline: '#143a5c' },
-  green: { base: '#5db84a', light: '#a6e07a', dark: '#3a8230', outline: '#1f4a18' },
+  amber:  { base: '#e8a72e', light: '#ffd76b', dark: '#b06f17', outline: '#4a2f10' },
+  blue:   { base: '#3f8fd6', light: '#8ec7f0', dark: '#225f9e', outline: '#143a5c' },
+  green:  { base: '#5db84a', light: '#a6e07a', dark: '#3a8230', outline: '#1f4a18' },
+  purple: { base: '#a05fd6', light: '#cf9ef0', dark: '#6e359e', outline: '#3c1a5c' },
 } satisfies Record<string, FolderColors>;
 
 /** dark-mode folder sprites: same hues stepped down so they sit on a dark page */
 export const FOLDER_COLORS_DARK = {
-  amber: { base: '#b8811f', light: '#d9a441', dark: '#7d4d10', outline: '#3a2410' },
-  blue:  { base: '#2f6ba8', light: '#5f9bcf', dark: '#194a7a', outline: '#0f2b45' },
-  green: { base: '#46903a', light: '#7ab85e', dark: '#2b6423', outline: '#163812' },
+  amber:  { base: '#b8811f', light: '#d9a441', dark: '#7d4d10', outline: '#3a2410' },
+  blue:   { base: '#2f6ba8', light: '#5f9bcf', dark: '#194a7a', outline: '#0f2b45' },
+  green:  { base: '#46903a', light: '#7ab85e', dark: '#2b6423', outline: '#163812' },
+  purple: { base: '#7d4aa8', light: '#a87fcf', dark: '#54307a', outline: '#2b1545' },
 } satisfies Record<string, FolderColors>;
 
 /** the three flat accent hues, mapped light -> dark for dark mode */
