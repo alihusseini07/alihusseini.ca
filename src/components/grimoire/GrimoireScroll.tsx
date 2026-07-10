@@ -61,7 +61,7 @@ export default function GrimoireScroll() {
                 fontSize: '1rem',
                 fontWeight: 600,
                 color: HEADING_COLOR,
-                margin: '0 0 0.35rem',
+                margin: '0 0 1.4rem',
                 textAlign: 'center',
                 textTransform: 'lowercase',
                 letterSpacing: '0.02em',
@@ -69,19 +69,6 @@ export default function GrimoireScroll() {
             >
               the grimoire
             </h2>
-            <p
-              style={{
-                margin: '0 0 1.4rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.45rem',
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                textAlign: 'center',
-                color: SUBTITLE_COLOR,
-              }}
-            >
-              ᛝ scroll of skills ᛝ
-            </p>
 
             {SECTIONS.map((category) => (
               <ScrollSection key={category} category={category} />

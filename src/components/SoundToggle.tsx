@@ -1,3 +1,4 @@
+import { CAN_HOVER } from '../lib/motion';
 import { toggleMute, useMuted } from '../lib/sound';
 import { useThemeCtx } from '../lib/theme';
 
@@ -25,6 +26,7 @@ export default function SoundToggle() {
         transition: 'transform .16s steps(2, end), filter .16s steps(2, end)',
       }}
       onMouseEnter={(e) => {
+        if (!CAN_HOVER()) return; // tap fires mouseenter but never mouseleave
         e.currentTarget.style.transform = 'translateY(-3px)';
         e.currentTarget.style.filter = 'brightness(1.12)';
       }}

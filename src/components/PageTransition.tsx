@@ -76,11 +76,20 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     setExit({ cls: exitCls, origin });
     // scaled pages overflow the document; hide scrollbars until enter settles
     document.documentElement.style.overflow = 'hidden';
+    // warp shakes translate the page wrapper, exposing the body at the
+    // edges — ink it grimoire-dark for the ride so the slivers don't flash
+    // the light page background
+    if (opts?.warp) document.body.style.background = '#241505';
     setTimeout(() => {
       busy.current = false;
       setExit(null);
       navigate(to);
-      setTimeout(() => { document.documentElement.style.overflow = ''; }, 400);
+      // warp enters keep shaking for ~.8s after navigate — hold the dark
+      // backdrop until they settle
+      setTimeout(() => {
+        document.documentElement.style.overflow = '';
+        document.body.style.background = '';
+      }, opts?.warp ? 900 : 400);
     }, ms);
   }, [navigate]);
 

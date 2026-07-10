@@ -7,6 +7,7 @@ import PixelName from './PixelName';
 import SoundToggle from './SoundToggle';
 import ThemeToggle from './ThemeToggle';
 // import TrailToggle from './TrailToggle'; // disabled for now
+import { CAN_HOVER } from '../lib/motion';
 import { play } from '../lib/sound';
 import { useThemeCtx } from '../lib/theme';
 import { useIsMobile } from '../lib/useIsMobile';
@@ -52,8 +53,12 @@ export default function SiteFooter() {
         justifyContent: isMobile ? 'flex-start' : 'space-between',
         gap: isMobile ? 64 : 0,
         // on mobile the footer takes the full viewport so the name, links and
-        // sea all get room without overlapping (see matching 100dvh page margins)
-        minHeight: isMobile ? '100dvh' : FOOTER_H,
+        // sea all get room without overlapping (see matching 100svh page
+        // margins). svh, not dvh: dvh re-resolves every time the browser UI
+        // collapses mid-scroll, which resized the sea canvas each frame
+        // (flashing ship) and let the reveal scroll run past the waterline.
+        height: isMobile ? '100svh' : FOOTER_H,
+        minHeight: isMobile ? '100svh' : FOOTER_H,
         // extra top padding: the pixel-name canvas bleeds ~48px above its
         // layout box (warp + hover room) — without it the page sheet's edge
         // slices the top of the letters
@@ -115,6 +120,7 @@ export default function SiteFooter() {
                 transition: 'color .16s steps(2, end), border-color .16s steps(2, end), transform .16s steps(2, end)',
               }}
               onMouseEnter={(e) => {
+                if (!CAN_HOVER()) return; // tap fires mouseenter but never mouseleave
                 play('tick');
                 e.currentTarget.style.color = THEME.nameColor;
                 e.currentTarget.style.borderBottomColor = THEME.nameColor;

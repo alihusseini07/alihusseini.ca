@@ -41,7 +41,8 @@ export default function Skills() {
         position: 'relative',
         zIndex: 1,
         // ride above the fixed footer; scrolling past the end uncovers it
-        marginBottom: isMobile ? '100dvh' : FOOTER_H,
+        // (svh matches SiteFooter's mobile height)
+        marginBottom: isMobile ? '100svh' : FOOTER_H,
         boxShadow: '0 18px 28px rgba(0,0,0,.45)',
         background: '#2b251f',
         // always a dark surface no matter the site theme, so hardcode the

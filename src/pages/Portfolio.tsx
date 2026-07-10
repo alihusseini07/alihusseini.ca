@@ -166,7 +166,7 @@ export default function Portfolio() {
       {/* DESIGN BOARD — sits above the fixed footer (z 1 vs 0) and leaves its
           height in bottom margin, so scrolling past the end uncovers it. the
           top bar rides on the same dotted board so there's no blank strip */}
-      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: isMobile ? '100dvh' : FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
+      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: isMobile ? '100svh' : FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         {/* top bar: return + toggles stay in the page flow, scroll with content */}
         <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
           {isMobile ? (
@@ -323,18 +323,18 @@ export default function Portfolio() {
               );
             })}
 
-            {/* END OF THE BOARD */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26, paddingBottom: 80 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 8, height: 8, background: THEME.nameColor }} />
-                <span style={eyebrow}>the end</span>
-              </div>
-              {!isMobile && (
+            {/* END OF THE BOARD (desktop only; mobile ends on the last frame) */}
+            {!isMobile && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26, paddingBottom: 80 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 8, height: 8, background: THEME.nameColor }} />
+                  <span style={eyebrow}>the end</span>
+                </div>
                 <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={returnBtn}>
                   <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

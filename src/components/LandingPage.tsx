@@ -160,8 +160,9 @@ export default function LandingPage() {
       ...sheet,
       minHeight: 'auto',
       // full-viewport footer needs a matching bottom margin so scrolling to
-      // the end uncovers the whole thing
-      marginBottom: '100dvh',
+      // the end uncovers the whole thing (svh matches the footer's own unit —
+      // dvh drifted while the browser UI collapsed, over-scrolling the reveal)
+      marginBottom: '100svh',
     };
     const mBody: CSSProperties = {
       position: 'relative',

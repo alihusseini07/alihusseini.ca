@@ -14,6 +14,13 @@ export const REDUCED = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/** true when the pointer can actually hover — touch devices fire a synthetic
+    mouseenter on tap with no matching mouseleave, so JS hover effects must
+    be skipped there or they stick until the next tap elsewhere */
+export const CAN_HOVER = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: hover)').matches;
+
 /** stagger helper: pair with an .enter-* class */
 export function enter(i: number, step = 70): CSSProperties {
   return { animationDelay: `${i * step}ms` };
