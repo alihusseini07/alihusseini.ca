@@ -166,10 +166,13 @@ export default function LandingPage() {
     const mBody: CSSProperties = {
       position: 'relative',
       zIndex: 2,
-      padding: '20px 20px 44px 32px',
+      // no top pad: ruled content starts at sheet top so rows land on the rules
+      padding: '0 20px 44px 32px',
       display: 'flex',
       flexDirection: 'column',
     };
+    // one text line = one ruled row; glyphs ride just above each rule
+    const mLine: CSSProperties = { lineHeight: `${RULE}px` };
     // resolve the highlighter ink for a bullet exactly as the desktop path does
     const bulletInk = (b: (typeof PROFILE.bullets)[number]): CSSProperties => {
       const hlInk = b.highlightColor
@@ -189,7 +192,7 @@ export default function LandingPage() {
 
           <div style={mBody}>
             {/* top bar: hamburger left, contact + toggles right */}
-            <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 56 }}>
+            <div className="enter-drop" style={{ height: RULE * 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 0 }}>
               <button
                 type="button"
                 aria-label="Open menu"
@@ -214,7 +217,7 @@ export default function LandingPage() {
                   <span key={n} style={{ display: 'block', height: 3, background: THEME.nameColor }} />
                 ))}
               </button>
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+              <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
                 <ContactBar links={PROFILE.links} />
                 <ThemeToggle />
                 <SoundToggle />
@@ -222,10 +225,10 @@ export default function LandingPage() {
             </div>
 
             <h1 className="enter-rise" style={{ margin: 0, color: THEME.nameColor, ...enter(1) }}>
-              <PixelName lines={PROFILE.name.split(' ')} width={250} color={THEME.nameColor} squash={[0.62, 0.8]} interactive={false} />
+              <PixelName lines={PROFILE.name.split(' ')} width={250} color={THEME.nameColor} squash={[0.62, 0.8]} snap={RULE} interactive={false} />
             </h1>
 
-            <p className="enter-rise" style={{ margin: '48px 0 0', fontSize: 12, lineHeight: 1.9, color: THEME.subTextColor, ...enter(2) }}>
+            <p className="enter-rise" style={{ margin: `${RULE}px 0 0`, fontSize: 12, ...mLine, color: THEME.subTextColor, ...enter(2) }}>
               <LinkPreviewLink
                 href={PROFILE.affiliation.link}
                 preview={PROFILE.affiliation.preview}
@@ -238,16 +241,12 @@ export default function LandingPage() {
               <span style={{ color: THEME.accentBlue }}>{PROFILE.affiliation.school}</span>
             </p>
 
-            <p className="enter-rise" style={{ margin: '14px 0 0', fontSize: 11, lineHeight: 1.8, color: THEME.bodyColor, ...enter(3) }}>
-              <CyclingTagline lines={PROFILE.taglines} />
-            </p>
-
-            <ul style={{ listStyle: 'none', margin: '26px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <ul style={{ listStyle: 'none', margin: `${RULE}px 0 0`, padding: 0, display: 'flex', flexDirection: 'column', gap: 0 }}>
               {PROFILE.bullets.map((b, i) => {
                 const parts = b.highlightPart ? b.text.split(b.highlightPart) : null;
                 return (
-                  <li key={b.text} className="enter-rise" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 11, lineHeight: 1.75, color: THEME.bodyColor, ...enter(4 + i) }}>
-                    <span style={{ ...marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color)), marginTop: 4, marginBottom: 0 }} />
+                  <li key={b.text} className="enter-rise" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 11, ...mLine, color: THEME.bodyColor, ...enter(4 + i) }}>
+                    <span style={{ ...marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color)), marginTop: (RULE - 9) / 2, marginBottom: 0 }} />
                     <span>
                       {parts ? (
                         <>
