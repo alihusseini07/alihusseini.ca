@@ -170,7 +170,7 @@ export const EXPERIENCE = [
 
 // Landing-page folders. "Projects" is now "Portfolio"; "Experiences" is now "Skills".
 export const FOLDERS = [
-  { label: 'About Me',  color: 'amber' as const, route: '/about' },
+  { label: 'About',  color: 'amber' as const, route: '/about' },
   { label: 'Portfolio', color: 'blue'  as const, route: '/portfolio' },
   { label: 'Skills',    color: 'green' as const, route: '/skills' },
 ];

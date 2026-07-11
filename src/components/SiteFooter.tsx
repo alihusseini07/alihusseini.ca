@@ -15,7 +15,7 @@ import { PROFILE } from '../tokens';
 
 const NAV_LINKS = [
   { path: '/', label: 'Home' },
-  { path: '/about', label: 'About Me' },
+  { path: '/about', label: 'About' },
   { path: '/portfolio', label: 'Portfolio' },
   { path: '/skills', label: 'Skills' },
 ];

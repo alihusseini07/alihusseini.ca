@@ -13,7 +13,7 @@ export default function AboutMe() {
         <SoundToggle />
       </div>
       <h1 style={{ font: "400 20px 'Press Start 2P', monospace", color: THEME.nameColor, textShadow: THEME.nameShadow }}>
-        About Me
+        About
       </h1>
       <p style={{ fontSize: 13, color: THEME.labelColor }}>
         // Coming soon
