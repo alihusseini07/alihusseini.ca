@@ -548,9 +548,7 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
 .about-kicker,
 .about-interest__number,
 .about-archive__eyebrow,
-.about-index,
-.about-gallery__index,
-.about-lightbox__count {
+.about-index {
   font-family: 'VT323', monospace;
   font-weight: 700;
   text-transform: uppercase;
@@ -794,19 +792,6 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 .about-gallery__item:nth-child(7n) { width: 97%; margin-left: 0; }
 .about-gallery__item .about-media { width: 100%; height: auto; }
 
-.about-gallery__index {
-  position: absolute;
-  z-index: 4;
-  top: 12px;
-  left: 12px;
-  min-width: 32px;
-  padding: 6px 7px;
-  background: var(--about-red);
-  color: #f6ecdb;
-  font-size: 7px;
-  pointer-events: none;
-}
-
 .about-media {
   position: relative;
   display: block;
@@ -826,10 +811,6 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
   object-fit: contain;
   background: #11100e;
 }
-.about-media.is-filled { transition: transform .24s cubic-bezier(.2, .78, .25, 1), filter .24s ease; }
-.about-media.is-filled:hover { transform: scale(.985); filter: contrast(1.04) saturate(.92); }
-.about-media:focus-visible { outline: 4px solid var(--about-blue); outline-offset: 4px; }
-
 .about-placeholder {
   position: absolute;
   inset: 0;
@@ -858,33 +839,8 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 .about-interest.is-visible .about-interest__frame--2 { transition-delay: .16s; }
 .about-interest.is-visible .about-interest__frame--3 { transition-delay: .24s; }
 
-.about-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  padding: clamp(56px, 8vw, 96px);
-  background: rgba(14, 12, 10, .94);
-  color: #f3ead9;
-  animation: about-lightbox-in .2s ease both;
-}
-
-.about-lightbox__media { max-width: min(84vw, 1280px); max-height: 82vh; }
-.about-lightbox__media img,
-.about-lightbox__media video { display: block; max-width: 100%; max-height: 82vh; object-fit: contain; box-shadow: 0 22px 70px rgba(0, 0, 0, .55); }
-.about-lightbox__close,
-.about-lightbox__arrow { position: fixed; z-index: 2; display: grid; place-items: center; border: 1px solid rgba(243, 234, 217, .55); background: transparent; color: #f3ead9; }
-.about-lightbox__close { top: 24px; right: 24px; width: 46px; height: 46px; font: 32px/1 'VT323', monospace; }
-.about-lightbox__arrow { top: 50%; width: 48px; height: 70px; transform: translateY(-50%); font: 28px/1 'VT323', monospace; }
-.about-lightbox__arrow--prev { left: 24px; }
-.about-lightbox__arrow--next { right: 24px; }
-.about-lightbox__count { position: fixed; top: 34px; left: 28px; font-size: 8px; }
-.about-lightbox button:focus-visible { outline: 3px solid #7894a3; outline-offset: 4px; }
-
 @keyframes about-copy-in { from { opacity: 0; transform: translateY(22px); } }
 @keyframes about-develop { from { opacity: 0; filter: sepia(1) contrast(.45) brightness(1.4); transform: translateY(34px) rotate(5deg) scale(.96); } }
-@keyframes about-lightbox-in { from { opacity: 0; } }
 
 @media (max-width: 1000px) {
   .about-hero { grid-template-columns: minmax(0, 1fr) minmax(300px, .72fr); gap: 42px; padding-left: 34px; padding-right: 34px; }
@@ -936,12 +892,6 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
   .about-gallery { columns: 150px 2; column-gap: 6px; }
   .about-gallery__item:nth-child(n) { width: 98%; margin-left: 0; margin-bottom: 8px; }
   .about-gallery__item:nth-child(even) { width: 97%; margin-left: 3%; }
-  .about-gallery__index { top: 7px; left: 7px; }
-  .about-lightbox { padding: 70px 14px; }
-  .about-lightbox__media { max-width: 94vw; }
-  .about-lightbox__arrow { top: auto; bottom: 16px; width: 54px; height: 44px; transform: none; }
-  .about-lightbox__arrow--prev { left: calc(50% - 62px); }
-  .about-lightbox__arrow--next { right: calc(50% - 62px); }
 }
 
 @media (max-width: 520px) {
@@ -952,7 +902,6 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 
 @media (prefers-reduced-motion: reduce) {
   .about-hero__copy,
-  .about-hero__visual,
-  .about-lightbox { animation: none; }
+  .about-hero__visual { animation: none; }
   .about-reveal { opacity: 1; transform: none; }
 }

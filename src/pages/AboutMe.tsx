@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MutableRefObject } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef, useState } from 'react';
 import MobileNav from '../components/MobileNav';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
@@ -36,12 +35,10 @@ function DiaryMedia({
   media,
   gallery = false,
   priority = false,
-  onOpen,
 }: {
   media: AboutMedia;
   gallery?: boolean;
   priority?: boolean;
-  onOpen?: (media: AboutMedia, trigger: HTMLElement) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reduced = useReducedMotion();
@@ -85,126 +82,12 @@ function DiaryMedia({
   );
 
   const className = `about-media about-media--${media.shape}${gallery ? ' about-media--gallery' : ''}${media.src ? ' is-filled' : ' is-empty'}`;
-
-  if (media.src && onOpen) {
-    return (
-      <button
-        type="button"
-        className={className}
-        aria-label={`Open ${media.alt}`}
-        onClick={(event) => onOpen(media, event.currentTarget)}
-      >
-        {content}
-      </button>
-    );
-  }
-
   return <div className={className}>{content}</div>;
-}
-
-function MediaLightbox({
-  items,
-  activeId,
-  onChange,
-  onClose,
-  returnFocus,
-}: {
-  items: AboutMedia[];
-  activeId: string;
-  onChange: (id: string) => void;
-  onClose: () => void;
-  returnFocus: MutableRefObject<HTMLElement | null>;
-}) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const activeIndex = items.findIndex((item) => item.id === activeId);
-  const active = items[activeIndex];
-
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    closeRef.current?.focus();
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      returnFocus.current?.focus();
-    };
-  }, [onClose, returnFocus]);
-
-  useEffect(() => {
-    const move = (delta: number) => {
-      const next = (activeIndex + delta + items.length) % items.length;
-      onChange(items[next].id);
-    };
-    const onKey = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-      if (event.key === 'ArrowLeft') move(-1);
-      if (event.key === 'ArrowRight') move(1);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [activeIndex, items, onChange, onClose]);
-
-  if (!active) return null;
-
-  const move = (delta: number) => {
-    const next = (activeIndex + delta + items.length) % items.length;
-    onChange(items[next].id);
-  };
-
-  const trapFocus = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'Tab') return;
-    const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button, video[controls]'));
-    if (focusable.length < 2) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
-  return (
-    <div
-      className="about-lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Media viewer"
-      onClick={onClose}
-      onKeyDown={trapFocus}
-    >
-      <div className="about-lightbox__count" aria-live="polite">
-        {String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}
-      </div>
-      <button ref={closeRef} type="button" className="about-lightbox__close" aria-label="Close media viewer" onClick={onClose}>×</button>
-      {items.length > 1 && (
-        <>
-          <button type="button" className="about-lightbox__arrow about-lightbox__arrow--prev" aria-label="Previous media" onClick={(event) => { event.stopPropagation(); move(-1); }}>←</button>
-          <button type="button" className="about-lightbox__arrow about-lightbox__arrow--next" aria-label="Next media" onClick={(event) => { event.stopPropagation(); move(1); }}>→</button>
-        </>
-      )}
-      <div className={`about-lightbox__media about-lightbox__media--${active.shape}`} onClick={(event) => event.stopPropagation()}>
-        {active.type === 'video' ? (
-          <video src={active.src} poster={active.poster} controls autoPlay muted loop playsInline aria-label={active.alt} />
-        ) : (
-          <img src={active.src} alt={active.alt} />
-        )}
-      </div>
-    </div>
-  );
 }
 
 export default function AboutMe() {
   const isMobile = useIsMobile();
   const pageRef = useRef<HTMLDivElement>(null);
-  const returnFocusRef = useRef<HTMLElement | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-
-  const viewableMedia = useMemo(
-    () => [ABOUT_HERO, ...ABOUT_INTERESTS.flatMap((interest) => interest.media), ...ABOUT_GALLERY].filter((media) => !!media.src),
-    [],
-  );
 
   useEffect(() => {
     const root = pageRef.current;
@@ -223,13 +106,6 @@ export default function AboutMe() {
     targets.forEach((target) => observer.observe(target));
     return () => observer.disconnect();
   }, []);
-
-  const openMedia = (media: AboutMedia, trigger: HTMLElement) => {
-    if (!media.src) return;
-    returnFocusRef.current = trigger;
-    setActiveId(media.id);
-  };
-  const closeMedia = useCallback(() => setActiveId(null), []);
 
   return (
     <div className="about-root">
@@ -255,7 +131,7 @@ export default function AboutMe() {
             </div>
             <div className="about-hero__visual">
               <div className="about-hero__tape" aria-hidden />
-              <DiaryMedia media={ABOUT_HERO} priority onOpen={openMedia} />
+              <DiaryMedia media={ABOUT_HERO} priority />
               <span className="about-hero__scribble" aria-hidden>that's me ↗</span>
               <span className="about-hero__frame-no" aria-hidden>001 / portrait</span>
             </div>
@@ -277,7 +153,7 @@ export default function AboutMe() {
                 <div className="about-interest__media">
                   {interest.media.map((media, mediaIndex) => (
                     <div key={media.id} className={`about-interest__frame about-interest__frame--${mediaIndex + 1}`}>
-                      <DiaryMedia media={media} onOpen={openMedia} />
+                      <DiaryMedia media={media} />
                     </div>
                   ))}
                 </div>
@@ -294,10 +170,9 @@ export default function AboutMe() {
               <p>no captions. no chronology. just things worth keeping.</p>
             </header>
             <div className="about-gallery">
-              {ABOUT_GALLERY.map((media, index) => (
+              {ABOUT_GALLERY.map((media) => (
                 <div key={media.id} className={`about-gallery__item about-gallery__item--${media.shape} about-reveal`}>
-                  <span className="about-gallery__index" aria-hidden>{String(index + 1).padStart(2, '0')}</span>
-                  <DiaryMedia media={media} gallery onOpen={openMedia} />
+                  <DiaryMedia media={media} gallery />
                 </div>
               ))}
             </div>
@@ -306,17 +181,6 @@ export default function AboutMe() {
       </div>
 
       <SiteFooter />
-
-      {activeId && viewableMedia.length > 0 && createPortal(
-        <MediaLightbox
-          items={viewableMedia}
-          activeId={activeId}
-          onChange={setActiveId}
-          onClose={closeMedia}
-          returnFocus={returnFocusRef}
-        />,
-        document.body,
-      )}
     </div>
   );
 }
