@@ -5,7 +5,6 @@ import ThemeToggle from '../components/ThemeToggle';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import VideoSlot from '../components/VideoSlot';
 import ImageSlot from '../components/ImageSlot';
-import { useTransitionNavigate } from '../components/PageTransition';
 import { play } from '../lib/sound';
 import { enter } from '../lib/motion';
 import { useThemeCtx } from '../lib/theme';
@@ -119,7 +118,6 @@ function TechGlyph({ name }: { name: string }) {
 }
 
 export default function Portfolio() {
-  const navigate = useTransitionNavigate();
   const { theme: THEME, accent } = useThemeCtx();
   const isMobile = useIsMobile();
   const frameRefs = useRef<(HTMLElement | null)[]>([]);
@@ -143,12 +141,8 @@ export default function Portfolio() {
     return () => io.disconnect();
   }, []);
 
-  const goHome = () => { play('shutter'); navigate('/', { zoom: 'out' }); };
-
   const page: CSSProperties = { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: THEME.pageBg, fontFamily: PIXEL, WebkitFontSmoothing: 'none' };
-  const returnBtn: CSSProperties = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 118, padding: '9px 0', background: THEME.highlight, color: THEME.highlightText, cursor: 'pointer', fontFamily: PIXEL, textDecoration: 'none' };
 
-  const eyebrow: CSSProperties = { ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.iconColor, textTransform: 'uppercase' };
   const sticker = (bg: string, fg: string): CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
@@ -168,14 +162,8 @@ export default function Portfolio() {
           top bar rides on the same dotted board so there's no blank strip */}
       <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', marginBottom: isMobile ? '100svh' : FOOTER_H, boxShadow: '0 18px 28px rgba(0,0,0,.3)', backgroundColor: THEME.pageBg, backgroundImage: svgUrl(dotSvg(THEME.dotGrid)) }}>
         {/* top bar: return + toggles stay in the page flow, scroll with content */}
-        <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 28px' }}>
-          {isMobile ? (
-            <MobileNav currentRoute="/portfolio" variant="board" burgerClassName="enter-drop" />
-          ) : (
-            <button className="btn-sticker enter-drop" style={returnBtn} onClick={goHome} onMouseEnter={() => play('focusBeep')}>
-              <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
-            </button>
-          )}
+        <header style={{ position: 'relative', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '20px 28px' }}>
+          <MobileNav currentRoute="/portfolio" variant="board" fixed burgerClassName="enter-drop" />
 
           <div className="enter-drop" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <ThemeToggle />
@@ -322,19 +310,6 @@ export default function Portfolio() {
                 </article>
               );
             })}
-
-            {/* END OF THE BOARD (desktop only; mobile ends on the last frame) */}
-            {!isMobile && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 26, paddingBottom: 80 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 8, height: 8, background: THEME.nameColor }} />
-                  <span style={eyebrow}>the end</span>
-                </div>
-                <button onClick={goHome} onMouseEnter={() => play('focusBeep')} className="btn-sticker" style={returnBtn}>
-                  <span style={{ ...stretch, fontSize: 10, transformOrigin: 'center' }}>← return</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
