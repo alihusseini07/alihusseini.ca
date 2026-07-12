@@ -88,6 +88,99 @@ function DiaryMedia({
   return <div className={className} style={style}>{content}</div>;
 }
 
+function FilmReel({
+  frames,
+  direction,
+  label,
+}: {
+  frames: AboutMedia[];
+  /** Idle auto-scroll direction (content drift). */
+  direction: 'left' | 'right';
+  label?: string;
+}) {
+  const reelRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  // Interaction state kept in refs so the rAF loop reads live values without re-subscribing.
+  const pausedRef = useRef(false);
+  const draggingRef = useRef(false);
+  // Sub-pixel position tracked as a float; scrollLeft rounds to int, so stepping
+  // it directly loses fractional advances (e.g. -0.5/frame rounds back to the
+  // same integer and never moves). We own the float and write rounded values.
+  const posRef = useRef(0);
+
+  // Keep pos inside [0, half); the track holds two copies so this is seamless.
+  const wrap = (half: number) => {
+    if (half <= 0) return;
+    if (posRef.current >= half) posRef.current -= half;
+    else if (posRef.current < 0) posRef.current += half;
+  };
+
+  useEffect(() => {
+    const el = reelRef.current;
+    if (!el || reduced) return;
+
+    const speed = direction === 'left' ? 0.5 : -0.5; // px per frame
+    let raf = 0;
+    const tick = () => {
+      if (!pausedRef.current && !draggingRef.current) {
+        posRef.current += speed;
+        wrap(el.scrollWidth / 2);
+        el.scrollLeft = Math.round(posRef.current);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [direction, reduced]);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = reelRef.current;
+    if (!el) return;
+    e.preventDefault(); // stop text/image selection from starting the drag
+    draggingRef.current = true;
+    el.setPointerCapture(e.pointerId);
+    const startX = e.clientX;
+    const startPos = posRef.current;
+
+    const onMove = (ev: PointerEvent) => {
+      if (!draggingRef.current) return;
+      posRef.current = startPos - (ev.clientX - startX);
+      wrap(el.scrollWidth / 2);
+      el.scrollLeft = Math.round(posRef.current);
+    };
+    const onUp = () => {
+      draggingRef.current = false;
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
+
+  return (
+    <div className="about-strip__reel">
+      <div
+        ref={reelRef}
+        className="about-strip__viewport"
+        aria-label={label}
+        onPointerDown={onPointerDown}
+        onPointerEnter={() => (pausedRef.current = true)}
+        onPointerLeave={() => (pausedRef.current = false)}
+      >
+        <div className="about-strip__track">
+          {[0, 1].map((pass) =>
+            frames.map((media) => (
+              <div key={`${media.id}-${pass}`} className="about-strip__frame" aria-hidden={pass === 1}>
+                <DiaryMedia media={media} />
+              </div>
+            )),
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AboutMe() {
   const isMobile = useIsMobile();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -155,17 +248,13 @@ export default function AboutMe() {
                 key={interest.id}
                 className={`about-strip about-strip--${interest.scroll} about-reveal`}
               >
-                <div className="about-strip__reel">
-                  <div className="about-strip__track" aria-label={interest.caption}>
-                    {[0, 1].map((pass) =>
-                      interest.media.map((media) => (
-                        <div key={`${media.id}-${pass}`} className="about-strip__frame" aria-hidden={pass === 1}>
-                          <DiaryMedia media={media} />
-                        </div>
-                      )),
-                    )}
-                  </div>
-                </div>
+                {interest.mediaTop && (
+                  <FilmReel
+                    frames={interest.mediaTop}
+                    direction={interest.scroll === 'left' ? 'right' : 'left'}
+                  />
+                )}
+                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} />
                 <p className="about-strip__caption">{interest.caption}</p>
               </article>
             ))}

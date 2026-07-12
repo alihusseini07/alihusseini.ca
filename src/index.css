@@ -655,6 +655,7 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 }
 .about-strip.is-visible { opacity: 1; translate: 0 0; }
 
+.about-strip__reel + .about-strip__reel { margin-top: 14px; }
 .about-strip__reel {
   position: relative;
   overflow: hidden;
@@ -665,6 +666,20 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
+
+/* Scroll/drag surface; perforations + mask stay fixed on the reel above it. */
+.about-strip__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.about-strip__frame img { -webkit-user-drag: none; }
+.about-strip__viewport::-webkit-scrollbar { display: none; }
+.about-strip__viewport:active { cursor: grabbing; }
 
 /* sprocket-hole perforations top and bottom */
 .about-strip__reel::before,
@@ -688,11 +703,8 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
   gap: 10px;
   width: max-content;
   padding: 0 5px;
-  animation: about-reel 46s linear infinite;
-  will-change: transform;
 }
-.about-strip--right .about-strip__track { animation-direction: reverse; }
-.about-strip__reel:hover .about-strip__track { animation-play-state: paused; }
+.about-strip__frame img { pointer-events: none; }
 
 .about-strip__frame {
   flex: 0 0 auto;
@@ -718,19 +730,6 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 .about-strip:nth-child(2) .about-strip__caption { color: var(--about-red); }
 .about-strip:nth-child(3) .about-strip__caption { color: var(--about-blue); }
 
-@keyframes about-reel {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .about-strip__reel {
-    -webkit-mask-image: none;
-    mask-image: none;
-    overflow-x: auto;
-  }
-  .about-strip__track { animation: none; }
-}
 
 .about-archive { padding: clamp(110px, 12vw, 180px) clamp(18px, 4vw, 62px) clamp(100px, 10vw, 150px); }
 

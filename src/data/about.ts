@@ -24,6 +24,10 @@ export interface AboutInterest {
   scroll: 'left' | 'right';
   /** Any number of frames; the strip loops seamlessly regardless of count. */
   media: AboutMedia[];
+  /** Optional extra film row shown ABOVE the main strip, with no caption of its
+   *  own — the interest's single caption then reads under both rows. Scrolls
+   *  opposite the main strip. */
+  mediaTop?: AboutMedia[];
 }
 
 export const ABOUT_HERO: AboutMedia = {
@@ -39,12 +43,23 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
     id: 'anime',
     caption: 'ranking characters far more seriously than the situation calls for',
     scroll: 'left',
+    mediaTop: [
+      { id: 'anime-top-bleach1', type: 'image', src: '/assets/anime/row1/bleach1.jpg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
+      { id: 'anime-top-bleach2', type: 'image', src: '/assets/anime/row1/bleach2.jpeg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
+      { id: 'anime-top-bleach3', type: 'image', src: '/assets/anime/row1/bleach3.jpeg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
+      { id: 'anime-top-goatbeard', type: 'image', src: '/assets/anime/row1/goatbeard.png', alt: 'Whitebeard', shape: 'landscape', placeholder: 'the goat' },
+      { id: 'anime-top-opiece1', type: 'image', src: '/assets/anime/row1/opiece1.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+      { id: 'anime-top-opiece2', type: 'image', src: '/assets/anime/row1/opiece2.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+      { id: 'anime-top-opiece3', type: 'image', src: '/assets/anime/row1/opiece3.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+    ],
     media: [
-      { id: 'anime-01', type: 'image', alt: 'One of Ali\'s favourite anime moments', shape: 'landscape', placeholder: 'favourite scene' },
-      { id: 'anime-02', type: 'image', alt: 'Anime art selected by Ali', shape: 'landscape', placeholder: 'character pick' },
-      { id: 'anime-03', type: 'image', alt: 'Another anime favourite from Ali', shape: 'landscape', placeholder: 'current watch' },
-      { id: 'anime-04', type: 'image', alt: 'An anime still Ali keeps coming back to', shape: 'landscape', placeholder: 'a story i love' },
-      { id: 'anime-05', type: 'image', alt: 'Anime art picked by Ali', shape: 'landscape', placeholder: 'the tier list' },
+      { id: 'anime-aot', type: 'image', src: '/assets/anime/row2/aot.jpg', alt: 'Attack on Titan', shape: 'landscape', placeholder: 'aot' },
+      { id: 'anime-code-geass', type: 'image', src: '/assets/anime/row2/code-geass.jpg', alt: 'Code Geass', shape: 'landscape', placeholder: 'code geass' },
+      { id: 'anime-haikyuu', type: 'image', src: '/assets/anime/row2/haikyuu.jpg', alt: 'Haikyuu', shape: 'landscape', placeholder: 'haikyuu' },
+      { id: 'anime-hxh1', type: 'image', src: '/assets/anime/row2/hxh1.jpg', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
+      { id: 'anime-hxh2', type: 'image', src: '/assets/anime/row2/hxh2.jpg', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
+      { id: 'anime-naruto', type: 'image', src: '/assets/anime/row2/naruto.jpg', alt: 'Naruto', shape: 'landscape', placeholder: 'naruto' },
+      { id: 'anime-shinra-tensei', type: 'image', src: '/assets/anime/row2/shinra-tensei.jpg', alt: 'Shinra Tensei', shape: 'landscape', placeholder: 'shinra tensei' },
     ],
   },
   {
