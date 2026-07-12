@@ -18,9 +18,12 @@ export interface AboutMedia {
 
 export interface AboutInterest {
   id: 'anime' | 'kickboxing' | 'fashion';
-  title: string;
-  blurb: string;
-  media: [AboutMedia, AboutMedia, AboutMedia];
+  /** Single handwritten line shown under the film strip. No section title. */
+  caption: string;
+  /** Direction the strip auto-scrolls. Alternate per row for rhythm. */
+  scroll: 'left' | 'right';
+  /** Any number of frames; the strip loops seamlessly regardless of count. */
+  media: AboutMedia[];
 }
 
 export const ABOUT_HERO: AboutMedia = {
@@ -34,32 +37,38 @@ export const ABOUT_HERO: AboutMedia = {
 export const ABOUT_INTERESTS: AboutInterest[] = [
   {
     id: 'anime',
-    title: 'anime',
-    blurb: 'i love a good story, a ridiculous power system, and ranking characters way more seriously than the situation calls for.',
+    caption: 'ranking characters far more seriously than the situation calls for',
+    scroll: 'left',
     media: [
       { id: 'anime-01', type: 'image', alt: 'One of Ali\'s favourite anime moments', shape: 'landscape', placeholder: 'favourite scene' },
-      { id: 'anime-02', type: 'image', alt: 'Anime art selected by Ali', shape: 'portrait', placeholder: 'character pick' },
-      { id: 'anime-03', type: 'image', alt: 'Another anime favourite from Ali', shape: 'square', placeholder: 'current watch' },
+      { id: 'anime-02', type: 'image', alt: 'Anime art selected by Ali', shape: 'landscape', placeholder: 'character pick' },
+      { id: 'anime-03', type: 'image', alt: 'Another anime favourite from Ali', shape: 'landscape', placeholder: 'current watch' },
+      { id: 'anime-04', type: 'image', alt: 'An anime still Ali keeps coming back to', shape: 'landscape', placeholder: 'a story i love' },
+      { id: 'anime-05', type: 'image', alt: 'Anime art picked by Ali', shape: 'landscape', placeholder: 'the tier list' },
     ],
   },
   {
     id: 'kickboxing',
-    title: 'kickboxing',
-    blurb: 'kickboxing is where i go to get out of my head—pads, footwork, and the kind of tired that fixes everything.',
+    caption: 'pads, footwork, and the kind of tired that fixes everything',
+    scroll: 'right',
     media: [
       { id: 'kickboxing-01', type: 'image', alt: 'Ali training kickboxing', shape: 'landscape', placeholder: 'pad work' },
       { id: 'kickboxing-02', type: 'image', alt: 'A kickboxing training detail', shape: 'landscape', placeholder: 'in the gym' },
       { id: 'kickboxing-03', type: 'image', alt: 'Ali during a kickboxing session', shape: 'landscape', placeholder: 'training shot' },
+      { id: 'kickboxing-04', type: 'image', alt: 'Kickboxing footwork detail', shape: 'landscape', placeholder: 'footwork' },
+      { id: 'kickboxing-05', type: 'image', alt: 'After a kickboxing round', shape: 'landscape', placeholder: 'round done' },
     ],
   },
   {
     id: 'fashion',
-    title: 'fashion',
-    blurb: 'i like treating an outfit like another build: start with one good piece, overthink the details, then pretend it came together effortlessly.',
+    caption: 'an outfit is just another build — then pretend it was effortless',
+    scroll: 'left',
     media: [
-      { id: 'fashion-01', type: 'image', alt: 'One of Ali\'s favourite outfits', shape: 'portrait', placeholder: 'outfit 01' },
-      { id: 'fashion-02', type: 'image', alt: 'A fashion detail selected by Ali', shape: 'portrait', placeholder: 'detail' },
-      { id: 'fashion-03', type: 'image', alt: 'Another outfit styled by Ali', shape: 'portrait', placeholder: 'outfit 02' },
+      { id: 'fashion-01', type: 'image', alt: 'One of Ali\'s favourite outfits', shape: 'landscape', placeholder: 'outfit 01' },
+      { id: 'fashion-02', type: 'image', alt: 'A fashion detail selected by Ali', shape: 'landscape', placeholder: 'the details' },
+      { id: 'fashion-03', type: 'image', alt: 'Another outfit styled by Ali', shape: 'landscape', placeholder: 'outfit 02' },
+      { id: 'fashion-04', type: 'image', alt: 'A styled look from Ali', shape: 'landscape', placeholder: 'one good piece' },
+      { id: 'fashion-05', type: 'image', alt: 'An outfit Ali put together', shape: 'landscape', placeholder: 'outfit 03' },
     ],
   },
 ];

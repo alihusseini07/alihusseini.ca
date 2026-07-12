@@ -546,8 +546,7 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
   animation: about-copy-in .7s cubic-bezier(.2, .78, .25, 1) both;
 }
 
-.about-archive__eyebrow,
-.about-index {
+.about-archive__eyebrow {
   font-family: 'VT323', monospace;
   font-weight: 700;
   text-transform: uppercase;
@@ -567,7 +566,7 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
 }
 
 .about-hero h1,
-.about-interest h2,
+.about-section-head h2,
 .about-archive h2 {
   font-family: 'Anton', Impact, sans-serif;
   font-weight: 400;
@@ -631,79 +630,107 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
   transform: rotate(-3deg);
 }
 
-.about-index {
+.about-section-head {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
-  padding: 28px clamp(24px, 5vw, 76px);
-  border-bottom: 1px solid var(--about-line);
-  color: var(--about-muted);
-  font-size: 8px;
+  gap: 40px;
+  padding: clamp(90px, 11vw, 156px) clamp(24px, 5vw, 76px) 0;
+}
+.about-section-head h2 { font-size: clamp(58px, 8vw, 128px); line-height: .82; }
+.about-section-head p { max-width: 26ch; padding-bottom: 10px; color: var(--about-muted); font-size: clamp(19px, 1.6vw, 26px); line-height: 1.12; }
+
+.about-interests {
+  padding: clamp(44px, 5vw, 72px) clamp(20px, 5vw, 76px) clamp(40px, 6vw, 96px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(56px, 7vw, 104px);
 }
 
-.about-interests { padding: 0 clamp(24px, 6.5vw, 104px); }
-
-.about-interest {
-  position: relative;
-  min-height: 850px;
-  display: grid;
-  grid-template-columns: minmax(250px, .72fr) minmax(0, 1.5fr);
-  align-items: center;
-  gap: clamp(40px, 7vw, 120px);
-  padding: clamp(100px, 12vw, 180px) 0;
-  border-bottom: 1px solid var(--about-line);
-}
-
-.about-interest:nth-child(even) { grid-template-columns: minmax(0, 1.5fr) minmax(250px, .72fr); }
-.about-interest:nth-child(even) .about-interest__copy { grid-column: 2; grid-row: 1; }
-.about-interest:nth-child(even) .about-interest__media { grid-column: 1; grid-row: 1; }
-
-.about-interest__copy { position: relative; z-index: 3; }
-
-.about-interest h2 {
-  font-size: clamp(72px, 8vw, 130px);
-  line-height: .86;
-}
-
-.about-interest__copy p {
-  max-width: 28ch;
-  margin-top: 28px;
-  font-size: clamp(23px, 2vw, 30px);
-  line-height: 1.18;
-  color: var(--about-muted);
-}
-
-.about-interest__media { position: relative; min-height: 570px; }
-.about-interest__frame {
-  position: absolute;
+/* Film-strip row: a horizontal reel of frames that auto-scrolls, one caption under. */
+.about-strip {
   opacity: 0;
-  scale: .97;
-  transition: opacity .5s ease, scale .62s cubic-bezier(.2, .78, .25, 1);
+  translate: 0 26px;
+  transition: opacity .6s ease, translate .7s cubic-bezier(.2, .78, .25, 1);
 }
-.about-interest.is-visible .about-interest__frame { opacity: 1; scale: 1; }
-.about-interest__frame .about-media { width: 100%; height: 100%; }
+.about-strip.is-visible { opacity: 1; translate: 0 0; }
 
-.about-interest--anime .about-interest__media {
-  background-image: radial-gradient(var(--about-line) 1.4px, transparent 1.4px);
-  background-size: 9px 9px;
-  clip-path: polygon(0 4%, 96% 0, 100% 93%, 4% 100%);
+.about-strip__reel {
+  position: relative;
+  overflow: hidden;
+  padding: 15px 0;
+  background: #171513;
+  border-radius: 3px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .28), inset 0 0 0 1px rgba(255, 255, 255, .05);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
-.about-interest--anime .about-interest__frame { padding: 8px; background: var(--about-paper); border: 2px solid var(--about-ink); box-shadow: 8px 8px 0 var(--about-ink); }
-.about-interest--anime .about-interest__frame--1 { inset: 4% 18% 28% 2%; transform: rotate(-2deg); }
-.about-interest--anime .about-interest__frame--2 { width: 35%; height: 53%; right: 1%; top: 10%; transform: rotate(3deg); }
-.about-interest--anime .about-interest__frame--3 { width: 36%; height: 37%; right: 8%; bottom: 2%; transform: rotate(-1deg); }
 
-.about-interest--kickboxing .about-interest__media { min-height: 500px; }
-.about-interest--kickboxing .about-interest__frame { width: 54%; height: 58%; border: 10px solid #171513; box-shadow: 0 15px 30px rgba(0, 0, 0, .28); }
-.about-interest--kickboxing .about-interest__frame--1 { left: 0; top: 0; transform: rotate(-2.2deg); }
-.about-interest--kickboxing .about-interest__frame--2 { right: 0; top: 18%; transform: rotate(1.8deg); z-index: 2; }
-.about-interest--kickboxing .about-interest__frame--3 { left: 16%; bottom: -5%; transform: rotate(.6deg); z-index: 3; }
+/* sprocket-hole perforations top and bottom */
+.about-strip__reel::before,
+.about-strip__reel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 15px;
+  background-image: radial-gradient(rgba(238, 228, 209, .82) 0 40%, transparent 42%);
+  background-size: 22px 15px;
+  background-repeat: repeat-x;
+  pointer-events: none;
+  z-index: 2;
+}
+.about-strip__reel::before { top: 0; }
+.about-strip__reel::after { bottom: 0; }
 
-.about-interest--fashion .about-interest__media { display: flex; align-items: flex-end; gap: clamp(10px, 1.6vw, 24px); min-height: 620px; }
-.about-interest--fashion .about-interest__frame { position: relative; flex: 1; height: 82%; padding: 10px 10px 48px; background: #f4ecdd; border: 1px solid rgba(38, 34, 30, .25); box-shadow: 8px 12px 0 rgba(38, 34, 30, .12); }
-.about-interest--fashion .about-interest__frame:nth-child(2) { height: 100%; transform: translateY(-6px); }
-.about-interest--fashion .about-interest__frame:nth-child(3) { height: 88%; transform: translateY(20px); }
-html[data-theme='dark'] .about-interest--fashion .about-interest__frame { background: #d9cdb8; }
+.about-strip__track {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  padding: 0 5px;
+  animation: about-reel 46s linear infinite;
+  will-change: transform;
+}
+.about-strip--right .about-strip__track { animation-direction: reverse; }
+.about-strip__reel:hover .about-strip__track { animation-play-state: paused; }
+
+.about-strip__frame {
+  flex: 0 0 auto;
+  width: clamp(220px, 24vw, 340px);
+  aspect-ratio: 3 / 2;
+  padding: 6px;
+  background: #f4ecdd;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+}
+html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
+.about-strip__frame .about-media { width: 100%; height: 100%; }
+
+.about-strip__caption {
+  margin: 18px auto 0;
+  max-width: 46ch;
+  text-align: center;
+  font-family: 'VT323', monospace;
+  font-size: clamp(20px, 1.9vw, 27px);
+  letter-spacing: .01em;
+  line-height: 1.15;
+  color: var(--about-muted);
+}
+.about-strip:nth-child(2) .about-strip__caption { color: var(--about-red); }
+.about-strip:nth-child(3) .about-strip__caption { color: var(--about-blue); }
+
+@keyframes about-reel {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-strip__reel {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow-x: auto;
+  }
+  .about-strip__track { animation: none; }
+}
 
 .about-archive { padding: clamp(110px, 12vw, 180px) clamp(18px, 4vw, 62px) clamp(100px, 10vw, 150px); }
 
@@ -795,17 +822,12 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 
 .about-reveal { opacity: 0; transform: translateY(42px); transition: opacity .68s ease, transform .76s cubic-bezier(.2, .78, .25, 1); }
 .about-reveal.is-visible { opacity: 1; transform: none; }
-.about-interest.is-visible .about-interest__frame--1 { transition-delay: .08s; }
-.about-interest.is-visible .about-interest__frame--2 { transition-delay: .16s; }
-.about-interest.is-visible .about-interest__frame--3 { transition-delay: .24s; }
 
 @keyframes about-copy-in { from { opacity: 0; transform: translateY(22px); } }
 @keyframes about-develop { from { opacity: 0; filter: sepia(1) contrast(.45) brightness(1.4); transform: translateY(34px) rotate(5deg) scale(.96); } }
 
 @media (max-width: 1000px) {
   .about-hero { grid-template-columns: minmax(0, 1fr) minmax(300px, .72fr); gap: 42px; padding-left: 34px; padding-right: 34px; }
-  .about-interest { grid-template-columns: minmax(220px, .72fr) minmax(0, 1.35fr); gap: 44px; }
-  .about-interest:nth-child(even) { grid-template-columns: minmax(0, 1.35fr) minmax(220px, .72fr); }
 }
 
 @media (max-width: 900px) {
@@ -821,27 +843,13 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
   .about-hero__copy p { max-width: 31ch; font-size: 23px; }
   .about-hero__visual { width: calc(100% - 26px); justify-self: center; padding: 12px 12px 66px; box-shadow: 10px 14px 0 rgba(38, 34, 30, .12), 0 20px 45px rgba(38, 34, 30, .2); }
   .about-hero__scribble { left: 18px; bottom: 20px; font-size: 21px; }
-  .about-index { padding: 24px 20px; font-size: 7px; line-height: 1.6; }
-  .about-index span:first-child { max-width: 22ch; }
+  .about-section-head { flex-direction: column; align-items: flex-start; gap: 14px; padding: clamp(72px, 18vw, 104px) 16px 0; }
+  .about-section-head h2 { font-size: clamp(42px, 13vw, 88px); }
+  .about-section-head p { font-size: 20px; padding-bottom: 0; }
 
-  .about-interests { padding: 0 20px; }
-  .about-interest,
-  .about-interest:nth-child(even) {
-    min-height: 0;
-    grid-template-columns: 1fr;
-    gap: 56px;
-    padding: 100px 0 116px;
-  }
-  .about-interest:nth-child(even) .about-interest__copy,
-  .about-interest:nth-child(even) .about-interest__media { grid-column: 1; grid-row: auto; }
-  .about-interest__copy { max-width: 92%; }
-  .about-interest h2 { font-size: clamp(44px, 13vw, 100px); }
-  .about-interest__copy p { font-size: 23px; }
-  .about-interest__media { min-height: 430px; }
-  .about-interest--kickboxing .about-interest__media { min-height: 410px; }
-  .about-interest--kickboxing .about-interest__frame { border-width: 6px; }
-  .about-interest--fashion .about-interest__media { min-height: 470px; gap: 8px; }
-  .about-interest--fashion .about-interest__frame { padding: 6px 6px 32px; }
+  .about-interests { padding: clamp(40px, 10vw, 64px) 16px clamp(32px, 10vw, 64px); gap: clamp(48px, 12vw, 72px); }
+  .about-strip__frame { width: clamp(180px, 62vw, 240px); }
+  .about-strip__caption { font-size: 22px; max-width: 34ch; }
 
   .about-archive { padding: 100px 12px 110px; }
   .about-archive__header { display: block; margin-bottom: 60px; padding: 0 8px; }

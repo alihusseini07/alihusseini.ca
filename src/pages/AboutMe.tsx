@@ -141,24 +141,32 @@ export default function AboutMe() {
             </div>
           </section>
 
-          <div className="about-index" aria-hidden>
-            <span>things i keep coming back to</span>
-          </div>
+          <header className="about-section-head about-reveal">
+            <div>
+              <span className="about-archive__eyebrow">off the clock</span>
+              <h2>things i keep<br />coming back to</h2>
+            </div>
+            <p>no résumé bullets. just what i spend my time on.</p>
+          </header>
 
-          <section className="about-interests" aria-label="Favourite interests">
+          <section className="about-interests" aria-label="Things I keep coming back to">
             {ABOUT_INTERESTS.map((interest) => (
-              <article key={interest.id} className={`about-interest about-interest--${interest.id} about-reveal`}>
-                <header className="about-interest__copy">
-                  <h2>{interest.title}</h2>
-                  <p>{interest.blurb}</p>
-                </header>
-                <div className="about-interest__media">
-                  {interest.media.map((media, mediaIndex) => (
-                    <div key={media.id} className={`about-interest__frame about-interest__frame--${mediaIndex + 1}`}>
-                      <DiaryMedia media={media} />
-                    </div>
-                  ))}
+              <article
+                key={interest.id}
+                className={`about-strip about-strip--${interest.scroll} about-reveal`}
+              >
+                <div className="about-strip__reel">
+                  <div className="about-strip__track" aria-label={interest.caption}>
+                    {[0, 1].map((pass) =>
+                      interest.media.map((media) => (
+                        <div key={`${media.id}-${pass}`} className="about-strip__frame" aria-hidden={pass === 1}>
+                          <DiaryMedia media={media} />
+                        </div>
+                      )),
+                    )}
+                  </div>
                 </div>
+                <p className="about-strip__caption">{interest.caption}</p>
               </article>
             ))}
           </section>
