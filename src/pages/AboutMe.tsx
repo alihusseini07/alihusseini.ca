@@ -84,7 +84,8 @@ function DiaryMedia({
   );
 
   const className = `about-media about-media--${media.shape}${gallery ? ' about-media--gallery' : ''}${media.src ? ' is-filled' : ' is-empty'}`;
-  return <div className={className}>{content}</div>;
+  const style = gallery && media.aspect ? { aspectRatio: String(media.aspect) } : undefined;
+  return <div className={className} style={style}>{content}</div>;
 }
 
 export default function AboutMe() {

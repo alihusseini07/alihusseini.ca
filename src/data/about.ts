@@ -10,6 +10,9 @@ export interface AboutMedia {
   poster?: string;
   alt: string;
   shape: AboutMediaShape;
+  /** Real width/height ratio of the asset. Reserves the tile's height before the
+   *  image loads so the archive masonry never reorders. */
+  aspect?: number;
   placeholder: string;
 }
 
@@ -61,44 +64,47 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
   },
 ];
 
-/** Reorder, remove, or append entries here; the archive reflows automatically. */
-const GALLERY_FILES: Array<[filename: string, type: AboutMediaType, shape: AboutMediaShape]> = [
-  ['IMG_2976.JPG', 'image', 'portrait'],
-  ['IMG_1174.JPG', 'image', 'portrait'],
-  ['082F7EE2-962A-4306-92B5-A22B7FCB918B.mov', 'video', 'tall'],
-  ['IMG_2999.JPG', 'image', 'landscape'],
-  ['IMG_1517.JPG', 'image', 'portrait'],
-  ['IMG_0841.JPG', 'image', 'portrait'],
-  ['IMG_2861.JPG', 'image', 'tall'],
-  ['IMG_1559.JPG', 'image', 'portrait'],
-  ['IMG_1759.JPG', 'image', 'portrait'],
-  ['IMG_1138.JPG', 'image', 'portrait'],
-  ['8141A2BB-16F4-4207-9F05-40D605FBD4C5-web.mp4', 'video', 'tall'],
-  ['IMG_2679.JPG', 'image', 'portrait'],
-  ['IMG_2681.JPG', 'image', 'portrait'],
-  ['temp_image_6415DD89-DC09-4BD3-A062-C662DB18932F.jpg', 'image', 'tall'],
-  ['IMG_2465.JPG', 'image', 'portrait'],
-  ['IMG_3093.JPG', 'image', 'tall'],
-  ['IMG_2738.JPG', 'image', 'portrait'],
-  ['IMG_3379.JPG', 'image', 'tall'],
-  ['CC225DFA-EA03-4BEC-9809-3A63217CD863.mp4', 'video', 'tall'],
-  ['IMG_2829.JPG', 'image', 'portrait'],
-  ['IMG_3380.JPG', 'image', 'tall'],
-  ['IMG_3009.JPG', 'image', 'portrait'],
-  ['IMG_3381.JPG', 'image', 'tall'],
-  ['IMG_3011.JPG', 'image', 'portrait'],
-  ['IMG_3185.JPG', 'image', 'portrait'],
-  ['IMG_3210.JPG', 'image', 'portrait'],
-  ['E0B0A188-EEA1-45D6-A7D9-798ADDCF3FE2.mp4', 'video', 'tall'],
-  ['IMG_3370.JPG', 'image', 'portrait'],
-  ['6FF93328-30C5-45F6-8585-49E5CC4DAB14.jpg', 'image', 'portrait'],
+/** Reorder, remove, or append entries here; the archive reflows automatically.
+ *  `aspect` = real width/height of the asset (measured from the file) so the tile
+ *  reserves its exact height before loading and the masonry never reorders. */
+const GALLERY_FILES: Array<[filename: string, type: AboutMediaType, shape: AboutMediaShape, aspect: number]> = [
+  ['IMG_2976.JPG', 'image', 'portrait', 0.75],
+  ['IMG_1174.JPG', 'image', 'portrait', 0.75],
+  ['082F7EE2-962A-4306-92B5-A22B7FCB918B.mov', 'video', 'tall', 0.5625],
+  ['IMG_2999.JPG', 'image', 'landscape', 1.3333],
+  ['IMG_1517.JPG', 'image', 'portrait', 0.75],
+  ['IMG_0841.JPG', 'image', 'portrait', 0.75],
+  ['IMG_2861.JPG', 'image', 'tall', 0.5625],
+  ['IMG_1559.JPG', 'image', 'portrait', 0.75],
+  ['IMG_1759.JPG', 'image', 'portrait', 0.6807],
+  ['IMG_1138.JPG', 'image', 'portrait', 0.75],
+  ['8141A2BB-16F4-4207-9F05-40D605FBD4C5-web.mp4', 'video', 'tall', 0.5625],
+  ['IMG_2679.JPG', 'image', 'portrait', 0.6608],
+  ['IMG_2681.JPG', 'image', 'portrait', 0.75],
+  ['temp_image_6415DD89-DC09-4BD3-A062-C662DB18932F.jpg', 'image', 'tall', 0.5625],
+  ['IMG_2465.JPG', 'image', 'portrait', 0.75],
+  ['IMG_3093.JPG', 'image', 'tall', 0.5625],
+  ['IMG_2738.JPG', 'image', 'portrait', 0.75],
+  ['IMG_3379.JPG', 'image', 'tall', 0.5625],
+  ['CC225DFA-EA03-4BEC-9809-3A63217CD863.mp4', 'video', 'tall', 0.5625],
+  ['IMG_2829.JPG', 'image', 'portrait', 0.75],
+  ['IMG_3380.JPG', 'image', 'tall', 0.5625],
+  ['IMG_3009.JPG', 'image', 'portrait', 0.75],
+  ['IMG_3381.JPG', 'image', 'tall', 0.5625],
+  ['IMG_3011.JPG', 'image', 'portrait', 0.75],
+  ['IMG_3185.JPG', 'image', 'portrait', 0.7025],
+  ['IMG_3210.JPG', 'image', 'portrait', 0.75],
+  ['E0B0A188-EEA1-45D6-A7D9-798ADDCF3FE2.mp4', 'video', 'tall', 0.5625],
+  ['IMG_3370.JPG', 'image', 'portrait', 0.75],
+  ['6FF93328-30C5-45F6-8585-49E5CC4DAB14.jpg', 'image', 'portrait', 0.75],
 ];
 
-export const ABOUT_GALLERY: AboutMedia[] = GALLERY_FILES.map(([filename, type, shape], index) => ({
+export const ABOUT_GALLERY: AboutMedia[] = GALLERY_FILES.map(([filename, type, shape, aspect], index) => ({
   id: `gallery-${filename.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
   type,
   src: `/assets/gallery/${filename}`,
   alt: `${type === 'video' ? 'Gallery video' : 'Gallery photo'} ${String(index + 1).padStart(2, '0')}`,
   shape,
+  aspect,
   placeholder: type === 'video' ? 'gallery video' : 'gallery photo',
 }));

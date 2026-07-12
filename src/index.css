@@ -762,10 +762,15 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 .about-media video { width: 100%; height: 100%; display: block; object-fit: cover; }
 .about-media--gallery img,
 .about-media--gallery video {
-  height: auto;
+  height: 100%;
   object-fit: contain;
   background: #11100e;
 }
+
+/* Each gallery tile carries its real aspect-ratio inline (see data/about.ts), so
+   the multi-column masonry reserves the exact height before the lazy image loads
+   and never reorders. This fallback covers any tile missing a ratio. */
+.about-media--gallery { aspect-ratio: 4 / 5; }
 .about-placeholder {
   position: absolute;
   inset: 0;
