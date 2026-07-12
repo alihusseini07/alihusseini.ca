@@ -546,7 +546,6 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
   animation: about-copy-in .7s cubic-bezier(.2, .78, .25, 1) both;
 }
 
-.about-kicker,
 .about-archive__eyebrow,
 .about-index {
   font-family: 'VT323', monospace;
@@ -555,16 +554,17 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
   letter-spacing: .08em;
 }
 
-.about-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
-  font-size: 8px;
+.about-hero__contact { margin-top: clamp(28px, 3vw, 40px); }
+.about-hero__contact-label {
+  display: block;
+  margin-bottom: 14px;
+  font-family: 'VT323', monospace;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
   color: var(--about-red);
 }
-
-.about-kicker::before { content: ''; width: 42px; height: 3px; background: currentColor; }
 
 .about-hero h1,
 .about-interest h2,

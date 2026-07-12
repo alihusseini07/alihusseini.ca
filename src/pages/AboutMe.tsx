@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import ContactBar from '../components/ContactBar';
 import MobileNav from '../components/MobileNav';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
 import ThemeToggle from '../components/ThemeToggle';
 import { ABOUT_GALLERY, ABOUT_HERO, ABOUT_INTERESTS, type AboutMedia } from '../data/about';
 import { useIsMobile } from '../lib/useIsMobile';
+import { PROFILE } from '../tokens';
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -123,10 +125,13 @@ export default function AboutMe() {
         <main>
           <section className="about-hero" aria-labelledby="about-title">
             <div className="about-hero__copy">
-              <div className="about-kicker">personal archive</div>
               <h1 id="about-title">hey, i'm ali —</h1>
               <p>mechatronics engineering student @ uwaterloo, incoming @ axl labs. i like building things that make people's lives easier: software, robots, and everything in between.</p>
               <p>off the clock i'm at the gym hitting pads, defending my anime tier lists, or putting together an outfit i'll overthink anyway. this page is the non-resume stuff.</p>
+              <div className="about-hero__contact">
+                <span className="about-hero__contact-label">reach me:</span>
+                <ContactBar links={PROFILE.links} variant="about" />
+              </div>
             </div>
             <div className="about-hero__visual">
               <div className="about-hero__tape" aria-hidden />
