@@ -8,6 +8,8 @@ export interface AboutMedia {
   src?: string;
   /** Recommended for video tiles so the grid has a clean first frame. */
   poster?: string;
+  /** Optional clip that plays over the still image while hovered (image tiles only). */
+  hoverVideo?: string;
   alt: string;
   shape: AboutMediaShape;
   /** Real width/height ratio of the asset. Reserves the tile's height before the
@@ -44,13 +46,15 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
     caption: 'ranking characters far more seriously than the situation calls for',
     scroll: 'left',
     mediaTop: [
-      { id: 'anime-top-bleach1', type: 'image', src: '/assets/anime/row1/bleach1.jpg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
+      { id: 'anime-top-bleach1', type: 'image', src: '/assets/anime/row1/bleach1.jpg', hoverVideo: '/assets/anime/row1/videos/bleach1.webm', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
       { id: 'anime-top-bleach2', type: 'image', src: '/assets/anime/row1/bleach2.jpeg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
       { id: 'anime-top-bleach3', type: 'image', src: '/assets/anime/row1/bleach3.jpeg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
-      { id: 'anime-top-goatbeard', type: 'image', src: '/assets/anime/row1/goatbeard.png', alt: 'Whitebeard', shape: 'landscape', placeholder: 'the goat' },
-      { id: 'anime-top-opiece1', type: 'image', src: '/assets/anime/row1/opiece1.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
-      { id: 'anime-top-opiece2', type: 'image', src: '/assets/anime/row1/opiece2.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
-      { id: 'anime-top-opiece3', type: 'image', src: '/assets/anime/row1/opiece3.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+      { id: 'anime-top-bleach4', type: 'image', src: '/assets/anime/row1/bleach4.jpg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
+      { id: 'anime-top-goatbeard', type: 'image', src: '/assets/anime/row1/goatbeard.png', hoverVideo: '/assets/anime/row1/videos/goatbeard.webm', alt: 'Whitebeard', shape: 'landscape', placeholder: 'the goat' },
+      { id: 'anime-top-opiece1', type: 'image', src: '/assets/anime/row1/opiece1.jpg', hoverVideo: '/assets/anime/row1/videos/opiece1.webm', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+      { id: 'anime-top-opiece2', type: 'image', src: '/assets/anime/row1/opiece2.jpg', hoverVideo: '/assets/anime/row1/videos/opiece2.webm', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+      { id: 'anime-top-opiece3', type: 'image', src: '/assets/anime/row1/opiece3.jpg', hoverVideo: '/assets/anime/row1/videos/opiece3.webm', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
+      { id: 'anime-top-opiece4', type: 'image', src: '/assets/anime/row1/opiece4.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
     ],
     media: [
       { id: 'anime-aot', type: 'image', src: '/assets/anime/row2/aot.jpg', alt: 'Attack on Titan', shape: 'landscape', placeholder: 'aot' },

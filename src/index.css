@@ -69,6 +69,16 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
   cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='10' y='2' width='2' height='6'/><rect x='10' y='15' width='2' height='6'/><rect x='2' y='10' width='6' height='2'/><rect x='15' y='10' width='6' height='2'/><rect x='9' y='9' width='5' height='5'/></g><rect x='10' y='10' width='3' height='3' fill='%23d1362f'/></svg>") 11 11, crosshair !important;
 }
 
+/* Any open video overlay (About lightbox, Projects video pop-up) forces the
+   white pixel crosshair over the whole surface — controls included — so it
+   reads on the dark backdrop in either theme. Doubled class + !important is
+   load-bearing: it must outrank the themed clickable-cursor rules that would
+   otherwise put the amber cross on the close / arrow buttons. */
+.video-overlay.video-overlay,
+.video-overlay.video-overlay * {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='23' height='23' shape-rendering='crispEdges'><g fill='%23f5f5f5'><rect x='10' y='3' width='2' height='17'/><rect x='3' y='10' width='17' height='2'/></g></svg>") 11 11, crosshair !important;
+}
+
 /* theme toggle: new theme sweeps out as a circle from the toggle button
    (View Transitions API; browsers without it just switch instantly).
    Duration + easing must match THEME_REVEAL_MS/themeRevealEase in
@@ -786,6 +796,72 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 
 .about-media img,
 .about-media video { width: 100%; height: 100%; display: block; object-fit: cover; }
+
+/* Row-1 tiles that carry a clip: still image swaps to video on hover, click to play. */
+.about-media.has-hover-video { cursor: pointer; }
+.about-media__hover {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.about-media.has-hover-video:hover .about-media__hover { opacity: 1; }
+
+.about-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(20, 18, 15, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.about-lightbox video {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 14px;
+  background: #000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.about-lightbox__close,
+.about-lightbox__nav {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fffdf6;
+  background: rgba(52, 48, 42, 0.55);
+  border: 2px solid rgba(255, 253, 246, 0.85);
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s ease;
+}
+.about-lightbox__close:hover,
+.about-lightbox__nav:hover { background: rgba(52, 48, 42, 0.9); }
+.about-lightbox__close {
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  font-size: 26px;
+}
+.about-lightbox__nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 54px;
+  height: 54px;
+  font-size: 34px;
+  padding-bottom: 4px;
+}
+.about-lightbox__nav--prev { left: 24px; }
+.about-lightbox__nav--next { right: 24px; }
+@media (max-width: 640px) {
+  .about-lightbox__nav { width: 44px; height: 44px; font-size: 26px; }
+  .about-lightbox__nav--prev { left: 10px; }
+  .about-lightbox__nav--next { right: 10px; }
+}
 .about-media--gallery img,
 .about-media--gallery video {
   height: 100%;

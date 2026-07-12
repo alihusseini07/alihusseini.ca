@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import ContactBar from '../components/ContactBar';
 import MobileNav from '../components/MobileNav';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
@@ -33,14 +34,121 @@ function Placeholder({ media }: { media: AboutMedia }) {
   );
 }
 
+function HoverVideo({ src, label, reduced, onActivate }: { src: string; label: string; reduced: boolean; onActivate: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  // Muted looping preview on hover + tap-to-open (the reel fires 'tileactivate'
+  // because it owns the pointer gesture — see FilmReel). The full-screen player
+  // itself lives at page level (VideoLightbox) so it can page through clips.
+  useEffect(() => {
+    const video = ref.current;
+    const tile = video?.parentElement;
+    if (!video || !tile) return;
+
+    const activate = () => onActivate();
+    tile.addEventListener('tileactivate', activate);
+
+    const enter = reduced ? null : () => void video.play().catch(() => {});
+    const leave = reduced ? null : () => {
+      video.pause();
+      video.currentTime = 0;
+    };
+    if (enter) tile.addEventListener('pointerenter', enter);
+    if (leave) tile.addEventListener('pointerleave', leave);
+    return () => {
+      tile.removeEventListener('tileactivate', activate);
+      if (enter) tile.removeEventListener('pointerenter', enter);
+      if (leave) tile.removeEventListener('pointerleave', leave);
+    };
+  }, [src, reduced, onActivate]);
+
+  return (
+    <video
+      ref={ref}
+      className="about-media__hover"
+      src={src}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-label={label}
+    />
+  );
+}
+
+interface Clip { src: string; label: string; }
+
+function VideoLightbox({ playlist, index, onIndex, onClose }: {
+  playlist: Clip[];
+  index: number | null;
+  onIndex: (i: number) => void;
+  onClose: () => void;
+}) {
+  const open = index !== null;
+
+  useEffect(() => {
+    if (!open || index === null) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowRight') onIndex((index + 1) % playlist.length);
+      else if (e.key === 'ArrowLeft') onIndex((index - 1 + playlist.length) % playlist.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open, index, playlist.length, onIndex, onClose]);
+
+  if (!open || index === null) return null;
+  const clip = playlist[index];
+  const many = playlist.length > 1;
+
+  return createPortal(
+    <div className="about-lightbox video-overlay" onClick={onClose}>
+      <button type="button" className="about-lightbox__close" aria-label="Close" onClick={onClose}>×</button>
+      {many && (
+        <button
+          type="button"
+          className="about-lightbox__nav about-lightbox__nav--prev"
+          aria-label="Previous video"
+          onClick={(e) => { e.stopPropagation(); onIndex((index - 1 + playlist.length) % playlist.length); }}
+        >‹</button>
+      )}
+      <video
+        key={clip.src}
+        src={clip.src}
+        controls
+        autoPlay
+        playsInline
+        aria-label={clip.label}
+        onClick={(e) => e.stopPropagation()}
+      />
+      {many && (
+        <button
+          type="button"
+          className="about-lightbox__nav about-lightbox__nav--next"
+          aria-label="Next video"
+          onClick={(e) => { e.stopPropagation(); onIndex((index + 1) % playlist.length); }}
+        >›</button>
+      )}
+    </div>,
+    document.body,
+  );
+}
+
 function DiaryMedia({
   media,
   gallery = false,
   priority = false,
+  onOpenClip,
 }: {
   media: AboutMedia;
   gallery?: boolean;
   priority?: boolean;
+  onOpenClip?: (src: string) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reduced = useReducedMotion();
@@ -77,13 +185,23 @@ function DiaryMedia({
         aria-label={media.alt}
       />
     ) : (
-      <img src={media.src} alt={media.alt} loading={priority ? 'eager' : 'lazy'} draggable={false} />
+      <>
+        <img src={media.src} alt={media.alt} loading={priority ? 'eager' : 'lazy'} draggable={false} />
+        {media.hoverVideo && (
+          <HoverVideo
+            src={media.hoverVideo}
+            label={media.alt}
+            reduced={reduced}
+            onActivate={() => onOpenClip?.(media.hoverVideo!)}
+          />
+        )}
+      </>
     )
   ) : (
     <Placeholder media={media} />
   );
 
-  const className = `about-media about-media--${media.shape}${gallery ? ' about-media--gallery' : ''}${media.src ? ' is-filled' : ' is-empty'}`;
+  const className = `about-media about-media--${media.shape}${gallery ? ' about-media--gallery' : ''}${media.src ? ' is-filled' : ' is-empty'}${media.hoverVideo ? ' has-hover-video' : ''}`;
   const style = gallery && media.aspect ? { aspectRatio: String(media.aspect) } : undefined;
   return <div className={className} style={style}>{content}</div>;
 }
@@ -92,11 +210,13 @@ function FilmReel({
   frames,
   direction,
   label,
+  onOpenClip,
 }: {
   frames: AboutMedia[];
   /** Idle auto-scroll direction (content drift). */
   direction: 'left' | 'right';
   label?: string;
+  onOpenClip?: (src: string) => void;
 }) {
   const reelRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
@@ -140,10 +260,15 @@ function FilmReel({
     draggingRef.current = true;
     el.setPointerCapture(e.pointerId);
     const startX = e.clientX;
+    const startY = e.clientY;
     const startPos = posRef.current;
+    // Remember where the gesture began so a tap (no real drag) can open the tile.
+    const downTarget = e.target as HTMLElement;
+    let moved = false;
 
     const onMove = (ev: PointerEvent) => {
       if (!draggingRef.current) return;
+      if (Math.hypot(ev.clientX - startX, ev.clientY - startY) >= 6) moved = true;
       posRef.current = startPos - (ev.clientX - startX);
       wrap(el.scrollWidth / 2);
       el.scrollLeft = Math.round(posRef.current);
@@ -152,6 +277,10 @@ function FilmReel({
       draggingRef.current = false;
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
+      if (!moved) {
+        downTarget.closest('.about-media.has-hover-video')
+          ?.dispatchEvent(new CustomEvent('tileactivate'));
+      }
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -171,7 +300,7 @@ function FilmReel({
           {[0, 1].map((pass) =>
             frames.map((media) => (
               <div key={`${media.id}-${pass}`} className="about-strip__frame" aria-hidden={pass === 1}>
-                <DiaryMedia media={media} />
+                <DiaryMedia media={media} onOpenClip={onOpenClip} />
               </div>
             )),
           )}
@@ -184,6 +313,22 @@ function FilmReel({
 export default function AboutMe() {
   const isMobile = useIsMobile();
   const pageRef = useRef<HTMLDivElement>(null);
+
+  // Every strip clip, in display order — the lightbox pages through this list.
+  const clips = useMemo<Clip[]>(() => {
+    const out: Clip[] = [];
+    for (const interest of ABOUT_INTERESTS) {
+      for (const media of [...(interest.mediaTop ?? []), ...interest.media]) {
+        if (media.hoverVideo) out.push({ src: media.hoverVideo, label: media.alt });
+      }
+    }
+    return out;
+  }, []);
+  const [clipIndex, setClipIndex] = useState<number | null>(null);
+  const openClip = (src: string) => {
+    const i = clips.findIndex((c) => c.src === src);
+    if (i !== -1) setClipIndex(i);
+  };
 
   useEffect(() => {
     const root = pageRef.current;
@@ -252,9 +397,10 @@ export default function AboutMe() {
                   <FilmReel
                     frames={interest.mediaTop}
                     direction={interest.scroll === 'left' ? 'right' : 'left'}
+                    onOpenClip={openClip}
                   />
                 )}
-                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} />
+                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} />
                 <p className="about-strip__caption">{interest.caption}</p>
               </article>
             ))}
@@ -280,6 +426,8 @@ export default function AboutMe() {
       </div>
 
       <SiteFooter />
+
+      <VideoLightbox playlist={clips} index={clipIndex} onIndex={setClipIndex} onClose={() => setClipIndex(null)} />
     </div>
   );
 }
