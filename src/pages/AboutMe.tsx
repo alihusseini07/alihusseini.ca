@@ -123,30 +123,26 @@ export default function AboutMe() {
         <main>
           <section className="about-hero" aria-labelledby="about-title">
             <div className="about-hero__copy">
-              <div className="about-kicker">personal archive / 01</div>
+              <div className="about-kicker">personal archive</div>
               <h1 id="about-title">hey, i'm ali —</h1>
               <p>mechatronics engineering student @ uwaterloo, incoming @ axl labs. i like building things that make people's lives easier: software, robots, and everything in between.</p>
               <p>off the clock i'm at the gym hitting pads, defending my anime tier lists, or putting together an outfit i'll overthink anyway. this page is the non-resume stuff.</p>
-              <div className="about-hero__stamp" aria-hidden>off duty<br />since 2007</div>
             </div>
             <div className="about-hero__visual">
               <div className="about-hero__tape" aria-hidden />
               <DiaryMedia media={ABOUT_HERO} priority />
               <span className="about-hero__scribble" aria-hidden>that's me ↗</span>
-              <span className="about-hero__frame-no" aria-hidden>001 / portrait</span>
             </div>
           </section>
 
           <div className="about-index" aria-hidden>
             <span>things i keep coming back to</span>
-            <span>02 — 04</span>
           </div>
 
           <section className="about-interests" aria-label="Favourite interests">
-            {ABOUT_INTERESTS.map((interest, index) => (
+            {ABOUT_INTERESTS.map((interest) => (
               <article key={interest.id} className={`about-interest about-interest--${interest.id} about-reveal`}>
                 <header className="about-interest__copy">
-                  <span className="about-interest__number">0{index + 2}</span>
                   <h2>{interest.title}</h2>
                   <p>{interest.blurb}</p>
                 </header>
@@ -164,7 +160,7 @@ export default function AboutMe() {
           <section className="about-archive" aria-labelledby="archive-title">
             <header className="about-archive__header about-reveal">
               <div>
-                <span className="about-archive__eyebrow">05 / camera roll</span>
+                <span className="about-archive__eyebrow">camera roll</span>
                 <h2 id="archive-title">the archive</h2>
               </div>
               <p>no captions. no chronology. just things worth keeping.</p>

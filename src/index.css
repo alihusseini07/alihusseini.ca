@@ -467,6 +467,7 @@ html[data-theme='dark'] .btn-sticker::after {
    ---------------------------------------------------------------------- */
 .about-root {
   min-height: 100vh;
+  overflow-x: hidden;
   background: var(--about-paper);
   color: var(--about-ink);
   --about-paper: #eee4d1;
@@ -546,7 +547,6 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
 }
 
 .about-kicker,
-.about-interest__number,
 .about-archive__eyebrow,
 .about-index {
   font-family: 'VT323', monospace;
@@ -573,6 +573,7 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: -.025em;
+  overflow-wrap: break-word;
 }
 
 .about-hero h1 {
@@ -591,26 +592,6 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
 }
 
 .about-hero__copy p + p { color: var(--about-muted); }
-
-.about-hero__stamp {
-  position: absolute;
-  right: 2%;
-  bottom: -56px;
-  width: 92px;
-  height: 92px;
-  display: grid;
-  place-items: center;
-  border: 3px double var(--about-red);
-  border-radius: 50%;
-  color: var(--about-red);
-  font-family: 'VT323', monospace;
-  font-size: 18px;
-  line-height: .85;
-  text-align: center;
-  text-transform: uppercase;
-  transform: rotate(-11deg);
-  opacity: .78;
-}
 
 .about-hero__visual {
   position: relative;
@@ -650,16 +631,6 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
   transform: rotate(-3deg);
 }
 
-.about-hero__frame-no {
-  position: absolute;
-  right: 22px;
-  bottom: 26px;
-  color: #756b5c;
-  font-size: 17px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
 .about-index {
   display: flex;
   justify-content: space-between;
@@ -688,13 +659,6 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 .about-interest:nth-child(even) .about-interest__media { grid-column: 1; grid-row: 1; }
 
 .about-interest__copy { position: relative; z-index: 3; }
-
-.about-interest__number {
-  display: block;
-  margin-bottom: 18px;
-  font-size: 9px;
-  color: var(--about-red);
-}
 
 .about-interest h2 {
   font-size: clamp(72px, 8vw, 130px);
@@ -730,15 +694,6 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 .about-interest--anime .about-interest__frame--3 { width: 36%; height: 37%; right: 8%; bottom: 2%; transform: rotate(-1deg); }
 
 .about-interest--kickboxing .about-interest__media { min-height: 500px; }
-.about-interest--kickboxing .about-interest__media::after {
-  content: '01  02  03';
-  position: absolute;
-  right: 0;
-  bottom: -34px;
-  color: var(--about-red);
-  font-size: 18px;
-  letter-spacing: 1.4em;
-}
 .about-interest--kickboxing .about-interest__frame { width: 54%; height: 58%; border: 10px solid #171513; box-shadow: 0 15px 30px rgba(0, 0, 0, .28); }
 .about-interest--kickboxing .about-interest__frame--1 { left: 0; top: 0; transform: rotate(-2.2deg); }
 .about-interest--kickboxing .about-interest__frame--2 { right: 0; top: 18%; transform: rotate(1.8deg); z-index: 2; }
@@ -844,7 +799,6 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 
 @media (max-width: 1000px) {
   .about-hero { grid-template-columns: minmax(0, 1fr) minmax(300px, .72fr); gap: 42px; padding-left: 34px; padding-right: 34px; }
-  .about-hero__stamp { display: none; }
   .about-interest { grid-template-columns: minmax(220px, .72fr) minmax(0, 1.35fr); gap: 44px; }
   .about-interest:nth-child(even) { grid-template-columns: minmax(0, 1.35fr) minmax(220px, .72fr); }
 }
@@ -858,11 +812,10 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
     gap: 68px;
     padding: 112px 20px 82px;
   }
-  .about-hero h1 { font-size: clamp(62px, 20vw, 92px); }
+  .about-hero h1 { font-size: clamp(46px, 14vw, 92px); }
   .about-hero__copy p { max-width: 31ch; font-size: 23px; }
   .about-hero__visual { width: calc(100% - 26px); justify-self: center; padding: 12px 12px 66px; box-shadow: 10px 14px 0 rgba(38, 34, 30, .12), 0 20px 45px rgba(38, 34, 30, .2); }
   .about-hero__scribble { left: 18px; bottom: 20px; font-size: 21px; }
-  .about-hero__frame-no { right: 14px; bottom: 20px; font-size: 14px; }
   .about-index { padding: 24px 20px; font-size: 7px; line-height: 1.6; }
   .about-index span:first-child { max-width: 22ch; }
 
@@ -877,7 +830,7 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
   .about-interest:nth-child(even) .about-interest__copy,
   .about-interest:nth-child(even) .about-interest__media { grid-column: 1; grid-row: auto; }
   .about-interest__copy { max-width: 92%; }
-  .about-interest h2 { font-size: clamp(68px, 23vw, 100px); }
+  .about-interest h2 { font-size: clamp(44px, 13vw, 100px); }
   .about-interest__copy p { font-size: 23px; }
   .about-interest__media { min-height: 430px; }
   .about-interest--kickboxing .about-interest__media { min-height: 410px; }
@@ -887,7 +840,7 @@ html[data-theme='dark'] .about-interest--fashion .about-interest__frame { backgr
 
   .about-archive { padding: 100px 12px 110px; }
   .about-archive__header { display: block; margin-bottom: 60px; padding: 0 8px; }
-  .about-archive h2 { font-size: clamp(82px, 27vw, 128px); }
+  .about-archive h2 { font-size: clamp(52px, 18vw, 128px); }
   .about-archive__header p { margin-top: 32px; font-size: 23px; }
   .about-gallery { columns: 150px 2; column-gap: 6px; }
   .about-gallery__item:nth-child(n) { width: 98%; margin-left: 0; margin-bottom: 8px; }
