@@ -19,7 +19,7 @@ export interface AboutMedia {
 }
 
 export interface AboutInterest {
-  id: 'anime' | 'kickboxing' | 'fashion';
+  id: 'anime' | 'kickboxing' | 'shows';
   /** Single handwritten line shown under the film strip. No section title. */
   caption: string;
   /** Direction the strip auto-scrolls. Alternate per row for rhythm. */
@@ -67,27 +67,33 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
     ],
   },
   {
+    id: 'shows',
+    caption: 'shows and movies that live rent-free — comfort rewatches and the ones i quote way too often',
+    scroll: 'right',
+    media: [
+      { id: 'shows-atlanta', type: 'image', src: '/assets/shows-movies/atlanta.jpg', alt: 'Atlanta', shape: 'landscape', placeholder: 'atlanta' },
+      { id: 'shows-avengers', type: 'image', src: '/assets/shows-movies/avengers.jpeg', alt: 'Avengers', shape: 'landscape', placeholder: 'avengers' },
+      { id: 'shows-dexter', type: 'image', src: '/assets/shows-movies/dexter.jpg', alt: 'Dexter', shape: 'landscape', placeholder: 'dexter' },
+      { id: 'shows-django', type: 'image', src: '/assets/shows-movies/django.jpg', alt: 'Django Unchained', shape: 'landscape', placeholder: 'django' },
+      { id: 'shows-invincible', type: 'image', src: '/assets/shows-movies/invincible.jpeg', alt: 'Invincible', shape: 'landscape', placeholder: 'invincible' },
+      { id: 'shows-longest-yard', type: 'image', src: '/assets/shows-movies/longest-yard.jpg', alt: 'The Longest Yard', shape: 'landscape', placeholder: 'longest yard' },
+      { id: 'shows-prince-bel-air', type: 'image', src: '/assets/shows-movies/prince-bel-air.jpg', alt: 'The Fresh Prince of Bel-Air', shape: 'landscape', placeholder: 'fresh prince' },
+      { id: 'shows-snowfall', type: 'image', src: '/assets/shows-movies/snowfall.jpg', alt: 'Snowfall', shape: 'landscape', placeholder: 'snowfall' },
+      { id: 'shows-spider-verse', type: 'image', src: '/assets/shows-movies/spider-verse.jpg', alt: 'Spider-Man: Into the Spider-Verse', shape: 'landscape', placeholder: 'spider-verse' },
+      { id: 'shows-the-boys', type: 'image', src: '/assets/shows-movies/the-boys.jpg', alt: 'The Boys', shape: 'landscape', placeholder: 'the boys' },
+      { id: 'shows-wolf', type: 'image', src: '/assets/shows-movies/wolf-of-wall-street.jpg', alt: 'The Wolf of Wall Street', shape: 'landscape', placeholder: 'wolf of wall st' },
+    ],
+  },
+  {
     id: 'kickboxing',
     caption: 'pads, footwork, and the kind of tired that fixes everything',
-    scroll: 'right',
+    scroll: 'left',
     media: [
       { id: 'kickboxing-01', type: 'image', alt: 'Ali training kickboxing', shape: 'landscape', placeholder: 'pad work' },
       { id: 'kickboxing-02', type: 'image', alt: 'A kickboxing training detail', shape: 'landscape', placeholder: 'in the gym' },
       { id: 'kickboxing-03', type: 'image', alt: 'Ali during a kickboxing session', shape: 'landscape', placeholder: 'training shot' },
       { id: 'kickboxing-04', type: 'image', alt: 'Kickboxing footwork detail', shape: 'landscape', placeholder: 'footwork' },
       { id: 'kickboxing-05', type: 'image', alt: 'After a kickboxing round', shape: 'landscape', placeholder: 'round done' },
-    ],
-  },
-  {
-    id: 'fashion',
-    caption: 'an outfit is just another build — then pretend it was effortless',
-    scroll: 'left',
-    media: [
-      { id: 'fashion-01', type: 'image', alt: 'One of Ali\'s favourite outfits', shape: 'landscape', placeholder: 'outfit 01' },
-      { id: 'fashion-02', type: 'image', alt: 'A fashion detail selected by Ali', shape: 'landscape', placeholder: 'the details' },
-      { id: 'fashion-03', type: 'image', alt: 'Another outfit styled by Ali', shape: 'landscape', placeholder: 'outfit 02' },
-      { id: 'fashion-04', type: 'image', alt: 'A styled look from Ali', shape: 'landscape', placeholder: 'one good piece' },
-      { id: 'fashion-05', type: 'image', alt: 'An outfit Ali put together', shape: 'landscape', placeholder: 'outfit 03' },
     ],
   },
 ];
