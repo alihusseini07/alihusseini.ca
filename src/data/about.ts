@@ -11,6 +11,8 @@ export interface AboutMedia {
   /** Optional clip that plays over the still image while hovered (image tiles only). */
   hoverVideo?: string;
   alt: string;
+  /** Name shown in the hover caption on anime / shows strips. Falls back to `alt`. */
+  title?: string;
   shape: AboutMediaShape;
   /** Real width/height ratio of the asset. Reserves the tile's height before the
    *  image loads so the archive masonry never reorders. */
@@ -50,7 +52,7 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
       { id: 'anime-top-bleach2', type: 'image', src: '/assets/anime/row1/bleach2.jpeg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
       { id: 'anime-top-bleach3', type: 'image', src: '/assets/anime/row1/bleach3.jpeg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
       { id: 'anime-top-bleach4', type: 'image', src: '/assets/anime/row1/bleach4.jpg', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
-      { id: 'anime-top-goatbeard', type: 'image', src: '/assets/anime/row1/goatbeard.png', hoverVideo: '/assets/anime/row1/videos/goatbeard.webm', alt: 'Whitebeard', shape: 'landscape', placeholder: 'the goat' },
+      { id: 'anime-top-goatbeard', type: 'image', src: '/assets/anime/row1/goatbeard.png', hoverVideo: '/assets/anime/row1/videos/goatbeard.webm', alt: 'Whitebeard', title: 'One Piece', shape: 'landscape', placeholder: 'the goat' },
       { id: 'anime-top-opiece1', type: 'image', src: '/assets/anime/row1/opiece1.jpg', hoverVideo: '/assets/anime/row1/videos/opiece1.webm', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
       { id: 'anime-top-opiece2', type: 'image', src: '/assets/anime/row1/opiece2.jpg', hoverVideo: '/assets/anime/row1/videos/opiece2.webm', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
       { id: 'anime-top-opiece3', type: 'image', src: '/assets/anime/row1/opiece3.jpg', hoverVideo: '/assets/anime/row1/videos/opiece3.webm', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
@@ -63,7 +65,7 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
       { id: 'anime-vinland', type: 'image', src: '/assets/anime/row2/vinland.png', hoverVideo: '/assets/anime/row2/videos/vinland.webm', alt: 'Vinland Saga', shape: 'landscape', placeholder: 'vinland' },
       { id: 'anime-hxh2', type: 'image', src: '/assets/anime/row2/hxh2.jpg', hoverVideo: '/assets/anime/row2/videos/hxh2.webm', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
       { id: 'anime-naruto', type: 'image', src: '/assets/anime/row2/naruto.jpg', alt: 'Naruto', shape: 'landscape', placeholder: 'naruto' },
-      { id: 'anime-shinra-tensei', type: 'image', src: '/assets/anime/row2/shinra-tensei.jpg', hoverVideo: '/assets/anime/row2/videos/shinra-tensei.webm', alt: 'Shinra Tensei', shape: 'landscape', placeholder: 'shinra tensei' },
+      { id: 'anime-shinra-tensei', type: 'image', src: '/assets/anime/row2/shinra-tensei.jpg', hoverVideo: '/assets/anime/row2/videos/shinra-tensei.webm', alt: 'Shinra Tensei', title: 'Naruto', shape: 'landscape', placeholder: 'shinra tensei' },
     ],
   },
   {
@@ -113,7 +115,6 @@ const GALLERY_FILES: Array<[filename: string, type: AboutMediaType, shape: About
   ['IMG_1759.JPG', 'image', 'portrait', 0.6807],
   ['IMG_1138.JPG', 'image', 'portrait', 0.75],
   ['8141A2BB-16F4-4207-9F05-40D605FBD4C5-web.mp4', 'video', 'tall', 0.5625],
-  ['IMG_2679.JPG', 'image', 'portrait', 0.6608],
   ['IMG_2681.JPG', 'image', 'portrait', 0.75],
   ['temp_image_6415DD89-DC09-4BD3-A062-C662DB18932F.jpg', 'image', 'tall', 0.5625],
   ['IMG_2465.JPG', 'image', 'portrait', 0.75],

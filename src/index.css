@@ -717,12 +717,34 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 .about-strip__frame img { pointer-events: none; }
 
 .about-strip__frame {
+  position: relative;
   flex: 0 0 auto;
   width: clamp(220px, 24vw, 340px);
   aspect-ratio: 3 / 2;
   padding: 6px;
   background: #f4ecdd;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+}
+.about-strip__frame-title {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* left/top track the cursor (set in JS); nudge the pill up-and-right of it. */
+  transform: translate(14px, calc(-100% - 10px));
+  padding: 3px 10px;
+  font-family: 'VT323', monospace;
+  font-size: clamp(14px, 1.1vw, 18px);
+  line-height: 1;
+  white-space: nowrap;
+  color: #f5f0e4;
+  background: rgba(20, 17, 14, .82);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .16s ease;
+}
+.about-strip__frame:hover .about-strip__frame-title {
+  opacity: 1;
 }
 html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 .about-strip__frame .about-media { width: 100%; height: 100%; }

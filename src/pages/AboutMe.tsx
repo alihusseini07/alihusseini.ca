@@ -237,12 +237,15 @@ function FilmReel({
   direction,
   label,
   onOpenClip,
+  showTitles,
 }: {
   frames: AboutMedia[];
   /** Idle auto-scroll direction (content drift). */
   direction: 'left' | 'right';
   label?: string;
   onOpenClip?: (src: string) => void;
+  /** Show a small hover caption naming each frame (anime / shows strips). */
+  showTitles?: boolean;
 }) {
   const reelRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
@@ -278,6 +281,16 @@ function FilmReel({
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [direction, reduced]);
+
+  // Park the hover caption on the cursor by writing its offset (relative to the
+  // frame) straight to the DOM node — cheaper than React state per pointer move.
+  const moveTitle = (e: React.PointerEvent<HTMLDivElement>) => {
+    const title = e.currentTarget.querySelector<HTMLElement>('.about-strip__frame-title');
+    if (!title) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    title.style.left = `${e.clientX - r.left}px`;
+    title.style.top = `${e.clientY - r.top}px`;
+  };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = reelRef.current;
@@ -325,8 +338,16 @@ function FilmReel({
         <div className="about-strip__track">
           {[0, 1].map((pass) =>
             frames.map((media) => (
-              <div key={`${media.id}-${pass}`} className="about-strip__frame" aria-hidden={pass === 1}>
+              <div
+                key={`${media.id}-${pass}`}
+                className="about-strip__frame"
+                aria-hidden={pass === 1}
+                onPointerMove={showTitles ? moveTitle : undefined}
+              >
                 <DiaryMedia media={media} onOpenClip={onOpenClip} />
+                {showTitles && (
+                  <span className="about-strip__frame-title">{media.title ?? media.alt}</span>
+                )}
               </div>
             )),
           )}
@@ -424,9 +445,10 @@ export default function AboutMe() {
                     frames={interest.mediaTop}
                     direction={interest.scroll === 'left' ? 'right' : 'left'}
                     onOpenClip={openClip}
+                    showTitles={interest.id !== 'kickboxing'}
                   />
                 )}
-                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} />
+                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} showTitles={interest.id !== 'kickboxing'} />
               </article>
             ))}
           </section>
