@@ -218,10 +218,18 @@ function AnimeCaption({ text }: { text: string }) {
   const parenIdx = rest.indexOf('(');
   const restBody = parenIdx === -1 ? rest : rest.slice(0, parenIdx).trimEnd();
   const paren = parenIdx === -1 ? '' : rest.slice(parenIdx);
+  // Render explicit line breaks (\n in the caption) as <br/>.
+  const restLines = restBody.split('\n');
   return (
     <p className="about-strip__caption about-strip__caption--top">
       <span className="about-strip__caption-lead">{lead}</span>
-      {restBody && ` ${restBody}`}
+      {restBody &&
+        restLines.map((line, i) => (
+          <span key={i}>
+            {i === 0 ? ` ${line}` : line}
+            {i < restLines.length - 1 && <br />}
+          </span>
+        ))}
       {paren && (
         <>
           {' '}

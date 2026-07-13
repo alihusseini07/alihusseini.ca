@@ -45,7 +45,7 @@ export const ABOUT_HERO: AboutMedia = {
 export const ABOUT_INTERESTS: AboutInterest[] = [
   {
     id: 'anime',
-    caption: 'my favorite animes that changed my brain chemistry. here are some of my favorite moments and art (watch out for spoilers)',
+    caption: 'my favorite animes that changed my brain chemistry.\nhere are some of my favorite moments and art (watch out for spoilers)',
     scroll: 'left',
     mediaTop: [
       { id: 'anime-top-bleach1', type: 'image', src: '/assets/anime/row1/bleach1.jpg', hoverVideo: '/assets/anime/row1/videos/bleach1.webm', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
