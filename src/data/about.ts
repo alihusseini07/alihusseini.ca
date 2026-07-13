@@ -37,6 +37,7 @@ export interface AboutInterest {
 export const ABOUT_HERO: AboutMedia = {
   id: 'hero-portrait',
   type: 'image',
+  src: '/assets/IMG_1318.JPG',
   alt: 'A candid portrait of Ali',
   shape: 'portrait',
   placeholder: 'candid portrait',

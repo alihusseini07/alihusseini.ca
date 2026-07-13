@@ -530,7 +530,7 @@ html[data-theme='dark'] .about-root {
 html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .055; }
 
 .about-controls {
-  position: fixed;
+  position: absolute;
   top: 1.25rem;
   right: 1.25rem;
   z-index: 50;
