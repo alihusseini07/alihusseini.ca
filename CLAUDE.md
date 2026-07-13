@@ -2,6 +2,32 @@
 
 **Never commit or push changes on your own.** Always wait for explicit instruction from the user before running `git commit` or `git push`.
 
+## Downloading YouTube videos
+
+When the user gives a YouTube link and asks to download the video, use **yt-dlp** ([github.com/yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp)).
+
+- Binary installed at `~/.local/bin/yt-dlp` (standalone `yt-dlp_linux` release, already in PATH). Update it with `yt-dlp -U`.
+- Basic download:
+  ```bash
+  yt-dlp "<youtube-url>"
+  ```
+- **ffmpeg is NOT installed.** Without it, yt-dlp can't merge separate best-video + best-audio streams, so a plain download falls back to a lower-quality single progressive file. Options:
+  - Grab best pre-merged single file (no ffmpeg needed): `yt-dlp -f "best" "<url>"`
+  - For true best quality, install ffmpeg first: `sudo apt install ffmpeg`, then `yt-dlp "<url>"` (auto-picks bestvideo+bestaudio and merges).
+- Audio-only (needs ffmpeg): `yt-dlp -x --audio-format mp3 "<url>"`
+- Files land in the current working directory unless `-o` is given.
+
+### Downloading a specific time window
+
+Use `--download-sections` with a `*`-prefixed range (`HH:MM:SS-HH:MM:SS` or seconds):
+```bash
+yt-dlp --download-sections "*00:01:30-00:02:45" "<url>"
+```
+- **Needs ffmpeg** (it does the cutting) — install with `sudo apt install ffmpeg` first, else the flag fails.
+- Multiple windows: repeat the flag.
+- Exact-frame cut (re-encodes, slower): add `--force-keyframes-at-cuts`. Without it, cuts snap to the nearest keyframe (faster, a few seconds off).
+- By chapter name: `--download-sections "*chapter:intro"`.
+
 ## Previewing the dev server on a phone
 
 The dev machine runs Vite inside **WSL2** (NAT networking — the WSL IP like `172.19.68.137` is **not** reachable from other devices). Campus Wi-Fi (uwaterloo) also uses **client isolation**, so phone↔PC over the LAN is blocked even with port forwarding. The reliable path is a **public tunnel** — it bypasses LAN, firewall, and isolation, and works on cellular too.

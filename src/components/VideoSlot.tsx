@@ -148,6 +148,7 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
 
       {open && url && createPortal(
         <div
+          className="video-overlay"
           onClick={() => setOpen(false)}
           style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(20,18,15,.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}
         >

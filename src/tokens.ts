@@ -130,7 +130,7 @@ export const PROFILE = {
   bullets: [
     { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs', link: 'https://axl.vc/', preview: '/assets/axl-preview.png', previewCaption: 'axl.vc' },
     { color: '#3f8fd6', text: 'interested in software & robotics' },
-    { color: '#5db84a', text: 'i like kickboxing, anime, and movies' },
+    { color: '#5db84a', text: 'i like kickboxing, anime, and fashion' },
     { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027', highlightColor: '#e0409a' },
   ] as { color: string; text: string; highlight?: boolean; highlightPart?: string; highlightColor?: string; link?: string; preview?: string; previewCaption?: string }[],
   links: {
