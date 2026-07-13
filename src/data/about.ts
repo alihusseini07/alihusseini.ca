@@ -21,7 +21,7 @@ export interface AboutMedia {
 }
 
 export interface AboutInterest {
-  id: 'anime' | 'kickboxing' | 'shows';
+  id: 'anime' | 'fashion' | 'shows';
   /** Single handwritten line shown under the film strip. No section title. */
   caption: string;
   /** Direction the strip auto-scrolls. Alternate per row for rhythm. */
@@ -87,15 +87,15 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
     ],
   },
   {
-    id: 'kickboxing',
-    caption: 'pads, footwork, and the kind of tired that fixes everything',
+    id: 'fashion',
+    caption: 'fits, fabrics, and the quiet thrill of a look that just works',
     scroll: 'left',
     media: [
-      { id: 'kickboxing-01', type: 'image', alt: 'Ali training kickboxing', shape: 'landscape', placeholder: 'pad work' },
-      { id: 'kickboxing-02', type: 'image', alt: 'A kickboxing training detail', shape: 'landscape', placeholder: 'in the gym' },
-      { id: 'kickboxing-03', type: 'image', alt: 'Ali during a kickboxing session', shape: 'landscape', placeholder: 'training shot' },
-      { id: 'kickboxing-04', type: 'image', alt: 'Kickboxing footwork detail', shape: 'landscape', placeholder: 'footwork' },
-      { id: 'kickboxing-05', type: 'image', alt: 'After a kickboxing round', shape: 'landscape', placeholder: 'round done' },
+      { id: 'fashion-01', type: 'image', alt: 'An everyday fit', shape: 'landscape', placeholder: 'everyday fit' },
+      { id: 'fashion-02', type: 'image', alt: 'A fabric and texture detail', shape: 'landscape', placeholder: 'texture' },
+      { id: 'fashion-03', type: 'image', alt: 'A layered outfit', shape: 'landscape', placeholder: 'layers' },
+      { id: 'fashion-04', type: 'image', alt: 'Footwear detail', shape: 'landscape', placeholder: 'the shoes' },
+      { id: 'fashion-05', type: 'image', alt: 'An accessory detail', shape: 'landscape', placeholder: 'accessories' },
     ],
   },
 ];

@@ -491,8 +491,8 @@ html[data-theme='dark'] .btn-sticker::after {
 }
 
 html[data-theme='dark'] .about-root {
-  --about-paper: #11100e;
-  --about-paper-deep: #1c1915;
+  --about-paper: #000000;
+  --about-paper-deep: #0d0c0b;
   --about-ink: #eadfc9;
   --about-muted: #a99d8a;
   --about-red: #b35a55;

@@ -445,10 +445,10 @@ export default function AboutMe() {
                     frames={interest.mediaTop}
                     direction={interest.scroll === 'left' ? 'right' : 'left'}
                     onOpenClip={openClip}
-                    showTitles={interest.id !== 'kickboxing'}
+                    showTitles={interest.id !== 'fashion'}
                   />
                 )}
-                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} showTitles={interest.id !== 'kickboxing'} />
+                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} showTitles={interest.id !== 'fashion'} />
               </article>
             ))}
           </section>
