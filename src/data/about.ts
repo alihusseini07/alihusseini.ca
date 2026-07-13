@@ -43,7 +43,7 @@ export const ABOUT_HERO: AboutMedia = {
 export const ABOUT_INTERESTS: AboutInterest[] = [
   {
     id: 'anime',
-    caption: 'ranking characters far more seriously than the situation calls for',
+    caption: 'my favorite animes that changed my brain chemistry. these are some of my favorite moments and art (watch out for spoilers)',
     scroll: 'left',
     mediaTop: [
       { id: 'anime-top-bleach1', type: 'image', src: '/assets/anime/row1/bleach1.jpg', hoverVideo: '/assets/anime/row1/videos/bleach1.webm', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
@@ -57,13 +57,13 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
       { id: 'anime-top-opiece4', type: 'image', src: '/assets/anime/row1/opiece4.jpg', alt: 'One Piece', shape: 'landscape', placeholder: 'one piece' },
     ],
     media: [
-      { id: 'anime-aot', type: 'image', src: '/assets/anime/row2/aot.jpg', alt: 'Attack on Titan', shape: 'landscape', placeholder: 'aot' },
-      { id: 'anime-code-geass', type: 'image', src: '/assets/anime/row2/code-geass.jpg', alt: 'Code Geass', shape: 'landscape', placeholder: 'code geass' },
-      { id: 'anime-haikyuu', type: 'image', src: '/assets/anime/row2/haikyuu.jpg', alt: 'Haikyuu', shape: 'landscape', placeholder: 'haikyuu' },
-      { id: 'anime-hxh1', type: 'image', src: '/assets/anime/row2/hxh1.jpg', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
-      { id: 'anime-hxh2', type: 'image', src: '/assets/anime/row2/hxh2.jpg', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
+      { id: 'anime-aot', type: 'image', src: '/assets/anime/row2/aot.jpg', hoverVideo: '/assets/anime/row2/videos/aot.webm', alt: 'Attack on Titan', shape: 'landscape', placeholder: 'aot' },
+      { id: 'anime-code-geass', type: 'image', src: '/assets/anime/row2/code-geass.jpg', hoverVideo: '/assets/anime/row2/videos/code-geass.webm', alt: 'Code Geass', shape: 'landscape', placeholder: 'code geass' },
+      { id: 'anime-haikyuu', type: 'image', src: '/assets/anime/row2/haikyuu.jpg', hoverVideo: '/assets/anime/row2/videos/haikyuu.webm', alt: 'Haikyuu', shape: 'landscape', placeholder: 'haikyuu' },
+      { id: 'anime-vinland', type: 'image', src: '/assets/anime/row2/vinland.png', alt: 'Vinland Saga', shape: 'landscape', placeholder: 'vinland' },
+      { id: 'anime-hxh2', type: 'image', src: '/assets/anime/row2/hxh2.jpg', hoverVideo: '/assets/anime/row2/videos/hxh2.webm', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
       { id: 'anime-naruto', type: 'image', src: '/assets/anime/row2/naruto.jpg', alt: 'Naruto', shape: 'landscape', placeholder: 'naruto' },
-      { id: 'anime-shinra-tensei', type: 'image', src: '/assets/anime/row2/shinra-tensei.jpg', alt: 'Shinra Tensei', shape: 'landscape', placeholder: 'shinra tensei' },
+      { id: 'anime-shinra-tensei', type: 'image', src: '/assets/anime/row2/shinra-tensei.jpg', hoverVideo: '/assets/anime/row2/videos/shinra-tensei.webm', alt: 'Shinra Tensei', shape: 'landscape', placeholder: 'shinra tensei' },
     ],
   },
   {

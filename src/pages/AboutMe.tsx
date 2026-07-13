@@ -206,6 +206,21 @@ function DiaryMedia({
   return <div className={className} style={style}>{content}</div>;
 }
 
+// Anime strip caption sits above its two rows; the lead phrase ("my favorite
+// animes") is darkened for emphasis.
+function AnimeCaption({ text }: { text: string }) {
+  const LEAD_WORDS = 3;
+  const words = text.split(' ');
+  const lead = words.slice(0, LEAD_WORDS).join(' ');
+  const rest = words.slice(LEAD_WORDS).join(' ');
+  return (
+    <p className="about-strip__caption about-strip__caption--top">
+      <span className="about-strip__caption-lead">{lead}</span>
+      {rest && ` ${rest}`}
+    </p>
+  );
+}
+
 function FilmReel({
   frames,
   direction,
@@ -382,9 +397,8 @@ export default function AboutMe() {
           <header className="about-section-head about-reveal">
             <div>
               <span className="about-archive__eyebrow">off the clock</span>
-              <h2>things i keep<br />coming back to</h2>
+              <h2>my favorite things</h2>
             </div>
-            <p>no résumé bullets. just what i spend my time on.</p>
           </header>
 
           <section className="about-interests" aria-label="Things I keep coming back to">
@@ -393,6 +407,7 @@ export default function AboutMe() {
                 key={interest.id}
                 className={`about-strip about-strip--${interest.scroll} about-reveal`}
               >
+                {interest.id === 'anime' && <AnimeCaption text={interest.caption} />}
                 {interest.mediaTop && (
                   <FilmReel
                     frames={interest.mediaTop}
@@ -401,7 +416,9 @@ export default function AboutMe() {
                   />
                 )}
                 <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} />
-                <p className="about-strip__caption">{interest.caption}</p>
+                {interest.id !== 'anime' && (
+                  <p className="about-strip__caption">{interest.caption}</p>
+                )}
               </article>
             ))}
           </section>
