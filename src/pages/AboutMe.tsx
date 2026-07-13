@@ -257,6 +257,9 @@ function FilmReel({
 }) {
   const reelRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  // Hover caption lives in a body portal (fixed to the viewport) so the reel's
+  // overflow:hidden, edge mask, and sibling tiles can never clip or cover it.
+  const [tip, setTip] = useState<{ text: string; x: number; y: number } | null>(null);
   // Interaction state kept in refs so the rAF loop reads live values without re-subscribing.
   const pausedRef = useRef(false);
   const draggingRef = useRef(false);
@@ -290,15 +293,10 @@ function FilmReel({
     return () => cancelAnimationFrame(raf);
   }, [direction, reduced]);
 
-  // Park the hover caption on the cursor by writing its offset (relative to the
-  // frame) straight to the DOM node — cheaper than React state per pointer move.
-  const moveTitle = (e: React.PointerEvent<HTMLDivElement>) => {
-    const title = e.currentTarget.querySelector<HTMLElement>('.about-strip__frame-title');
-    if (!title) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    title.style.left = `${e.clientX - r.left}px`;
-    title.style.top = `${e.clientY - r.top}px`;
-  };
+  // Park the hover caption on the cursor (viewport coords → fixed tooltip).
+  const showTip = (text: string) => (e: React.PointerEvent<HTMLDivElement>) =>
+    setTip({ text, x: e.clientX, y: e.clientY });
+  const hideTip = () => setTip(null);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = reelRef.current;
@@ -345,22 +343,34 @@ function FilmReel({
       >
         <div className="about-strip__track">
           {[0, 1].map((pass) =>
-            frames.map((media) => (
-              <div
-                key={`${media.id}-${pass}`}
-                className="about-strip__frame"
-                aria-hidden={pass === 1}
-                onPointerMove={showTitles ? moveTitle : undefined}
-              >
-                <DiaryMedia media={media} onOpenClip={onOpenClip} />
-                {showTitles && (
-                  <span className="about-strip__frame-title">{media.title ?? media.alt}</span>
-                )}
-              </div>
-            )),
+            frames.map((media) => {
+              const caption = media.title ?? media.alt;
+              return (
+                <div
+                  key={`${media.id}-${pass}`}
+                  className="about-strip__frame"
+                  aria-hidden={pass === 1}
+                  onPointerEnter={showTitles ? showTip(caption) : undefined}
+                  onPointerMove={showTitles ? showTip(caption) : undefined}
+                  onPointerLeave={showTitles ? hideTip : undefined}
+                >
+                  <DiaryMedia media={media} onOpenClip={onOpenClip} />
+                </div>
+              );
+            }),
           )}
         </div>
       </div>
+      {tip &&
+        createPortal(
+          <span
+            className="about-strip__frame-title"
+            style={{ left: tip.x, top: tip.y }}
+          >
+            {tip.text}
+          </span>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -436,7 +446,6 @@ export default function AboutMe() {
 
           <header className="about-section-head about-reveal">
             <div>
-              <span className="about-archive__eyebrow">off the clock</span>
               <h2>my favorite things</h2>
             </div>
           </header>
@@ -464,7 +473,6 @@ export default function AboutMe() {
           <section className="about-archive" aria-labelledby="archive-title">
             <header className="about-archive__header about-reveal">
               <div>
-                <span className="about-archive__eyebrow">camera roll</span>
                 <h2 id="archive-title">the archive</h2>
               </div>
             </header>
