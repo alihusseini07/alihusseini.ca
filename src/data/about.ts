@@ -60,7 +60,7 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
       { id: 'anime-aot', type: 'image', src: '/assets/anime/row2/aot.jpg', hoverVideo: '/assets/anime/row2/videos/aot.webm', alt: 'Attack on Titan', shape: 'landscape', placeholder: 'aot' },
       { id: 'anime-code-geass', type: 'image', src: '/assets/anime/row2/code-geass.jpg', hoverVideo: '/assets/anime/row2/videos/code-geass.webm', alt: 'Code Geass', shape: 'landscape', placeholder: 'code geass' },
       { id: 'anime-haikyuu', type: 'image', src: '/assets/anime/row2/haikyuu.jpg', hoverVideo: '/assets/anime/row2/videos/haikyuu.webm', alt: 'Haikyuu', shape: 'landscape', placeholder: 'haikyuu' },
-      { id: 'anime-vinland', type: 'image', src: '/assets/anime/row2/vinland.png', alt: 'Vinland Saga', shape: 'landscape', placeholder: 'vinland' },
+      { id: 'anime-vinland', type: 'image', src: '/assets/anime/row2/vinland.png', hoverVideo: '/assets/anime/row2/videos/vinland.webm', alt: 'Vinland Saga', shape: 'landscape', placeholder: 'vinland' },
       { id: 'anime-hxh2', type: 'image', src: '/assets/anime/row2/hxh2.jpg', hoverVideo: '/assets/anime/row2/videos/hxh2.webm', alt: 'Hunter x Hunter', shape: 'landscape', placeholder: 'hxh' },
       { id: 'anime-naruto', type: 'image', src: '/assets/anime/row2/naruto.jpg', alt: 'Naruto', shape: 'landscape', placeholder: 'naruto' },
       { id: 'anime-shinra-tensei', type: 'image', src: '/assets/anime/row2/shinra-tensei.jpg', hoverVideo: '/assets/anime/row2/videos/shinra-tensei.webm', alt: 'Shinra Tensei', shape: 'landscape', placeholder: 'shinra tensei' },
