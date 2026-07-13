@@ -118,6 +118,7 @@ const GALLERY_FILES: Array<[filename: string, type: AboutMediaType, shape: About
   ['IMG_2681.JPG', 'image', 'portrait', 0.75],
   ['temp_image_6415DD89-DC09-4BD3-A062-C662DB18932F.jpg', 'image', 'tall', 0.5625],
   ['IMG_2465.JPG', 'image', 'portrait', 0.75],
+  ['IMG_8033.jpg', 'image', 'portrait', 0.75],
   ['IMG_3093.JPG', 'image', 'tall', 0.5625],
   ['IMG_2738.JPG', 'image', 'portrait', 0.75],
   ['IMG_3379.JPG', 'image', 'tall', 0.5625],
