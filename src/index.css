@@ -739,8 +739,6 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 }
 .about-strip__caption--top { margin: 0 auto 18px; max-width: 74ch; }
 .about-strip__caption-lead { color: var(--about-ink); }
-.about-strip:nth-child(2) .about-strip__caption { color: var(--about-red); }
-.about-strip:nth-child(3) .about-strip__caption { color: var(--about-blue); }
 
 
 .about-archive { padding: clamp(110px, 12vw, 180px) clamp(18px, 4vw, 62px) clamp(100px, 10vw, 150px); }

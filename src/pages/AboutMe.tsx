@@ -213,10 +213,21 @@ function AnimeCaption({ text }: { text: string }) {
   const words = text.split(' ');
   const lead = words.slice(0, LEAD_WORDS).join(' ');
   const rest = words.slice(LEAD_WORDS).join(' ');
+  // Any trailing parenthetical (e.g. "(watch out for spoilers)") renders in the
+  // dark lead colour instead of the muted body colour.
+  const parenIdx = rest.indexOf('(');
+  const restBody = parenIdx === -1 ? rest : rest.slice(0, parenIdx).trimEnd();
+  const paren = parenIdx === -1 ? '' : rest.slice(parenIdx);
   return (
     <p className="about-strip__caption about-strip__caption--top">
       <span className="about-strip__caption-lead">{lead}</span>
-      {rest && ` ${rest}`}
+      {restBody && ` ${restBody}`}
+      {paren && (
+        <>
+          {' '}
+          <span className="about-strip__caption-lead">{paren}</span>
+        </>
+      )}
     </p>
   );
 }
@@ -407,7 +418,7 @@ export default function AboutMe() {
                 key={interest.id}
                 className={`about-strip about-strip--${interest.scroll} about-reveal`}
               >
-                {interest.id === 'anime' && <AnimeCaption text={interest.caption} />}
+                <AnimeCaption text={interest.caption} />
                 {interest.mediaTop && (
                   <FilmReel
                     frames={interest.mediaTop}
@@ -416,9 +427,6 @@ export default function AboutMe() {
                   />
                 )}
                 <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} />
-                {interest.id !== 'anime' && (
-                  <p className="about-strip__caption">{interest.caption}</p>
-                )}
               </article>
             ))}
           </section>
@@ -429,7 +437,6 @@ export default function AboutMe() {
                 <span className="about-archive__eyebrow">camera roll</span>
                 <h2 id="archive-title">the archive</h2>
               </div>
-              <p>no captions. no chronology. just things worth keeping.</p>
             </header>
             <div className="about-gallery">
               {ABOUT_GALLERY.map((media) => (

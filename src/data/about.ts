@@ -43,7 +43,7 @@ export const ABOUT_HERO: AboutMedia = {
 export const ABOUT_INTERESTS: AboutInterest[] = [
   {
     id: 'anime',
-    caption: 'my favorite animes that changed my brain chemistry. these are some of my favorite moments and art (watch out for spoilers)',
+    caption: 'my favorite animes that changed my brain chemistry. here are some of my favorite moments and art (watch out for spoilers)',
     scroll: 'left',
     mediaTop: [
       { id: 'anime-top-bleach1', type: 'image', src: '/assets/anime/row1/bleach1.jpg', hoverVideo: '/assets/anime/row1/videos/bleach1.webm', alt: 'Bleach', shape: 'landscape', placeholder: 'bleach' },
@@ -68,7 +68,7 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
   },
   {
     id: 'shows',
-    caption: 'shows and movies that live rent-free — comfort rewatches and the ones i quote way too often',
+    caption: 'shows and movies that live rent-free in my head',
     scroll: 'right',
     media: [
       { id: 'shows-atlanta', type: 'image', src: '/assets/shows-movies/atlanta.jpg', alt: 'Atlanta', shape: 'landscape', placeholder: 'atlanta' },
@@ -124,7 +124,6 @@ const GALLERY_FILES: Array<[filename: string, type: AboutMediaType, shape: About
   ['IMG_2829.JPG', 'image', 'portrait', 0.75],
   ['IMG_3380.JPG', 'image', 'tall', 0.5625],
   ['IMG_3009.JPG', 'image', 'portrait', 0.75],
-  ['IMG_3381.JPG', 'image', 'tall', 0.5625],
   ['IMG_3011.JPG', 'image', 'portrait', 0.75],
   ['IMG_3185.JPG', 'image', 'portrait', 0.7025],
   ['IMG_3210.JPG', 'image', 'portrait', 0.75],
