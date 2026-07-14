@@ -440,7 +440,7 @@ export default function AboutMe() {
             <div className="about-hero__visual">
               <div className="about-hero__tape" aria-hidden />
               <DiaryMedia media={ABOUT_HERO} priority />
-              <span className="about-hero__scribble" aria-hidden>that's me ↗</span>
+              <span className="about-hero__scribble" aria-hidden>Beirut, Lebanon | 27-07-2025</span>
             </div>
           </section>
 

@@ -633,11 +633,12 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 
 .about-hero__scribble {
   position: absolute;
-  left: 30px;
+  left: 50%;
   bottom: 26px;
   color: #4a443a;
   font-size: 24px;
-  transform: rotate(-3deg);
+  white-space: nowrap;
+  transform: translateX(-50%);
 }
 
 .about-section-head {
@@ -935,7 +936,7 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
   .about-hero h1 { font-size: clamp(46px, 14vw, 92px); }
   .about-hero__copy p { max-width: 31ch; font-size: 23px; }
   .about-hero__visual { width: calc(100% - 26px); justify-self: center; padding: 12px 12px 66px; box-shadow: 10px 14px 0 rgba(38, 34, 30, .12), 0 20px 45px rgba(38, 34, 30, .2); }
-  .about-hero__scribble { left: 18px; bottom: 20px; font-size: 21px; }
+  .about-hero__scribble { bottom: 20px; font-size: 21px; }
   .about-section-head { flex-direction: column; align-items: flex-start; gap: 14px; padding: clamp(72px, 18vw, 104px) 16px 0; }
   .about-section-head h2 { font-size: clamp(42px, 13vw, 88px); }
   .about-section-head p { font-size: 20px; padding-bottom: 0; }
