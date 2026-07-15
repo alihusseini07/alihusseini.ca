@@ -691,7 +691,10 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 .about-strip__viewport {
   overflow-x: auto;
   overflow-y: hidden;
-  touch-action: pan-y;
+  /* pan-x lets touch swipe the reel natively (JS drag is mouse-only: a thumb
+     swipe always has a vertical component, so pan-y alone made the browser
+     claim the gesture and pointercancel the JS drag). */
+  touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   user-select: none;
@@ -967,10 +970,21 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 }
 .about-lightbox__nav--prev { left: 24px; }
 .about-lightbox__nav--next { right: 24px; }
+/* Phones: arrows sit centered under the video instead of flanking it (thumb
+   reach + no overlap with the small video). */
 @media (max-width: 640px) {
-  .about-lightbox__nav { width: 44px; height: 44px; font-size: 26px; }
-  .about-lightbox__nav--prev { left: 10px; }
-  .about-lightbox__nav--next { right: 10px; }
+  .about-lightbox { padding: 24px 16px 104px; }
+  .about-lightbox video { max-height: 72svh; }
+  .about-lightbox__nav {
+    top: auto;
+    bottom: 28px;
+    transform: none;
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+  .about-lightbox__nav--prev { left: calc(50% - 62px); }
+  .about-lightbox__nav--next { right: calc(50% - 62px); }
 }
 .about-media--gallery img,
 .about-media--gallery video {
@@ -1050,8 +1064,10 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 }
 
 @media (max-width: 520px) {
-  .about-gallery { columns: 1; }
-  .about-gallery__item:nth-child(n) { width: 98%; margin-left: 0; }
+  /* two-up camera roll: plain count (no ideal width) so narrow phones never
+     collapse to a single column */
+  .about-gallery { columns: 2; column-gap: 6px; }
+  .about-gallery__item:nth-child(n) { width: 98%; margin-left: 0; margin-bottom: 6px; }
   .about-gallery__item:nth-child(even) { margin-left: 2%; }
 }
 

@@ -32,10 +32,14 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
   const pausedRef = useRef(false);
   const draggingRef = useRef(false);
   const onscreenRef = useRef(true);
+  // Auto-advance holds off for a full interval after any user interaction —
+  // otherwise a drag landing just before a timer tick advances again instantly.
+  const lastUserRef = useRef(0);
 
   const count = frames.length;
   // User-initiated moves make sound; the auto-advance timer stays silent.
   const goTo = (i: number) => {
+    lastUserRef.current = Date.now();
     const next = ((i % count) + count) % count;
     if (next !== active) play('hangerSlide');
     setActive(next);
@@ -46,6 +50,7 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
     if (reduced) return;
     const timer = setInterval(() => {
       if (pausedRef.current || draggingRef.current || !onscreenRef.current || document.hidden) return;
+      if (Date.now() - lastUserRef.current < AUTO_ADVANCE_MS) return;
       setActive((a) => (a + 1) % count);
     }, AUTO_ADVANCE_MS);
     return () => clearInterval(timer);
@@ -80,6 +85,7 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
     };
     const onUp = (ev: PointerEvent) => {
       draggingRef.current = false;
+      lastUserRef.current = Date.now(); // snap-backs count too, not just commits
       stage.classList.remove('is-dragging');
       stage.style.setProperty('--fc-drag', '0px');
       window.removeEventListener('pointermove', onMove);

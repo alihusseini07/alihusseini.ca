@@ -285,6 +285,9 @@ function FilmReel({
   // it directly loses fractional advances (e.g. -0.5/frame rounds back to the
   // same integer and never moves). We own the float and write rounded values.
   const posRef = useRef(0);
+  // While a native touch fling is coasting, the drift loop must not write
+  // scrollLeft (each write would kill the momentum). Refreshed per scroll event.
+  const coastUntilRef = useRef(0);
 
   // Keep pos inside [0, half); the track holds two copies so this is seamless.
   const wrap = (half: number) => {
@@ -300,7 +303,7 @@ function FilmReel({
     const speed = direction === 'left' ? 0.5 : -0.5; // px per frame
     let raf = 0;
     const tick = () => {
-      if (!pausedRef.current && !draggingRef.current) {
+      if (!pausedRef.current && !draggingRef.current && Date.now() >= coastUntilRef.current) {
         posRef.current += speed;
         wrap(el.scrollWidth / 2);
         el.scrollLeft = Math.round(posRef.current);
@@ -316,9 +319,55 @@ function FilmReel({
     setTip({ text, x: e.clientX, y: e.clientY });
   const hideTip = () => setTip(null);
 
+  // Any scroll we didn't write ourselves is the browser's native touch pan /
+  // fling: adopt it into the float position and wrap it onto the seamless loop.
+  const onScroll = () => {
+    const el = reelRef.current;
+    if (!el) return;
+    if (el.scrollLeft === Math.round(posRef.current)) return; // our own write
+    coastUntilRef.current = Date.now() + 900;
+    posRef.current = el.scrollLeft;
+    const half = el.scrollWidth / 2;
+    if (half <= 0) return;
+    if (el.scrollLeft >= half) {
+      posRef.current -= half;
+      el.scrollLeft = Math.round(posRef.current);
+    } else if (el.scrollLeft < 1) {
+      // Parked at the hard left edge: jump to the identical frame in copy two
+      // so the user can keep swiping backwards.
+      posRef.current += half;
+      el.scrollLeft = Math.round(posRef.current);
+    }
+  };
+
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = reelRef.current;
     if (!el) return;
+
+    // Touch pans natively (touch-action: pan-x). Capturing the pointer here
+    // would fight the native scroll and iOS would pointercancel the gesture —
+    // so on touch, JS only watches for a tap to open a clip.
+    if (e.pointerType !== 'mouse') {
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const downTarget = e.target as HTMLElement;
+      const onUp = (ev: PointerEvent) => {
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+        if (Math.hypot(ev.clientX - startX, ev.clientY - startY) < 6) {
+          downTarget.closest('.about-media.has-hover-video')
+            ?.dispatchEvent(new CustomEvent('tileactivate'));
+        }
+      };
+      const onCancel = () => {
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+      };
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onCancel);
+      return;
+    }
+
     e.preventDefault(); // stop text/image selection from starting the drag
     draggingRef.current = true;
     el.setPointerCapture(e.pointerId);
@@ -355,6 +404,7 @@ function FilmReel({
         ref={reelRef}
         className="about-strip__viewport"
         aria-label={label}
+        onScroll={onScroll}
         onPointerDown={onPointerDown}
         onPointerEnter={() => (pausedRef.current = true)}
         onPointerLeave={() => (pausedRef.current = false)}
