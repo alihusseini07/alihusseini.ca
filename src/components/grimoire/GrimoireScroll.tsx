@@ -34,7 +34,7 @@ export default function GrimoireScroll() {
         style={{
           display: 'grid',
           gridTemplateRows: unrolled ? '1fr' : '0fr',
-          transition: 'grid-template-rows 1.1s cubic-bezier(.25,.9,.3,1)',
+          transition: 'grid-template-rows 0.85s cubic-bezier(.25,.9,.3,1)',
         }}
       >
         <div style={{ overflow: 'hidden', minHeight: 0 }}>
@@ -87,29 +87,28 @@ export default function GrimoireScroll() {
           gap: 0.5rem;
           padding: 0.4rem 0.1rem;
         }
+        /* opacity + transform only: the old sepia filter transition ran while
+           the item was still transparent (pure repaint cost, visible jank on
+           mobile GPUs) */
         .gscroll-item .gscroll-art,
         .gscroll-item .gscroll-name {
           opacity: 0;
           transform: translateY(7px);
-          filter: sepia(1) saturate(0.3) brightness(0.7);
           transition:
-            opacity 0.45s steps(4, end),
-            transform 0.45s steps(4, end),
-            filter 0.6s steps(5, end);
+            opacity 0.3s steps(3, end),
+            transform 0.3s steps(3, end);
           transition-delay: var(--ink-delay, 0ms);
         }
         .gscroll-item.inked .gscroll-art,
         .gscroll-item.inked .gscroll-name {
           opacity: 1;
           transform: translateY(0);
-          filter: none;
         }
         @media (prefers-reduced-motion: reduce) {
           .gscroll-item .gscroll-art,
           .gscroll-item .gscroll-name {
             opacity: 1 !important;
             transform: none !important;
-            filter: none !important;
             transition: none !important;
           }
         }
@@ -239,7 +238,9 @@ function InkedSkill({ name, column, children }: { name: string; column: number; 
           obs.disconnect()
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.15 },
+      // pre-trigger ~100px below the fold so icons are already inked (or
+      // inking) by the time they scroll into view
+      { rootMargin: '0px 0px 100px 0px', threshold: 0.01 },
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -250,7 +251,7 @@ function InkedSkill({ name, column, children }: { name: string; column: number; 
       ref={ref}
       className={`gscroll-item${inked ? ' inked' : ''}`}
       // stagger left-to-right across the row so each rank inks in sequence
-      style={{ '--ink-delay': `${column * 90}ms` } as React.CSSProperties}
+      style={{ '--ink-delay': `${column * 60}ms` } as React.CSSProperties}
     >
       <div className="gscroll-art" style={{ height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {children}

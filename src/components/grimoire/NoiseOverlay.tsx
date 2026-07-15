@@ -2,33 +2,6 @@
 export default function NoiseOverlay() {
   return (
     <>
-      {/* SVG noise filter definition */}
-      <svg
-        aria-hidden="true"
-        style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}
-      >
-        <defs>
-          <filter
-            id="grain"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            colorInterpolationFilters="sRGB"
-          >
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.65"
-              numOctaves="3"
-              stitchTiles="stitch"
-            />
-            <feColorMatrix type="saturate" values="0" />
-            <feBlend in="SourceGraphic" result="blend" mode="multiply" />
-            <feComposite in="blend" in2="SourceGraphic" operator="in" />
-          </filter>
-        </defs>
-      </svg>
-
       {/* Subtle light vignette — absolute, so it stays on the page sheet and
           off the footer revealed beneath it */}
       <div
@@ -42,7 +15,10 @@ export default function NoiseOverlay() {
         }}
       />
 
-      {/* Frost grain overlay */}
+      {/* Frost grain overlay — pre-rasterized noise tile. This used to be a
+          live SVG filter (filter: url(#grain)) over the full viewport, which
+          recomposited every scroll frame and stuttered on mobile; a tiled
+          background image rasterizes once and costs nothing after that. */}
       <div
         aria-hidden="true"
         style={{
@@ -50,9 +26,10 @@ export default function NoiseOverlay() {
           inset: 0,
           pointerEvents: 'none',
           zIndex: 3,
-          opacity: 0.03,
-          filter: 'url(#grain)',
-          background: '#a8c8e0',
+          opacity: 0.05,
+          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '140px 140px',
         }}
       />
     </>

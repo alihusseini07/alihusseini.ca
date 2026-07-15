@@ -600,6 +600,17 @@ export default function FooterSea() {
 
     const tick = () => {
       if (disposed) return;
+      // The footer sits fixed *behind* the page sheet and only comes on
+      // screen near the scroll bottom. While it's fully covered, skip the
+      // whole sim + draw — otherwise it burns a frame budget on every page
+      // (worst on mobile, where it made scrolling visibly stutter).
+      const doc = document.documentElement;
+      const covered =
+        doc.scrollHeight - window.innerHeight - window.scrollY > canvas.clientHeight + 60;
+      if (covered) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       const t = performance.now();
       step(t);
       drawScene(t);
