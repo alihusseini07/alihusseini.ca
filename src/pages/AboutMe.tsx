@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ContactBar from '../components/ContactBar';
+import FashionCarousel from '../components/FashionCarousel';
 import MobileNav from '../components/MobileNav';
 import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
@@ -457,15 +458,21 @@ export default function AboutMe() {
                 className={`about-strip about-strip--${interest.scroll} about-reveal`}
               >
                 <AnimeCaption text={interest.caption} />
-                {interest.mediaTop && (
-                  <FilmReel
-                    frames={interest.mediaTop}
-                    direction={interest.scroll === 'left' ? 'right' : 'left'}
-                    onOpenClip={openClip}
-                    showTitles={interest.id !== 'fashion'}
-                  />
+                {interest.id === 'fashion' ? (
+                  <FashionCarousel frames={interest.media} label={interest.caption} />
+                ) : (
+                  <>
+                    {interest.mediaTop && (
+                      <FilmReel
+                        frames={interest.mediaTop}
+                        direction={interest.scroll === 'left' ? 'right' : 'left'}
+                        onOpenClip={openClip}
+                        showTitles
+                      />
+                    )}
+                    <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} showTitles />
+                  </>
                 )}
-                <FilmReel frames={interest.media} direction={interest.scroll} label={interest.caption} onOpenClip={openClip} showTitles={interest.id !== 'fashion'} />
               </article>
             ))}
           </section>
