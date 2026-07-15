@@ -7,6 +7,7 @@ import SiteFooter, { FOOTER_H } from '../components/SiteFooter';
 import SoundToggle from '../components/SoundToggle';
 import ThemeToggle from '../components/ThemeToggle';
 import { ABOUT_GALLERY, ABOUT_HERO, ABOUT_INTERESTS, type AboutMedia } from '../data/about';
+import { play } from '../lib/sound';
 import { useIsMobile } from '../lib/useIsMobile';
 import { PROFILE } from '../tokens';
 
@@ -409,7 +410,14 @@ export default function AboutMe() {
   const [clipIndex, setClipIndex] = useState<number | null>(null);
   const openClip = (src: string) => {
     const i = clips.findIndex((c) => c.src === src);
-    if (i !== -1) setClipIndex(i);
+    if (i !== -1) {
+      play('shutter');
+      setClipIndex(i);
+    }
+  };
+  const closeClip = () => {
+    play('whooshClose');
+    setClipIndex(null);
   };
 
   useEffect(() => {
@@ -454,7 +462,12 @@ export default function AboutMe() {
                 <ContactBar links={PROFILE.links} variant="about" />
               </div>
             </div>
-            <div className="about-hero__visual">
+            <div
+              className="about-hero__visual"
+              onPointerEnter={(e) => {
+                if (e.pointerType === 'mouse') play('frameWhoosh'); // hover only; taps stay silent
+              }}
+            >
               <div className="about-hero__tape" aria-hidden />
               <DiaryMedia media={ABOUT_HERO} priority />
               <span className="about-hero__scribble" aria-hidden>Beirut, Lebanon | 27-07-2025</span>
@@ -512,7 +525,7 @@ export default function AboutMe() {
 
       <SiteFooter />
 
-      <VideoLightbox playlist={clips} index={clipIndex} onIndex={setClipIndex} onClose={() => setClipIndex(null)} />
+      <VideoLightbox playlist={clips} index={clipIndex} onIndex={setClipIndex} onClose={closeClip} />
     </div>
   );
 }

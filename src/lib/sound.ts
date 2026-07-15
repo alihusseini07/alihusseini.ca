@@ -8,7 +8,8 @@ export type SoundName =
   | 'bell' | 'chime' | 'pageTurn' | 'chantHover'
   | 'bookOpen' | 'ringHalt'
   | 'focusBeep' | 'shutter' | 'frameWhoosh' | 'lensWhir' | 'lensBack'
-  | 'cannon' | 'seagull' | 'splash' | 'luffyStretch';
+  | 'cannon' | 'seagull' | 'splash' | 'luffyStretch'
+  | 'hangerSlide';
 
 const MUTE_KEY = 'ah:sound-muted';
 
@@ -463,6 +464,11 @@ export function play(name: SoundName): void {
         break;
       case 'luffyStretch': // Gomu Gomu no Pistol, sampled
         playSample(a, m, 'luffyStretch', 0.45);
+        break;
+      case 'hangerSlide': // clothes rack: hanger zips along the rail, cloth sways, end-stop tink
+        swish(a, m, 'bandpass', 2000, 3400, now, 0.09, 0.038, 0.008);
+        swish(a, m, 'lowpass', 900, 480, now + 0.02, 0.16, 0.028, 0.03);
+        tone(a, m, 'triangle', 2960, now + 0.08, 0.03, 0.022, undefined, 0.002);
         break;
     }
   } catch { /* no-op */ }

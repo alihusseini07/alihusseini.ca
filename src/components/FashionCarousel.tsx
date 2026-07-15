@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { AboutMedia } from '../data/about';
+import { play } from '../lib/sound';
 
 const AUTO_ADVANCE_MS = 4000;
 /** Drag distance (px) that commits a slide change instead of snapping back. */
@@ -33,7 +34,12 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
   const onscreenRef = useRef(true);
 
   const count = frames.length;
-  const goTo = (i: number) => setActive(((i % count) + count) % count);
+  // User-initiated moves make sound; the auto-advance timer stays silent.
+  const goTo = (i: number) => {
+    const next = ((i % count) + count) % count;
+    if (next !== active) play('hangerSlide');
+    setActive(next);
+  };
 
   // Auto-advance, paused while hovered, dragging, offscreen, or tabbed away.
   useEffect(() => {
@@ -80,8 +86,13 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
       window.removeEventListener('pointerup', onUp);
       const dx = ev.clientX - startX;
       if (moved) {
-        if (dx <= -DRAG_THRESHOLD) setActive((a) => (a + 1) % count);
-        else if (dx >= DRAG_THRESHOLD) setActive((a) => (a - 1 + count) % count);
+        if (dx <= -DRAG_THRESHOLD) {
+          if (count > 1) play('hangerSlide');
+          setActive((a) => (a + 1) % count);
+        } else if (dx >= DRAG_THRESHOLD) {
+          if (count > 1) play('hangerSlide');
+          setActive((a) => (a - 1 + count) % count);
+        }
       } else {
         const idx = downTarget.closest<HTMLElement>('[data-idx]')?.dataset.idx;
         if (idx !== undefined) goTo(Number(idx));

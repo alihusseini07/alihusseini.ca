@@ -611,7 +611,16 @@ html[data-theme='dark'] .about-sheet::after { mix-blend-mode: screen; opacity: .
   border: 1px solid rgba(38, 34, 30, .28);
   box-shadow: 16px 22px 0 rgba(38, 34, 30, .12), 0 24px 60px rgba(38, 34, 30, .2);
   transform: rotate(2.1deg);
-  animation: about-develop .9s .18s cubic-bezier(.2, .78, .25, 1) both;
+  /* fill must stay 'backwards' (not 'both'): fill-forwards keeps the animation
+     owning `transform` after it ends, which kills the hover lift transition. */
+  animation: about-develop .9s .18s cubic-bezier(.2, .78, .25, 1) backwards;
+  transition: transform .55s cubic-bezier(.22, .61, .21, 1);
+  will-change: transform;
+}
+
+/* Photo lifts off the page and leans further into its tilt on hover (desktop only). */
+@media (hover: hover) {
+  .about-hero__visual:hover { transform: rotate(3.4deg) translateY(-9px); }
 }
 
 html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 16px 22px 0 rgba(179, 90, 85, .18), 0 24px 60px rgba(0, 0, 0, .45); }
@@ -1049,5 +1058,7 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 @media (prefers-reduced-motion: reduce) {
   .about-hero__copy,
   .about-hero__visual { animation: none; }
+  .about-hero__visual,
+  .about-hero__visual:hover { transition: none; transform: rotate(2.1deg); }
   .about-reveal { opacity: 1; transform: none; }
 }
