@@ -83,13 +83,17 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
       if (Math.hypot(ev.clientX - startX, ev.clientY - startY) >= 6) moved = true;
       stage.style.setProperty('--fc-drag', `${ev.clientX - startX}px`);
     };
-    const onUp = (ev: PointerEvent) => {
+    const finish = () => {
       draggingRef.current = false;
       lastUserRef.current = Date.now(); // snap-backs count too, not just commits
       stage.classList.remove('is-dragging');
       stage.style.setProperty('--fc-drag', '0px');
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onCancel);
+    };
+    const onUp = (ev: PointerEvent) => {
+      finish();
       const dx = ev.clientX - startX;
       if (moved) {
         if (dx <= -DRAG_THRESHOLD) {
@@ -104,8 +108,16 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
         if (idx !== undefined) goTo(Number(idx));
       }
     };
+    // Vertical swipes hand the gesture to native scroll (touch-action: pan-y)
+    // and fire pointercancel instead of pointerup — without this, draggingRef
+    // stays true and the auto-advance never resumes.
+    const onCancel = () => {
+      finish();
+      pausedRef.current = false; // touch never gets a balancing pointerleave
+    };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onCancel);
   };
 
   const current = frames[active];
