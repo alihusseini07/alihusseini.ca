@@ -211,6 +211,22 @@ function DiaryMedia({
 // animes") is darkened for emphasis.
 function AnimeCaption({ text }: { text: string }) {
   const LEAD_WORDS = 3;
+  // Explicit **phrase** markup overrides the lead-words emphasis: the marked
+  // phrase renders in the dark lead colour, everything else stays muted.
+  if (text.includes('**')) {
+    const parts = text.split('**'); // odd indices sit between the ** markers
+    return (
+      <p className="about-strip__caption about-strip__caption--top">
+        {parts.map((part, i) =>
+          i % 2 === 1 ? (
+            <span key={i} className="about-strip__caption-lead">{part}</span>
+          ) : (
+            <span key={i}>{part}</span>
+          ),
+        )}
+      </p>
+    );
+  }
   const words = text.split(' ');
   const lead = words.slice(0, LEAD_WORDS).join(' ');
   const rest = words.slice(LEAD_WORDS).join(' ');
