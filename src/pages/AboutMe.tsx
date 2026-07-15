@@ -258,6 +258,9 @@ function AnimeCaption({ text }: { text: string }) {
   );
 }
 
+// How long the idle drift stays parked after the user scrolls a reel themself.
+const DRIFT_RESUME_DELAY_MS = 2500;
+
 function FilmReel({
   frames,
   direction,
@@ -279,14 +282,14 @@ function FilmReel({
   // overflow:hidden, edge mask, and sibling tiles can never clip or cover it.
   const [tip, setTip] = useState<{ text: string; x: number; y: number } | null>(null);
   // Interaction state kept in refs so the rAF loop reads live values without re-subscribing.
-  const pausedRef = useRef(false);
   const draggingRef = useRef(false);
   // Sub-pixel position tracked as a float; scrollLeft rounds to int, so stepping
   // it directly loses fractional advances (e.g. -0.5/frame rounds back to the
   // same integer and never moves). We own the float and write rounded values.
   const posRef = useRef(0);
-  // While a native touch fling is coasting, the drift loop must not write
-  // scrollLeft (each write would kill the momentum). Refreshed per scroll event.
+  // After the user scrolls the strip themself (mouse drag or native touch
+  // pan/fling), the drift stays parked until this timestamp — writes during a
+  // fling would also kill its momentum. Refreshed per user scroll event.
   const coastUntilRef = useRef(0);
 
   // Keep pos inside [0, half); the track holds two copies so this is seamless.
@@ -303,7 +306,7 @@ function FilmReel({
     const speed = direction === 'left' ? 0.5 : -0.5; // px per frame
     let raf = 0;
     const tick = () => {
-      if (!pausedRef.current && !draggingRef.current && Date.now() >= coastUntilRef.current) {
+      if (!draggingRef.current && Date.now() >= coastUntilRef.current) {
         posRef.current += speed;
         wrap(el.scrollWidth / 2);
         el.scrollLeft = Math.round(posRef.current);
@@ -324,8 +327,13 @@ function FilmReel({
   const onScroll = () => {
     const el = reelRef.current;
     if (!el) return;
-    if (el.scrollLeft === Math.round(posRef.current)) return; // our own write
-    coastUntilRef.current = Date.now() + 900;
+    if (draggingRef.current) return; // drag handler already owns posRef
+    // scrollLeft reads back quantized to device pixels, so on fractional
+    // display scaling (e.g. Windows 125%) our own integer writes echo back
+    // slightly off (write 5, read 4.8). Exact equality would misread every
+    // drift write as a native fling and coast forever — use a tolerance.
+    if (Math.abs(el.scrollLeft - posRef.current) < 1.5) return; // our own write
+    coastUntilRef.current = Date.now() + DRIFT_RESUME_DELAY_MS;
     posRef.current = el.scrollLeft;
     const half = el.scrollWidth / 2;
     if (half <= 0) return;
@@ -387,6 +395,7 @@ function FilmReel({
     };
     const onUp = () => {
       draggingRef.current = false;
+      coastUntilRef.current = Date.now() + DRIFT_RESUME_DELAY_MS;
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       if (!moved) {
@@ -406,8 +415,6 @@ function FilmReel({
         aria-label={label}
         onScroll={onScroll}
         onPointerDown={onPointerDown}
-        onPointerEnter={() => (pausedRef.current = true)}
-        onPointerLeave={() => (pausedRef.current = false)}
       >
         <div className="about-strip__track">
           {[0, 1].map((pass) =>

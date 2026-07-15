@@ -661,7 +661,8 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 .about-section-head p { max-width: 26ch; padding-bottom: 10px; color: var(--about-muted); font-size: clamp(19px, 1.6vw, 26px); line-height: 1.12; }
 
 .about-interests {
-  padding: clamp(44px, 5vw, 72px) clamp(20px, 5vw, 76px) clamp(40px, 6vw, 96px);
+  --about-gutter: clamp(20px, 5vw, 76px);
+  padding: clamp(44px, 5vw, 72px) var(--about-gutter) clamp(40px, 6vw, 96px);
   display: flex;
   flex-direction: column;
   gap: clamp(56px, 7vw, 104px);
@@ -679,12 +680,12 @@ html[data-theme='dark'] .about-hero__visual { background: #ded2bd; box-shadow: 1
 .about-strip__reel {
   position: relative;
   overflow: hidden;
+  /* Bleed past the section gutter so the reel spans the full viewport width. */
+  margin-inline: calc(-1 * var(--about-gutter));
   padding: 15px 0;
   background: #171513;
   border-radius: 3px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, .28), inset 0 0 0 1px rgba(255, 255, 255, .05);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
 
 /* Scroll/drag surface; perforations + mask stay fixed on the reel above it. */
@@ -1046,7 +1047,7 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
   .about-section-head h2 { font-size: clamp(42px, 13vw, 88px); }
   .about-section-head p { font-size: 20px; padding-bottom: 0; }
 
-  .about-interests { padding: clamp(40px, 10vw, 64px) 16px clamp(32px, 10vw, 64px); gap: clamp(48px, 12vw, 72px); }
+  .about-interests { --about-gutter: 16px; padding: clamp(40px, 10vw, 64px) var(--about-gutter) clamp(32px, 10vw, 64px); gap: clamp(48px, 12vw, 72px); }
   .about-strip__frame { width: clamp(180px, 62vw, 240px); }
   .about-strip__caption { font-size: 22px; max-width: 34ch; }
   .fashion-carousel { --fc-step: clamp(120px, 36vw, 190px); }
