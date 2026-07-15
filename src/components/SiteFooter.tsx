@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ContactBar from './ContactBar';
 // import CursorTrail from './CursorTrail'; // disabled for now
@@ -36,6 +37,32 @@ export default function SiteFooter() {
   const goWarp = useTransitionNavigate();
   const isMobile = useIsMobile();
   const links = NAV_LINKS.filter((l) => l.path !== location.pathname);
+
+  // The footer is fixed behind the page sheet. During fast mobile flings the
+  // sheet's rasterization can lag the scroll, letting the footer flash
+  // through mid-page — so keep it visibility:hidden until the scroll position
+  // is actually close enough for the curtain-reveal to begin.
+  const [nearBottom, setNearBottom] = useState(false);
+  useEffect(() => {
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const doc = document.documentElement;
+      const remaining = doc.scrollHeight - window.innerHeight - window.scrollY;
+      const footerH = isMobile ? window.innerHeight : FOOTER_H;
+      setNearBottom(remaining < footerH + 240);
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
+    check();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [isMobile]);
+
   return (
     <footer
       style={{
@@ -66,6 +93,7 @@ export default function SiteFooter() {
         background: THEME.headerBg,
         borderTop: `2px solid ${THEME.headerBorder}`,
         overflow: 'hidden',
+        visibility: nearBottom ? 'visible' : 'hidden',
       }}
     >
       {/* <CursorTrail /> disabled for now */}
