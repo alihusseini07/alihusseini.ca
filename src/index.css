@@ -796,7 +796,7 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
   transform: translate(-50%, -50%) translateX(calc(var(--fc-x) + var(--fc-drag, 0px))) scale(var(--fc-s));
   opacity: var(--fc-o);
   z-index: var(--fc-z);
-  transition: transform .55s cubic-bezier(.22, .75, .25, 1), opacity .55s ease;
+  transition: transform .8s cubic-bezier(.45, .05, .15, 1), opacity .8s ease;
   will-change: transform, opacity;
 }
 .fashion-carousel__stage.is-dragging .fashion-carousel__slide { transition: none; }

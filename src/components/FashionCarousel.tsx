@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { AboutMedia } from '../data/about';
 import { play } from '../lib/sound';
 
-const AUTO_ADVANCE_MS = 4000;
+const AUTO_ADVANCE_MS = 2500;
 /** Drag distance (px) that commits a slide change instead of snapping back. */
 const DRAG_THRESHOLD = 60;
 
