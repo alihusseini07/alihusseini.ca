@@ -38,8 +38,8 @@ export default function MobileNav({ currentRoute, variant, fixed = false, burger
 
   const goHome = () => {
     setOpen(false);
-    // skills lives in the warp dimension; everything else zooms
-    navigate('/', currentRoute === '/skills' ? { warp: 'out' } : { zoom: 'out' });
+    // skills lives in the warp dimension; everything else slides across the desk
+    navigate('/', currentRoute === '/skills' ? { warp: 'out' } : undefined);
   };
 
   const burger = grim ? (
@@ -212,12 +212,15 @@ export default function MobileNav({ currentRoute, variant, fixed = false, burger
                 labelColor={labelColor}
                 onClick={(rect) => {
                   setOpen(false);
-                  navigate(f.route, {
-                    ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
-                    origin: rect
-                      ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-                      : undefined,
-                  });
+                  // skills folder tears open a new dimension; the rest slide across the desk
+                  navigate(f.route, f.route === '/skills'
+                    ? {
+                        warp: 'in',
+                        origin: rect
+                          ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+                          : undefined,
+                      }
+                    : undefined);
                 }}
               />
             ))}

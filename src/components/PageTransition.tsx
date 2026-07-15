@@ -1,14 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { play } from '../lib/sound';
-import { EXIT_MS, ZOOM_MS, WARP_IN_MS, WARP_OUT_MS, REDUCED } from '../lib/motion';
+import { EXIT_MS, WARP_IN_MS, WARP_OUT_MS, REDUCED } from '../lib/motion';
 
 export interface GoOptions {
-  /** 'in' = dive into a folder, 'out' = pull back out of it */
-  zoom?: 'in' | 'out';
   /** 'in' = glitch + twist into the grimoire dimension, 'out' = warp back home */
   warp?: 'in' | 'out';
-  /** viewport point to zoom toward (the clicked folder's center) */
+  /** viewport point to warp toward (the clicked folder's center) */
   origin?: { x: number; y: number };
 }
 
@@ -54,27 +52,13 @@ export default function PageTransition({ children }: { children: ReactNode }) {
       enterCls = 'page-enter-unwarped';
       ms = WARP_OUT_MS;
       play('warpOut');
-    } else if (opts?.zoom === 'in') {
-      if (opts.origin) lastOrigin = opts.origin;
-      origin = opts.origin ? `${opts.origin.x}px ${opts.origin.y}px` : '50% 50%';
-      exitCls = 'page-exit-dive';
-      enterCls = 'page-enter-inside';
-      ms = ZOOM_MS;
-      play('paperIn');
-    } else if (opts?.zoom === 'out') {
-      origin = lastOrigin ? `${lastOrigin.x}px ${lastOrigin.y}px` : '50% 45%';
-      enterOrigin = origin;
-      exitCls = 'page-exit-back';
-      enterCls = 'page-enter-outside';
-      ms = ZOOM_MS;
-      play('paperOut');
     } else {
       play('whooshClose');
     }
     busy.current = true;
     enterRef.current = { cls: enterCls, origin: enterOrigin };
     setExit({ cls: exitCls, origin });
-    // scaled pages overflow the document; hide scrollbars until enter settles
+    // sliding/warping pages overflow the document; hide scrollbars until enter settles
     document.documentElement.style.overflow = 'hidden';
     // warp shakes translate the page wrapper, exposing the body at the
     // edges — ink it grimoire-dark for the ride so the slivers don't flash

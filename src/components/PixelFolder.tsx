@@ -8,7 +8,7 @@ export interface PixelFolderProps {
   labelColor?: string;
   /** base art width in px (everything scales from 182) */
   width?: number;
-  /** rect = folder art position at click time (for zoom-into-folder transitions) */
+  /** rect = folder art position at click time (for warp-into-folder transitions) */
   onClick?: (rect?: DOMRect) => void;
 }
 

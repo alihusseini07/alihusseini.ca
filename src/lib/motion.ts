@@ -2,8 +2,6 @@ import type { CSSProperties } from 'react';
 
 /** duration of the page-exit animation before navigating */
 export const EXIT_MS = 200;
-/** duration of the folder dive/back-out page transitions */
-export const ZOOM_MS = 360;
 /** duration of the glitch + dimension-warp transitions (skills grimoire) */
 export const WARP_IN_MS = 950;
 export const WARP_OUT_MS = 850;

@@ -142,26 +142,6 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
   to { opacity: 0; transform: translateY(-8px); }
 }
 
-/* folder dive: camera zooms into the clicked folder, interior grows in */
-@keyframes dive-out {
-  to { opacity: 0; transform: scale(2.2); }
-}
-
-@keyframes inside-in {
-  from { opacity: 0; transform: scale(.92); }
-  to { opacity: 1; transform: none; }
-}
-
-/* folder back-out: interior shrinks into the folder, exterior pulls back */
-@keyframes back-out {
-  to { opacity: 0; transform: scale(.55); }
-}
-
-@keyframes outside-in {
-  from { opacity: 0; transform: scale(2.2); }
-  to { opacity: 1; transform: none; }
-}
-
 /* dimension warp: glitch flicker, then the screen cuts to black. Pages own
    a full-viewport background, so brightness(0) blacks the whole screen —
    opacity stays 1 to avoid flashing the body behind the page. */
@@ -431,10 +411,6 @@ html[data-theme='dark'] .btn-sticker::after {
 .overlay-exit { animation: overlay-out .16s ease both; }
 .page-enter { animation: rise-in .26s cubic-bezier(.2,.85,.3,1) both; }
 .page-exit { animation: page-out .2s ease-in both; }
-.page-exit-dive { animation: dive-out .36s cubic-bezier(.5,0,.8,.4) both; }
-.page-enter-inside { animation: inside-in .3s cubic-bezier(.2,.85,.3,1) both; }
-.page-exit-back { animation: back-out .36s cubic-bezier(.5,0,.8,.4) both; }
-.page-enter-outside { animation: outside-in .38s cubic-bezier(.2,.85,.3,1) both; }
 /* exit wrappers are unmounted right after the animation, so the
    will-change layer promotion is transient; enter classes persist on the
    page wrapper, so they must not carry will-change (permanent layer). */

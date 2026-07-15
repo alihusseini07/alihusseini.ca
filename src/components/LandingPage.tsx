@@ -392,10 +392,10 @@ export default function LandingPage() {
                   labelColor={THEME.labelColor}
                   onClick={(rect) => {
                     setMenuOpen(false);
-                    navigate(f.route, {
-                      ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
-                      origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
-                    });
+                    // skills folder tears open a new dimension; the rest slide across the desk
+                    navigate(f.route, f.route === '/skills'
+                      ? { warp: 'in', origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined }
+                      : undefined);
                   }}
                 />
               ))}
@@ -515,11 +515,10 @@ export default function LandingPage() {
                     label={f.label}
                     palette={folders[f.color]}
                     labelColor={THEME.labelColor}
-                    onClick={(rect) => navigate(f.route, {
-                      // skills folder tears open a new dimension; the rest zoom in
-                      ...(f.route === '/skills' ? { warp: 'in' as const } : { zoom: 'in' as const }),
-                      origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined,
-                    })}
+                    onClick={(rect) => navigate(f.route, f.route === '/skills'
+                      // skills folder tears open a new dimension; the rest slide across the desk
+                      ? { warp: 'in', origin: rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : undefined }
+                      : undefined)}
                   />
                 </div>
               ))}
