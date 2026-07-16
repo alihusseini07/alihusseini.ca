@@ -769,14 +769,20 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
   top: 50%;
   width: clamp(210px, 27vw, 360px);
   height: 92%;
-  transform: translate(-50%, -50%) translateX(calc(var(--fc-x) + var(--fc-drag, 0px))) scale(var(--fc-s));
+  translate: calc(-50% + var(--fc-x)) -50%;
+  scale: var(--fc-s);
   opacity: var(--fc-o);
   z-index: var(--fc-z);
-  transition: transform .8s cubic-bezier(.45, .05, .15, 1), opacity .8s ease;
-  will-change: transform, opacity;
+  transition: translate .8s cubic-bezier(.45, .05, .15, 1), scale .8s cubic-bezier(.45, .05, .15, 1), opacity .8s ease;
+  will-change: translate, scale, opacity;
 }
+/* While dragging, FashionCarousel.tsx drives --fc-x/-s/-o/-z inline every
+   pointer move, interpolating between the resting states below — transitions
+   would fight that, so they're off until release. */
 .fashion-carousel__stage.is-dragging .fashion-carousel__slide { transition: none; }
 
+/* Resting states per offset — mirrored by KEYFRAMES in FashionCarousel.tsx;
+   keep the two in sync. */
 .fashion-carousel__slide[data-off='0'] { --fc-x: 0px; --fc-s: 1; --fc-o: 1; --fc-z: 3; }
 .fashion-carousel__slide[data-off='1'],
 .fashion-carousel__slide[data-off='-1'] { --fc-s: .58; --fc-o: .45; --fc-z: 2; }

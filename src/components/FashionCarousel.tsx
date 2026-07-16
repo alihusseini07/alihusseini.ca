@@ -3,8 +3,14 @@ import type { AboutMedia } from '../data/about';
 import { play } from '../lib/sound';
 
 const AUTO_ADVANCE_MS = 2500;
-/** Drag distance (px) that commits a slide change instead of snapping back. */
+/** Remaining drag distance (px) on release that commits one more slide instead of snapping back. */
 const DRAG_THRESHOLD = 60;
+/**
+ * Fraction of the slide spacing a drag must cross to commit a slide mid-drag.
+ * Slightly past halfway so a pointer hovering at the midpoint doesn't flip
+ * back and forth between neighbours.
+ */
+const STEP_COMMIT_RATIO = 0.55;
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -24,12 +30,40 @@ function loopOffset(i: number, active: number, count: number) {
   return ((i - active) % count + count + half) % count - half;
 }
 
+/**
+ * Resting values per |offset| step — must mirror the data-off rules in
+ * index.css. x is in units of --fc-step.
+ */
+const KEYFRAMES = [
+  { x: 0, s: 1, o: 1 },
+  { x: 1, s: 0.58, o: 0.45 },
+  { x: 1.7, s: 0.45, o: 0.14 },
+  { x: 2.1, s: 0.4, o: 0 },
+];
+
+/** Interpolated slide style at a fractional loop offset (drag in progress). */
+function slideStyle(pos: number) {
+  const a = Math.min(Math.abs(pos), 3);
+  const seg = Math.min(Math.floor(a), 2);
+  const t = a - seg;
+  const from = KEYFRAMES[seg];
+  const to = KEYFRAMES[seg + 1];
+  const lerp = (p: number, q: number) => p + (q - p) * t;
+  return {
+    x: Math.sign(pos) * lerp(from.x, to.x),
+    s: lerp(from.s, to.s),
+    o: lerp(from.o, to.o),
+    // Finer-grained than the resting 0–3 z scale so stacking order hands over
+    // cleanly as two slides cross.
+    z: Math.round(30 - a * 10),
+  };
+}
+
 export default function FashionCarousel({ frames, label }: { frames: AboutMedia[]; label?: string }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const [active, setActive] = useState(0);
   // Interaction state in refs so the auto-advance timer reads live values.
-  const pausedRef = useRef(false);
   const draggingRef = useRef(false);
   const onscreenRef = useRef(true);
   // Auto-advance holds off for a full interval after any user interaction —
@@ -45,11 +79,11 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
     setActive(next);
   };
 
-  // Auto-advance, paused while hovered, dragging, offscreen, or tabbed away.
+  // Auto-advance, paused while dragging, offscreen, or tabbed away.
   useEffect(() => {
     if (reduced) return;
     const timer = setInterval(() => {
-      if (pausedRef.current || draggingRef.current || !onscreenRef.current || document.hidden) return;
+      if (draggingRef.current || !onscreenRef.current || document.hidden) return;
       if (Date.now() - lastUserRef.current < AUTO_ADVANCE_MS) return;
       setActive((a) => (a + 1) % count);
     }, AUTO_ADVANCE_MS);
@@ -79,27 +113,84 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
     const downTarget = e.target as HTMLElement;
     let moved = false;
 
+    // Spacing between adjacent slide centres, measured from the DOM because
+    // --fc-step is a responsive clamp() the JS can't resolve.
+    const center = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      return r.left + r.width / 2;
+    };
+    const s0 = stage.querySelector('[data-off="0"]');
+    const s1 = stage.querySelector('[data-off="1"]');
+    const stepPx = s0 && s1 ? Math.abs(center(s1) - center(s0)) : 240;
+
+    // Rebased each time a slide commits mid-drag so dx stays continuous.
+    let baseX = startX;
+    let stepped = false;
+    // Mirrors the React state during the drag so per-move math never has to
+    // wait on a render.
+    let localActive = active;
+    const slides = Array.from(stage.querySelectorAll<HTMLElement>('.fashion-carousel__slide'));
+
+    // While dragging, every slide is styled continuously from the fractional
+    // drag progress (inline vars override the discrete data-off CSS), so
+    // in-between slides grow and fade smoothly instead of popping states.
+    const applyDragStyles = (dx: number) => {
+      for (const el of slides) {
+        const pos = loopOffset(Number(el.dataset.idx), localActive, count) + dx / stepPx;
+        const st = slideStyle(pos);
+        el.style.setProperty('--fc-x', `${st.x * stepPx}px`);
+        el.style.setProperty('--fc-s', String(st.s));
+        el.style.setProperty('--fc-o', String(st.o));
+        el.style.setProperty('--fc-z', String(st.z));
+      }
+    };
+
     const onMove = (ev: PointerEvent) => {
       if (Math.hypot(ev.clientX - startX, ev.clientY - startY) >= 6) moved = true;
-      stage.style.setProperty('--fc-drag', `${ev.clientX - startX}px`);
+      let dx = ev.clientX - baseX;
+      // A long drag scrubs through as many slides as it covers: each crossing
+      // commits one slide (dots, sound, auto-advance base) and rebases; the
+      // visuals stay continuous through applyDragStyles regardless.
+      while (count > 1 && Math.abs(dx) > stepPx * STEP_COMMIT_RATIO) {
+        const dir = dx < 0 ? 1 : -1; // drag left → next slide
+        stepped = true;
+        localActive = (localActive + dir + count) % count;
+        play('hangerSlide');
+        setActive(localActive);
+        baseX -= dir * stepPx;
+        dx = ev.clientX - baseX;
+      }
+      applyDragStyles(dx);
     };
     const finish = () => {
       draggingRef.current = false;
       lastUserRef.current = Date.now(); // snap-backs count too, not just commits
+      // Drop the inline overrides and re-enable transitions in one pass so the
+      // slides animate from their exact drag positions to their resting spots.
+      for (const el of slides) {
+        el.style.removeProperty('--fc-x');
+        el.style.removeProperty('--fc-s');
+        el.style.removeProperty('--fc-o');
+        el.style.removeProperty('--fc-z');
+      }
       stage.classList.remove('is-dragging');
-      stage.style.setProperty('--fc-drag', '0px');
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
     };
     const onUp = (ev: PointerEvent) => {
+      // Remainder past the last mid-drag commit, not the full drag distance.
+      const dx = ev.clientX - baseX;
       finish();
-      const dx = ev.clientX - startX;
       if (moved) {
-        if (dx <= -DRAG_THRESHOLD) {
+        // Once mid-drag commits have happened, active is already the nearest
+        // slide — only a remainder past halfway should commit one more. The
+        // small flick threshold applies only to drags that never stepped.
+        const commitPx = stepped ? stepPx / 2 : DRAG_THRESHOLD;
+        if (dx <= -commitPx) {
           if (count > 1) play('hangerSlide');
           setActive((a) => (a + 1) % count);
-        } else if (dx >= DRAG_THRESHOLD) {
+        } else if (dx >= commitPx) {
           if (count > 1) play('hangerSlide');
           setActive((a) => (a - 1 + count) % count);
         }
@@ -111,10 +202,7 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
     // Vertical swipes hand the gesture to native scroll (touch-action: pan-y)
     // and fire pointercancel instead of pointerup — without this, draggingRef
     // stays true and the auto-advance never resumes.
-    const onCancel = () => {
-      finish();
-      pausedRef.current = false; // touch never gets a balancing pointerleave
-    };
+    const onCancel = () => finish();
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onCancel);
@@ -128,8 +216,6 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
         ref={stageRef}
         className="fashion-carousel__stage"
         onPointerDown={onPointerDown}
-        onPointerEnter={() => (pausedRef.current = true)}
-        onPointerLeave={() => (pausedRef.current = false)}
       >
         {frames.map((media, i) => {
           const off = loopOffset(i, active, count);
