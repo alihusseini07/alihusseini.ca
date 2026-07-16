@@ -285,14 +285,17 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
 /* pink pixel eraser that scrubs the tagline away */
 .tagline-eraser {
   position: absolute;
-  top: -7px;
-  width: 26px;
-  height: 22px;
-  background: #e8837a;
-  /* lighter worn top band + chunky pixel outline */
-  box-shadow:
-    inset 0 7px 0 #f6bcb4,
-    0 0 0 2px #4a2f2a;
+  bottom: -0.2em;
+  width: 5em;
+  /* pre-squashed: the tagline wrapper is scaleY(1.4)-stretched, so the art's
+     ~1:0.97 aspect needs height = 4.85em / 1.4 to render undistorted */
+  height: 3.46em;
+  background: url('/assets/Pink-eraser.svg') no-repeat;
+  background-size: 100% 100%;
+  /* horizontal centering + vertical drift set inline (translate(-30%, driftpx)) */
+  filter: drop-shadow(1px 2px 1px rgba(0, 0, 0, 0.25));
+  pointer-events: none;
+  will-change: left, transform;
 }
 
 /* typewriter block cursor for the cycling tagline */
