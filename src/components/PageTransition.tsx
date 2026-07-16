@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { play } from '../lib/sound';
 import { EXIT_MS, WARP_IN_MS, WARP_OUT_MS, REDUCED } from '../lib/motion';
@@ -77,12 +77,45 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     }, ms);
   }, [navigate]);
 
+  // restore the pre-reload scroll position before first paint — native
+  // restoration is disabled in main.tsx because it fires after the SPA's
+  // empty first paint and flashes the top of the page
+  useLayoutEffect(() => {
+    const raw = sessionStorage.getItem('reload-scroll');
+    if (!raw) return;
+    sessionStorage.removeItem('reload-scroll');
+    try {
+      const { path, y } = JSON.parse(raw) as { path: string; y: number };
+      if (path !== window.location.pathname || !y) return;
+      window.scrollTo(0, y);
+      // late-loading images can leave the document too short right now,
+      // clamping the scroll — retry once everything has loaded, but only if
+      // the user hasn't scrolled away from the clamped position themselves
+      const clamped = window.scrollY;
+      if (clamped < y) {
+        const retry = () => {
+          if (window.scrollY === clamped) window.scrollTo(0, y);
+        };
+        window.addEventListener('load', retry, { once: true });
+      }
+    } catch {
+      // corrupt saved state — nothing to restore
+    }
+  }, []);
+
   // consume the enter style once; back/forward navigations get the default
   const enter = enterRef.current;
+  const prevPath = useRef(location.pathname);
   useEffect(() => {
     enterRef.current = { cls: 'page-enter' };
-    // land at the top of every page instead of inheriting the prior scroll
-    window.scrollTo(0, 0);
+    // land at the top only when the path actually changes — never on the
+    // initial load, where it would stomp the restored reload position (a
+    // first-run flag won't do: StrictMode replays mount effects, and the
+    // replay would see the flag already consumed and scroll anyway)
+    if (prevPath.current !== location.pathname) {
+      prevPath.current = location.pathname;
+      window.scrollTo(0, 0);
+    }
   }, [location.pathname]);
 
   return (
