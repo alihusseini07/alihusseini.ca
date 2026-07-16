@@ -298,11 +298,14 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
   position: absolute;
   bottom: -0.2em;
   width: 5em;
-  /* pre-squashed: the tagline wrapper is scaleY(1.4)-stretched, so the art's
-     ~1:0.97 aspect needs height = 4.85em / 1.4 to render undistorted */
-  height: 3.46em;
-  background: url('/assets/Pink-eraser.svg') no-repeat;
-  background-size: 100% 100%;
+  /* the eraser art fills only the top-left 1050x975 of its 1200x1200 canvas,
+     so background-size/position below crop the empty right+bottom margin.
+     height = art's 1050:975 aspect at width 5em, pre-divided by the parent's
+     scaleY(1.4) so it renders undistorted: 5em * 975/1050 / 1.4 = 3.32em */
+  height: 3.32em;
+  background: url('/assets/Pink-eraser.svg') no-repeat left top;
+  /* map the 1050x975 art box onto the element (1200/1050, 1200/975) */
+  background-size: 114.29% 123.08%;
   /* horizontal centering + vertical drift set inline (translate(-30%, driftpx)) */
   filter: drop-shadow(1px 2px 1px rgba(0, 0, 0, 0.25));
   pointer-events: none;
