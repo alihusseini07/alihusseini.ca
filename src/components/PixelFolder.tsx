@@ -83,10 +83,20 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: Math.max(12, r(20)), userSelect: 'none' }}>
-      <div ref={artRef} style={art} onMouseEnter={() => { play('tick'); setOpen(true); }} onMouseLeave={() => setOpen(false)} onClick={handleClick}>
-        <img src={sprites.back} draggable={false} alt="" style={backStyle} />
-        <img src={sprites.papers} draggable={false} alt="" style={papersStyle} />
-        <img src={sprites.front} draggable={false} alt="" style={frontStyle} />
+      {/* stable hitbox: never transforms, so opening (which lifts the art up
+          ~16px) can't slide the folder out from under the cursor and cause an
+          open/close flicker loop. Vertical padding covers the lift + a buffer. */}
+      <div
+        style={{ padding: `${r(22)}px 0`, cursor: 'pointer' }}
+        onMouseEnter={() => { play('tick'); setOpen(true); }}
+        onMouseLeave={() => setOpen(false)}
+        onClick={handleClick}
+      >
+        <div ref={artRef} style={art}>
+          <img src={sprites.back} draggable={false} alt="" style={backStyle} />
+          <img src={sprites.papers} draggable={false} alt="" style={papersStyle} />
+          <img src={sprites.front} draggable={false} alt="" style={frontStyle} />
+        </div>
       </div>
       <div style={labelStyle}>{label}</div>
     </div>

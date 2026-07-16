@@ -508,7 +508,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingTop: 80 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingTop: 24 }}>
               {FOLDERS.map((f, i) => (
                 <div key={f.label} className="enter-pop" style={enter(8 + i)}>
                   <PixelFolder
