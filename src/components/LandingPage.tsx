@@ -508,7 +508,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingTop: 24 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 24 }}>
               {FOLDERS.map((f, i) => (
                 <div key={f.label} className="enter-pop" style={enter(8 + i)}>
                   <PixelFolder
@@ -526,7 +526,7 @@ export default function LandingPage() {
           </div>
 
           {/* EXPERIENCE: index cards side by side, right above the folders */}
-          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -40 + RULE }}>
+          <div style={{ paddingTop: 8, paddingBottom: 72, marginTop: -40 * 4 + RULE + 10 }}>
             <div className="enter-rise" style={{ ...enter(5), display: 'flex', alignItems: 'center', gap: 12, marginBottom: 26 }}>
               <span style={{ width: 8, height: 8, background: THEME.nameColor, flex: 'none' }} />
               <span style={{ ...stretch, fontSize: 9, letterSpacing: 1, color: THEME.subTextColor, textTransform: 'uppercase' }}>my experience</span>

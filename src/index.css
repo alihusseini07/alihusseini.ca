@@ -297,12 +297,12 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
 .tagline-eraser {
   position: absolute;
   bottom: -0.2em;
-  width: 5em;
+  width: 4.3em;
   /* the eraser art fills only the top-left 1050x975 of its 1200x1200 canvas,
      so background-size/position below crop the empty right+bottom margin.
-     height = art's 1050:975 aspect at width 5em, pre-divided by the parent's
-     scaleY(1.4) so it renders undistorted: 5em * 975/1050 / 1.4 = 3.32em */
-  height: 3.32em;
+     height = art's 1050:975 aspect at width 4.3em, pre-divided by the parent's
+     scaleY(1.4) so it renders undistorted: 4.3em * 975/1050 / 1.4 = 2.85em */
+  height: 2.85em;
   background: url('/assets/Pink-eraser.svg') no-repeat left top;
   /* map the 1050x975 art box onto the element (1200/1050, 1200/975) */
   background-size: 114.29% 123.08%;
