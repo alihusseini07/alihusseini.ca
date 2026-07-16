@@ -240,18 +240,6 @@ export default function FashionCarousel({ frames, label }: { frames: AboutMedia[
         {current.title ?? current.alt}
         <span aria-hidden> ]</span>
       </p>
-      <div className="fashion-carousel__dots">
-        {frames.map((media, i) => (
-          <button
-            key={media.id}
-            type="button"
-            className={`fashion-carousel__dot${i === active ? ' is-active' : ''}`}
-            aria-label={`Show ${media.title ?? media.alt}`}
-            aria-current={i === active}
-            onClick={() => goTo(i)}
-          />
-        ))}
-      </div>
     </div>
   );
 }

@@ -815,23 +815,6 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
   color: var(--about-ink);
 }
 
-.fashion-carousel__dots {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-.fashion-carousel__dot {
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  border: 1px solid var(--about-ink);
-  background: transparent;
-  cursor: pointer;
-  transition: background .2s ease;
-}
-.fashion-carousel__dot.is-active { background: var(--about-ink); }
-
 @media (prefers-reduced-motion: reduce) {
   .fashion-carousel__slide { transition: none; }
 }
