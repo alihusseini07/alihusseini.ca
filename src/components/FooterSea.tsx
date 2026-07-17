@@ -226,6 +226,13 @@ export default function FooterSea() {
     const reduced = REDUCED();
     let raf = 0;
     let disposed = false;
+    // fixed-timestep sim clock: step() integrates by frame (luffy.t += 1,
+    // velocities, spawn odds), so it must run at a locked rate — otherwise a
+    // 120Hz ProMotion display runs the whole ocean at 2x. Accumulate real
+    // elapsed time and step in fixed 60Hz chunks; draw every rAF for smoothness.
+    const SIM_DT = 1000 / 60;
+    let simAcc = 0;
+    let lastFrame = performance.now();
 
     const ambient = (i: number, t: number) =>
       1.8 * Math.sin(i * 0.5 + t * 0.0012) + 1.1 * Math.sin(i * 0.21 - t * 0.0007);
@@ -607,13 +614,23 @@ export default function FooterSea() {
       const doc = document.documentElement;
       const covered =
         doc.scrollHeight - window.innerHeight - window.scrollY > canvas.clientHeight + 60;
+      const now = performance.now();
       if (covered) {
+        // don't bank elapsed time while hidden, or it all runs at once on reveal
+        lastFrame = now;
         raf = requestAnimationFrame(tick);
         return;
       }
-      const t = performance.now();
-      step(t);
-      drawScene(t);
+      // clamp the gap so a backgrounded tab doesn't spiral on catch-up
+      simAcc += Math.min(250, now - lastFrame);
+      lastFrame = now;
+      let subSteps = 0;
+      while (simAcc >= SIM_DT && subSteps < 5) {
+        step(now);
+        simAcc -= SIM_DT;
+        subSteps++;
+      }
+      drawScene(now);
       raf = requestAnimationFrame(tick);
     };
 
