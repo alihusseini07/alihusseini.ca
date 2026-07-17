@@ -508,7 +508,12 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 24 }}>
+            {/* snapped to the ruled-paper grid: each folder unit is 186px tall
+                (see PixelFolder's layout contract), so gap 14 gives a 200px
+                (5-rule) pitch. paddingTop 44 puts the first art bottom on a
+                rule (40 blank + 44 + 22 pad + 134 art = 240) and each label
+                box bottom 10px above the next rule, like the text rows. */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 44 }}>
               {FOLDERS.map((f, i) => (
                 <div key={f.label} className="enter-pop" style={enter(8 + i)}>
                   <PixelFolder

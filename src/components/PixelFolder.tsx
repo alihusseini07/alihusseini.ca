@@ -72,6 +72,7 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
     display: 'inline-block',
     fontFamily: "'Press Start 2P', monospace",
     fontSize: Math.max(9, r(13)),
+    lineHeight: 1,
     letterSpacing: 0.5,
     color: labelColor,
     textAlign: 'center',
@@ -81,13 +82,17 @@ export default function PixelFolder({ label, palette, labelColor = '#3b362d', wi
     transformOrigin: 'bottom',
   };
 
+  // Vertical layout contract at the default width (s=1), top to bottom:
+  // 22 hitbox pad + 134 art + 6 hitbox pad + 11 gap + 13 label = 186 total,
+  // with art bottom 30px above label bottom. LandingPage leans on these
+  // numbers to snap folders and labels onto the ruled-paper 40px grid.
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: Math.max(12, r(20)), userSelect: 'none' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: r(11), userSelect: 'none' }}>
       {/* stable hitbox: never transforms, so opening (which lifts the art up
           ~16px) can't slide the folder out from under the cursor and cause an
-          open/close flicker loop. Vertical padding covers the lift + a buffer. */}
+          open/close flicker loop. The tall top padding covers the lift. */}
       <div
-        style={{ padding: `${r(22)}px 0`, cursor: 'pointer' }}
+        style={{ padding: `${r(22)}px 0 ${r(6)}px`, cursor: 'pointer' }}
         onMouseEnter={() => { play('tick'); setOpen(true); }}
         onMouseLeave={() => setOpen(false)}
         onClick={handleClick}
