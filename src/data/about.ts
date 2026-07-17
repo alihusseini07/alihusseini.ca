@@ -99,8 +99,8 @@ export const ABOUT_INTERESTS: AboutInterest[] = [
       { id: 'fashion-halfnhalf-zip', type: 'image', src: '/assets/fashion/halfnhalf-zip.png', alt: 'Half-and-half zip-up', title: 'my favorite hoodie', shape: 'portrait', placeholder: 'halfnhalf zip' },
       { id: 'fashion-gats', type: 'image', src: '/assets/fashion/adidas-gats.png', alt: 'Adidas GATs sneakers', title: 'adidas gats 😎', shape: 'square', placeholder: 'the shoes' },
       { id: 'fashion-outfit1', type: 'image', src: '/assets/fashion/outfit1.jpg', alt: 'Outfit photo 1', title: 'summer fit', shape: 'portrait', placeholder: 'outfit 1' },
-      { id: 'fashion-black-jeans', type: 'image', src: '/assets/fashion/black-jeans.png', alt: 'Black jeans', title: 'go-to black jeans', shape: 'portrait', placeholder: 'black jeans' },
-      { id: 'fashion-blue-jorts', type: 'image', src: '/assets/fashion/blue-jorts.png', alt: 'Blue jorts', title: 'my go-to shorts', shape: 'portrait', placeholder: 'blue jorts' },
+      { id: 'fashion-black-jeans', type: 'image', src: '/assets/fashion/black-jeans.png', alt: 'Black jeans', title: 'go-to jeans', shape: 'portrait', placeholder: 'black jeans' },
+      { id: 'fashion-blue-jorts', type: 'image', src: '/assets/fashion/blue-jorts.png', alt: 'Blue jorts', title: 'go-to shorts', shape: 'portrait', placeholder: 'blue jorts' },
     ],
   },
 ];
