@@ -26,16 +26,22 @@ export default function LinkPreviewLink({ href, preview, caption, className, sty
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [ready, setReady] = useState(false);
 
-  // Decode the screenshot ahead of hover so the card renders at full height on
-  // its first paint — otherwise height=0 places it below the cursor, then it
-  // jumps up once the image loads.
+  // Preload the screenshot ahead of hover so the card paints at full height
+  // right away — at height 0 it would sit below the cursor, then jump up as
+  // the image loads.
   useEffect(() => {
     let live = true;
+    const done = () => { if (live) setReady(true); };
     const img = new Image();
+    img.onload = done;
+    img.onerror = done;
     img.src = preview;
-    img.decode?.().then(() => { if (live) setReady(true); }).catch(() => { if (live) setReady(true); });
-    if (img.complete) setReady(true);
-    return () => { live = false; };
+    // decode() pre-rasterizes to skip a first-paint hitch, but on an off-DOM
+    // Image it can hang forever in some WebKit builds, so it must never gate
+    // readiness. The timer caps the wait if load events also go missing.
+    img.decode?.().catch(() => {});
+    const t = setTimeout(done, 600);
+    return () => { live = false; clearTimeout(t); };
   }, [preview]);
 
   return (
@@ -46,15 +52,21 @@ export default function LinkPreviewLink({ href, preview, caption, className, sty
         rel="noopener noreferrer"
         className={className}
         style={{ ...style, cursor: 'pointer' }}
-        onMouseEnter={(e) => {
-          // touch devices have no hover — skip the polaroid so a stray
-          // synthetic mouseenter doesn't leave a floating card behind; the tap
-          // just follows the link
-          if (window.matchMedia('(hover: none)').matches) { onEnter?.(e); return; }
-          play('lensWhir'); setPos({ x: e.clientX, y: e.clientY }); setHover(true); onEnter?.(e);
+        onPointerEnter={(e) => {
+          // Pop the card only for inputs that can hover (mouse/pen). Decided
+          // per event via pointerType, not a hover media query — touchscreen
+          // laptops misreport those and were wrongly suppressing the card. A
+          // touch tap just follows the link, so its synthetic enter can't
+          // strand a floating card behind.
+          if (e.pointerType !== 'touch') {
+            play('lensWhir');
+            setPos({ x: e.clientX, y: e.clientY });
+            setHover(true);
+          }
+          onEnter?.(e);
         }}
-        onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
-        onMouseLeave={(e) => { setHover(false); onLeave?.(e); }}
+        onPointerMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
+        onPointerLeave={(e) => { setHover(false); onLeave?.(e); }}
       >
         {children}
       </a>
