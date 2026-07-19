@@ -31,7 +31,7 @@ export const PROJECTS: PortfolioItem[] = [
     demo: '#',
     github: 'https://github.com/athravseruwam07/clarus',
     image: '/assets/clarus-poster.jpg',
-    video: '/assets/clarus-demo.mp4',
+    video: '/assets/clarus-demo.webm',
   },
   {
     title: 'ChefIt',
@@ -42,7 +42,7 @@ export const PROJECTS: PortfolioItem[] = [
     demo: '#',
     github: 'https://github.com/MatthewKim07/chef-it',
     image: '/assets/chefit.png',
-    video: '/assets/chef-it-demo.mp4',
+    video: '/assets/chef-it-demo.webm',
   },
   {
     title: 'WaterlooWorks+',
@@ -53,6 +53,6 @@ export const PROJECTS: PortfolioItem[] = [
     demo: '#',
     github: 'https://github.com/MatthewKim07/waterloo-works-plus',
     image: '/assets/waterlooworksplus.png',
-    video: '/assets/waterloo-works-plus-demo.mp4',
+    video: '/assets/waterloo-works-plus-demo.webm',
   },
 ];
