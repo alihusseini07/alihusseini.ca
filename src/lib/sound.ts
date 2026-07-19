@@ -30,10 +30,15 @@ const listeners = new Set<() => void>();
 
 export function isMuted() { return muted; }
 
+/** What the user actually experiences: audio the browser hasn't unlocked yet is
+    silent no matter what the mute flag says, so report it as muted rather than
+    showing a speaker icon over a site that makes no sound. */
+function effectiveMuted(): boolean { return muted || !isAudioReady(); }
+
 export function toggleMute() {
-  if (muted) {
+  if (effectiveMuted()) {
     muted = false;
-    play('toggleOn');
+    play('toggleOn'); // pre-unlock this is queued and fires once audio starts
   } else {
     play('toggleOff'); // audible feedback before mute takes effect
     muted = true;
@@ -45,7 +50,7 @@ export function toggleMute() {
 export function useMuted(): boolean {
   return useSyncExternalStore(
     (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
-    () => muted,
+    effectiveMuted,
   );
 }
 
@@ -53,7 +58,14 @@ let ac: AudioContext | null = null;
 let master: GainNode | null = null;
 let noiseBuf: AudioBuffer | null = null;
 
-function ctx(): { ac: AudioContext; master: GainNode } | null {
+/** true once the AudioContext exists AND is actually running (post-gesture) */
+export function isAudioReady(): boolean { return ac?.state === 'running'; }
+
+/** Build the context if it doesn't exist yet. Only ever call this from a user
+    gesture — a context constructed without one starts 'suspended' and some
+    browsers keep it flagged, so building it eagerly is what made the site feel
+    muted on first load. */
+function ensureCtx(): { ac: AudioContext; master: GainNode } | null {
   const Ctx = window.AudioContext || (window as any).webkitAudioContext;
   if (!Ctx) return null;
   if (!ac) {
@@ -61,25 +73,52 @@ function ctx(): { ac: AudioContext; master: GainNode } | null {
     master = ac.createGain();
     master.gain.value = 1.4;
     master.connect(ac.destination);
+    ac.addEventListener('statechange', () => {
+      if (ac?.state === 'running') { decodePending(); flushPending(); }
+      listeners.forEach((fn) => fn());
+    });
   }
-  if (ac.state === 'suspended') void ac.resume();
   return { ac, master: master! };
 }
 
-// Browsers create an AudioContext in the 'suspended' state and only let it run
-// after a user gesture. Without this, the FIRST play() after load schedules its
-// nodes against a suspended context and is dropped — the site feels muted even
-// though `muted` is false, and interactions appear one step behind. Resume the
-// context on the first gesture (capture phase, so it runs before button
-// onClick handlers), then detach once it's running.
+/** context for playback: null until a gesture has unlocked it */
+function ctx(): { ac: AudioContext; master: GainNode } | null {
+  if (!ac) return null;
+  if (ac.state === 'suspended') void ac.resume();
+  return ac.state === 'running' ? { ac, master: master! } : null;
+}
+
+// resume() is async: the sound requested by the very gesture that unlocks audio
+// would otherwise be scheduled against a still-suspended context and dropped —
+// which is why the first click always felt silent. Hold that one sound and
+// replay it the moment the context reports 'running'.
+let pending: { name: SoundName; at: number } | null = null;
+const PENDING_MAX_AGE = 600; // ms — older than this, the sound is stale, drop it
+
+function flushPending(): void {
+  const p = pending;
+  pending = null;
+  if (p && Date.now() - p.at < PENDING_MAX_AGE) play(p.name);
+}
+
+// Browsers only let an AudioContext run after a user gesture. Create and resume
+// it on the first one (capture phase, so it runs before button onClick
+// handlers), then detach once it's running.
 let unlockBound = false;
 function bindUnlock(): void {
   if (unlockBound || typeof window === 'undefined') return;
   unlockBound = true;
-  const events = ['pointerdown', 'touchstart', 'keydown', 'click'] as const;
+  const events = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'keydown', 'click'] as const;
   const unlock = () => {
-    const c = ctx(); // creates + resumes the context within the user gesture
-    if (c && c.ac.state === 'running') {
+    const c = ensureCtx(); // creates the context within the user gesture
+    if (!c) return;
+    if (c.ac.state === 'suspended') {
+      void c.ac.resume().then(() => { decodePending(); flushPending(); });
+    } else if (c.ac.state === 'running') {
+      decodePending();
+      flushPending();
+    }
+    if (c.ac.state === 'running') {
       events.forEach((ev) => window.removeEventListener(ev, unlock, true));
     }
   };
@@ -150,30 +189,52 @@ const sampleBufs: Record<SampleName, (AudioBuffer | null)[]> = {
   luffyStretch: SAMPLE_SRCS.luffyStretch.map(() => null),
 };
 const sampleLoadStarted: Record<SampleName, boolean> = { splash: false, luffyStretch: false };
+/** raw bytes fetched before the context exists, waiting to be decoded */
+const sampleBytes: Record<SampleName, (ArrayBuffer | null)[]> = {
+  splash: SAMPLE_SRCS.splash.map(() => null),
+  luffyStretch: SAMPLE_SRCS.luffyStretch.map(() => null),
+};
 
 /** per-file playback rates, indexed like SAMPLE_SRCS; missing = 1 */
 const SAMPLE_RATES: Partial<Record<SampleName, number[]>> = {
   splash: [1.5, 1, 1], // splash1 runs long: speed it up
 };
 
-function loadSamples(a: AudioContext, name: SampleName): void {
+/** fetch the bytes; decode too if a context already exists */
+function loadSamples(name: SampleName): void {
   if (sampleLoadStarted[name]) return;
   sampleLoadStarted[name] = true;
   SAMPLE_SRCS[name].forEach((src, i) => {
     fetch(src)
       .then((r) => r.arrayBuffer())
-      .then((data) => a.decodeAudioData(data))
-      .then((buf) => { sampleBufs[name][i] = buf; })
+      .then((data) => {
+        sampleBytes[name][i] = data;
+        decodeOne(name, i);
+      })
       .catch(() => { /* no-op: callers fall back to synth or silence */ });
   });
 }
 
-/** kick off sample decoding ahead of the first play */
+function decodeOne(name: SampleName, i: number): void {
+  const data = sampleBytes[name][i];
+  if (!ac || !data || sampleBufs[name][i]) return;
+  sampleBytes[name][i] = null; // decodeAudioData detaches the buffer
+  ac.decodeAudioData(data)
+    .then((buf) => { sampleBufs[name][i] = buf; })
+    .catch(() => { /* no-op */ });
+}
+
+/** decode everything fetched before the context existed */
+function decodePending(): void {
+  (Object.keys(SAMPLE_SRCS) as SampleName[]).forEach((n) =>
+    SAMPLE_SRCS[n].forEach((_, i) => decodeOne(n, i)));
+}
+
+/** kick off sample fetching ahead of the first play — safe pre-gesture,
+    since this no longer needs (or creates) an AudioContext */
 export function preloadSamples(): void {
   try {
-    const c = ctx();
-    if (!c) return;
-    (Object.keys(SAMPLE_SRCS) as SampleName[]).forEach((n) => loadSamples(c.ac, n));
+    (Object.keys(SAMPLE_SRCS) as SampleName[]).forEach((n) => loadSamples(n));
   } catch { /* no-op */ }
 }
 
@@ -183,7 +244,7 @@ const lastPlayed: Partial<Record<SampleName, number>> = {};
 /** play one of a sample set at random (never the same twice in a row);
     false while still decoding */
 function playSample(a: AudioContext, m: GainNode, name: SampleName, gain: number): boolean {
-  loadSamples(a, name);
+  loadSamples(name);
   const bufs = sampleBufs[name];
   let readyIdx = bufs.map((b, i) => (b ? i : -1)).filter((i) => i >= 0);
   if (!readyIdx.length) return false;
@@ -217,7 +278,15 @@ export function play(name: SoundName): void {
   if (muted) return;
   try {
     const c = ctx();
-    if (!c) return;
+    if (!c) {
+      // Audio not unlocked yet. If this call came from a real user gesture, the
+      // unlock handler is resuming the context right now — hold the sound so it
+      // plays a beat later instead of vanishing. Hover/idle sounds with no
+      // activation behind them are dropped, as the browser requires.
+      const act = (navigator as any).userActivation;
+      if (!act || act.isActive) pending = { name, at: Date.now() };
+      return;
+    }
     const { ac: a, master: m } = c;
     const now = a.currentTime;
     switch (name) {
