@@ -192,32 +192,41 @@ export default function LandingPage() {
           <div style={{ position: 'absolute', top: 0, bottom: 0, left: 16, width: 2, background: THEME.marginColor }} />
 
           <div style={mBody}>
-            {/* top bar: hamburger left, contact + toggles right */}
-            <div className="enter-drop" style={{ height: RULE * 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 0 }}>
-              <button
-                type="button"
-                aria-label="Open menu"
-                aria-expanded={menuOpen}
-                onClick={() => { play('click'); setMenuOpen(true); }}
-                style={{
-                  flex: 'none',
-                  width: 34,
-                  height: 30,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  gap: 5,
-                  padding: '0 6px',
-                  background: THEME.headerBg,
-                  border: `2px solid ${THEME.headerBorder}`,
-                  boxShadow: `2px 2px 0 ${mode === 'dark' ? 'rgba(0,0,0,.4)' : 'rgba(52,48,42,.25)'}`,
-                  cursor: 'pointer',
-                }}
-              >
-                {[0, 1, 2].map((n) => (
-                  <span key={n} style={{ display: 'block', height: 3, background: THEME.nameColor }} />
-                ))}
-              </button>
+            {/* burger floats fixed to the viewport (own animation — never nest a
+                position:fixed element inside a transform-animated wrapper, that
+                turns the wrapper into its containing block). Matches MobileNav. */}
+            <button
+              type="button"
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+              className="enter-drop"
+              onClick={() => { play('click'); setMenuOpen(true); }}
+              style={{
+                position: 'fixed',
+                top: '1.25rem',
+                left: '1.25rem',
+                zIndex: 50,
+                flex: 'none',
+                width: 34,
+                height: 30,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: 5,
+                padding: '0 6px',
+                background: THEME.headerBg,
+                border: `2px solid ${THEME.headerBorder}`,
+                boxShadow: `2px 2px 0 ${mode === 'dark' ? 'rgba(0,0,0,.4)' : 'rgba(52,48,42,.25)'}`,
+                cursor: 'pointer',
+              }}
+            >
+              {[0, 1, 2].map((n) => (
+                <span key={n} style={{ display: 'block', height: 3, background: THEME.nameColor }} />
+              ))}
+            </button>
+
+            {/* top bar: contact + toggles stay static, right-aligned */}
+            <div className="enter-drop" style={{ height: RULE * 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginBottom: 0 }}>
               <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
                 <ContactBar links={PROFILE.links} />
                 <ThemeToggle />
