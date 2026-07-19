@@ -37,7 +37,6 @@ export function toggleMute() {
   } else {
     play('toggleOff'); // audible feedback before mute takes effect
     muted = true;
-    stopRingHum(); // kill any running loop; owners restart it on unmute
   }
   try { localStorage.setItem(MUTE_KEY, muted ? '1' : '0'); } catch { /* no-op */ }
   listeners.forEach((fn) => fn());
@@ -191,112 +190,6 @@ function bellTone(
   for (const [ratio, amp] of partials) {
     tone(a, out, 'sine', base * ratio, at, dur * (1 - ratio * 0.07), peak * amp, undefined, 0.002);
   }
-}
-
-/* ---- grimoire ring hum: continuous loop while the three rings turn ---- */
-
-let hum: { gate: GainNode; sources: AudioScheduledSourceNode[] } | null = null;
-
-/** brooding war-drone: dark detuned strings on an open fifth (D2+A2) under a
-    deep sub root, breathing in slow ominous swells; call stopRingHum to end */
-export function startRingHum(): void {
-  if (muted || hum) return;
-  try {
-    const c = ctx();
-    if (!c) return;
-    const { ac: a, master: m } = c;
-    const now = a.currentTime;
-
-    const gate = a.createGain();
-    gate.gain.setValueAtTime(0.0001, now);
-    gate.gain.exponentialRampToValueAtTime(1, now + 1.2);
-    gate.connect(m);
-
-    // slow swell breathes the whole drone (~12s cycle)
-    const swell = a.createGain();
-    swell.gain.value = 0.75;
-    swell.connect(gate);
-
-    const sources: AudioScheduledSourceNode[] = [];
-
-    const swellLfo = a.createOscillator();
-    swellLfo.type = 'sine';
-    swellLfo.frequency.value = 0.08;
-    const swellAmt = a.createGain();
-    swellAmt.gain.value = 0.22;
-    swellLfo.connect(swellAmt).connect(swell.gain);
-    swellLfo.start(now);
-    sources.push(swellLfo);
-
-    // dark string section: detuned saw pairs, muffled behind a low ceiling
-    const lp = a.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 380;
-    lp.Q.value = 0.7;
-    lp.connect(swell);
-    for (const [f, amp] of [
-      [73.42, 0.02], [73.95, 0.018],   // D2 pair, slow beat = menace
-      [110, 0.011], [110.65, 0.01],    // A2 pair
-      [146.83, 0.005],                 // D3 whisper on top
-    ] as const) {
-      const o = a.createOscillator();
-      o.type = 'sawtooth';
-      o.frequency.value = f;
-      const g = a.createGain();
-      g.gain.value = amp;
-      o.connect(g).connect(lp);
-      o.start(now);
-      sources.push(o);
-    }
-
-    // sub root D1: felt more than heard
-    const sub = a.createOscillator();
-    sub.type = 'sine';
-    sub.frequency.value = 36.71;
-    const subG = a.createGain();
-    subG.gain.value = 0.03;
-    sub.connect(subG).connect(swell);
-    sub.start(now);
-    sources.push(sub);
-
-    // cavern breath: dark looped noise drifting with its own slow cycle
-    const src = a.createBufferSource();
-    src.buffer = noise(a);
-    src.loop = true;
-    const bf = a.createBiquadFilter();
-    bf.type = 'bandpass';
-    bf.frequency.value = 240;
-    bf.Q.value = 1.4;
-    const ng = a.createGain();
-    ng.gain.value = 0.012;
-    const breathLfo = a.createOscillator();
-    breathLfo.type = 'sine';
-    breathLfo.frequency.value = 0.12;
-    const breathAmt = a.createGain();
-    breathAmt.gain.value = 120;
-    breathLfo.connect(breathAmt).connect(bf.frequency);
-    src.connect(bf).connect(ng).connect(swell);
-    src.start(now);
-    breathLfo.start(now);
-    sources.push(src, breathLfo);
-
-    hum = { gate, sources };
-  } catch { /* no-op */ }
-}
-
-export function stopRingHum(): void {
-  if (!hum) return;
-  const { gate, sources } = hum;
-  hum = null;
-  try {
-    if (!ac) return;
-    const t = ac.currentTime;
-    gate.gain.cancelScheduledValues(t);
-    gate.gain.setValueAtTime(Math.max(gate.gain.value, 0.0001), t);
-    gate.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-    sources.forEach((s) => s.stop(t + 0.3));
-    setTimeout(() => { try { gate.disconnect(); } catch { /* no-op */ } }, 350);
-  } catch { /* no-op */ }
 }
 
 export function play(name: SoundName): void {
