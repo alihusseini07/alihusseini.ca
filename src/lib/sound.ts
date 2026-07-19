@@ -30,13 +30,8 @@ const listeners = new Set<() => void>();
 
 export function isMuted() { return muted; }
 
-/** What the user actually experiences: audio the browser hasn't unlocked yet is
-    silent no matter what the mute flag says, so report it as muted rather than
-    showing a speaker icon over a site that makes no sound. */
-function effectiveMuted(): boolean { return muted || !isAudioReady(); }
-
 export function toggleMute() {
-  if (effectiveMuted()) {
+  if (muted) {
     muted = false;
     play('toggleOn'); // pre-unlock this is queued and fires once audio starts
   } else {
@@ -50,7 +45,7 @@ export function toggleMute() {
 export function useMuted(): boolean {
   return useSyncExternalStore(
     (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
-    effectiveMuted,
+    () => muted,
   );
 }
 
