@@ -30,7 +30,7 @@ export const PROJECTS: PortfolioItem[] = [
     stack: ['TypeScript', 'Next.js', 'Fastify', 'Prisma', 'Playwright'],
     demo: '#',
     github: 'https://github.com/athravseruwam07/clarus',
-    image: '/assets/clarus-poster.jpg',
+    image: '/assets/clarus-poster.webp',
     video: '/assets/clarus-demo.webm',
   },
   {
