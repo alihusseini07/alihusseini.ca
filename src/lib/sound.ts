@@ -18,11 +18,11 @@ let muted = (() => {
     const stored = localStorage.getItem(MUTE_KEY);
     if (stored === '1') return true;
     if (stored === '0') return false;
-    // No saved choice yet. The OS silent/ring switch isn't exposed to the web,
-    // so we can't read it directly — default to muted on touch devices (phones/
-    // tablets) so the site never blasts audio unprompted. Desktop stays on.
+    // No saved choice yet — default unmuted on every device. Sounds only ever
+    // fire from a user gesture (tap/click), so nothing plays until the visitor
+    // interacts; the AudioContext is unlocked on that first gesture (see below).
     // A stored preference (set by the toggle) always overrides this.
-    return window.matchMedia?.('(pointer: coarse)').matches ?? false;
+    return false;
   } catch { return false; }
 })();
 
@@ -65,6 +65,27 @@ function ctx(): { ac: AudioContext; master: GainNode } | null {
   if (ac.state === 'suspended') void ac.resume();
   return { ac, master: master! };
 }
+
+// Browsers create an AudioContext in the 'suspended' state and only let it run
+// after a user gesture. Without this, the FIRST play() after load schedules its
+// nodes against a suspended context and is dropped — the site feels muted even
+// though `muted` is false, and interactions appear one step behind. Resume the
+// context on the first gesture (capture phase, so it runs before button
+// onClick handlers), then detach once it's running.
+let unlockBound = false;
+function bindUnlock(): void {
+  if (unlockBound || typeof window === 'undefined') return;
+  unlockBound = true;
+  const events = ['pointerdown', 'touchstart', 'keydown', 'click'] as const;
+  const unlock = () => {
+    const c = ctx(); // creates + resumes the context within the user gesture
+    if (c && c.ac.state === 'running') {
+      events.forEach((ev) => window.removeEventListener(ev, unlock, true));
+    }
+  };
+  events.forEach((ev) => window.addEventListener(ev, unlock, { capture: true, passive: true }));
+}
+bindUnlock();
 
 function noise(a: AudioContext): AudioBuffer {
   if (!noiseBuf) {
