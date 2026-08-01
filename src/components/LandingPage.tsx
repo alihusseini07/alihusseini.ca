@@ -250,7 +250,7 @@ export default function LandingPage() {
                 preview={PROFILE.affiliation.preview}
                 caption={PROFILE.affiliation.previewCaption}
                 className="hl-anim"
-                style={{ ...highlight, animationDelay: '420ms', textDecoration: 'none' }}
+                style={{ ...highlight, animationDelay: '420ms', textDecoration: 'underline' }}
               >
                 {PROFILE.affiliation.label}
               </LinkPreviewLink>{' '}
@@ -273,7 +273,7 @@ export default function LandingPage() {
                               preview={b.preview}
                               caption={b.previewCaption}
                               className="hl-anim"
-                              style={{ ...highlight, animationDelay: `${(4 + i) * 70 + 320}ms`, textDecoration: 'none' }}
+                              style={{ ...highlight, animationDelay: `${(4 + i) * 70 + 320}ms`, textDecoration: 'underline' }}
                             >
                               {b.highlightPart}
                             </LinkPreviewLink>
