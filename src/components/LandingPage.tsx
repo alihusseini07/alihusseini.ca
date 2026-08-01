@@ -172,7 +172,13 @@ export default function LandingPage() {
       display: 'flex',
       flexDirection: 'column',
     };
-    // one text line = one ruled row; glyphs ride just above each rule
+    // one text line = one ruled row; line-height (not a flex anchor) is what
+    // keeps this true when text wraps — each wrapped physical line gets its
+    // own RULE-tall band, so the whole paragraph stays snapped to the grid
+    // no matter how many lines it takes. A scaleY "stretch" transform can't
+    // be used here: applied to an inline-block spanning 2+ wrapped lines it
+    // scales the whole block as one rigid unit, blowing out the gap between
+    // lines — that's the desktop-only trick (single-line, non-wrapping).
     const mLine: CSSProperties = { lineHeight: `${RULE}px` };
     // resolve the highlighter ink for a bullet exactly as the desktop path does
     const bulletInk = (b: (typeof PROFILE.bullets)[number]): CSSProperties => {
@@ -238,7 +244,7 @@ export default function LandingPage() {
               <PixelName lines={PROFILE.name.split(' ')} width={250} color={THEME.nameColor} squash={[0.62, 0.8]} snap={RULE} interactive={false} />
             </h1>
 
-            <p className="enter-rise" style={{ margin: `${RULE}px 0 0`, fontSize: 12, ...mLine, color: THEME.subTextColor, ...enter(2) }}>
+            <p className="enter-rise" style={{ margin: `${RULE}px 0 0`, fontSize: 14, ...mLine, color: THEME.subTextColor, ...enter(2) }}>
               <LinkPreviewLink
                 href={PROFILE.affiliation.link}
                 preview={PROFILE.affiliation.preview}
@@ -255,7 +261,7 @@ export default function LandingPage() {
               {PROFILE.bullets.map((b, i) => {
                 const parts = b.highlightPart ? b.text.split(b.highlightPart) : null;
                 return (
-                  <li key={b.text} className="enter-rise" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 11, ...mLine, color: THEME.bodyColor, ...enter(4 + i) }}>
+                  <li key={b.text} className="enter-rise" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 13, ...mLine, color: THEME.bodyColor, ...enter(4 + i) }}>
                     <span style={{ ...marker(b.color === '#34302a' ? THEME.nameColor : accent(b.color)), marginTop: (RULE - 9) / 2, marginBottom: 0 }} />
                     <span>
                       {parts ? (
@@ -328,13 +334,24 @@ export default function LandingPage() {
                       </div>
                     </>
                   );
-                  return e.link && e.preview ? (
-                    <LinkPreviewLink key={e.company} href={e.link} preview={e.preview} caption={e.previewCaption} className="enter-pop" style={cardStyle}>
+                  const card = e.link && e.preview ? (
+                    <LinkPreviewLink href={e.link} preview={e.preview} caption={e.previewCaption} className="enter-pop" style={cardStyle}>
                       {inner}
                     </LinkPreviewLink>
                   ) : (
-                    <div key={e.company} className="enter-pop" style={cardStyle}>
+                    <div className="enter-pop" style={cardStyle}>
                       {inner}
+                    </div>
+                  );
+                  return (
+                    <div key={e.company} style={{ position: 'relative' }}>
+                      {/* enter-pop promotes the card to its own composited layer;
+                          iOS Safari sometimes fails to fully repaint that layer
+                          over the sheet's repeating rule pattern, letting it bleed
+                          through. This static, unanimated backer guarantees solid
+                          coverage underneath regardless. */}
+                      <div style={{ position: 'absolute', inset: 0, background: THEME.cardBg }} />
+                      {card}
                     </div>
                   );
                 })}
