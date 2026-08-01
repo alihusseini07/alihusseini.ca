@@ -123,11 +123,11 @@ export const PROFILE = {
     label: 'mechatronics engineering',
     school: '@ uwaterloo',
     link: 'https://uwaterloo.ca/future-students/programs/mechatronics-engineering',
-    preview: '/assets/tron-preview.png',
+    preview: '/assets/tron-preview.webp',
     previewCaption: 'uwaterloo.ca',
   },
   bullets: [
-    { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs', link: 'https://axl.vc/', preview: '/assets/axl-preview.png', previewCaption: 'axl.vc' },
+    { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs', link: 'https://axl.vc/', preview: '/assets/axl-preview.webp', previewCaption: 'axl.vc' },
     { color: '#3f8fd6', text: 'interested in software & robotics' },
     { color: '#5db84a', text: 'i like kickboxing, anime, and fashion' },
     { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027', highlightColor: '#e0409a' },
@@ -149,7 +149,7 @@ export const EXPERIENCE = [
     logo: '/assets/ndi-logo.png',
     accent: '#3f8fd6',
     link: 'https://netdynamicconsulting.com/ats360/',
-    preview: '/assets/ats360-preview.png',
+    preview: '/assets/ats360-preview.webp',
     previewCaption: 'ats360.com',
   },
   {
@@ -159,7 +159,7 @@ export const EXPERIENCE = [
     logo: '/assets/waterlooformulaelectric_logo.png',
     accent: '#5db84a',
     link: 'https://www.uwfsae.ca/',
-    preview: '/assets/uwfe-preview.png',
+    preview: '/assets/uwfe-preview.webp',
     previewCaption: 'uwfsae.ca',
   },
 ] as {

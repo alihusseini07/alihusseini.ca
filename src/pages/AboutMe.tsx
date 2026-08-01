@@ -154,6 +154,10 @@ function DiaryMedia({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reduced = useReducedMotion();
+  // image load state: show a pixel spinner + fade the photo in once decoded.
+  // A cached image can finish before onLoad binds, so the ref callback also
+  // checks .complete.
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -188,7 +192,16 @@ function DiaryMedia({
       />
     ) : (
       <>
-        <img src={media.src} alt={media.alt} loading={priority ? 'eager' : 'lazy'} draggable={false} />
+        <img
+          src={media.src}
+          alt={media.alt}
+          loading={priority ? 'eager' : 'lazy'}
+          draggable={false}
+          ref={(el) => { if (el?.complete) setImgLoaded(true); }}
+          onLoad={() => setImgLoaded(true)}
+          style={{ opacity: imgLoaded ? 1 : 0, transition: 'opacity .4s ease' }}
+        />
+        {!imgLoaded && <span className="media-spin" aria-hidden />}
         {media.hoverVideo && (
           <HoverVideo
             src={media.hoverVideo}

@@ -917,6 +917,27 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 .about-media img,
 .about-media video { width: 100%; height: 100%; display: block; object-fit: cover; }
 
+/* pixel spinner shown while a photo/cover still decodes (see media-spin usage
+   in DiaryMedia + ImageSlot). Centered, spins a square 8-bit ring. */
+.media-spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  z-index: 2;
+  pointer-events: none;
+  border: 3px solid rgba(52, 48, 42, .18);
+  border-top-color: rgba(52, 48, 42, .62);
+  /* steps() keeps the spin chunky/pixelated rather than smooth */
+  animation: media-spin 0.8s steps(8) infinite;
+}
+@keyframes media-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .media-spin { animation-duration: 2s; }
+}
+
 /* Row-1 tiles that carry a clip: still image swaps to video on hover, click to play. */
 .about-media.has-hover-video { cursor: pointer; }
 .about-media__hover {

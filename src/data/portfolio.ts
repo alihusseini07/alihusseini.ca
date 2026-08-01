@@ -20,7 +20,7 @@ export const PROJECTS: PortfolioItem[] = [
     stack: ['Python', 'FastAPI', 'Celery', 'Redis', 'PostgreSQL', 'React', 'Vite', 'Docker', 'Kubernetes'],
     demo: '#',
     github: 'https://github.com/alihusseini07/compilot',
-    image: '/assets/compilot.png',
+    image: '/assets/compilot.webp',
   },
   {
     title: 'Clarus',
