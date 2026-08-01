@@ -513,7 +513,7 @@ export default function AboutMe() {
             <div className="about-hero__copy">
               <h1 id="about-title">about me</h1>
               <p>i'm ali, a mechatronics engineering student at the university of waterloo. my goal is to build things that make people's lives easier, and software and robotics are the perfect means to do just that.</p>
-              <p>off the clock i'm at the gym, defending my anime tier lists, or putting together an outfit i'll overthink anyway. this page is the personal, non-resume stuff.</p>
+              <p>off the clock i'm at the gym, defending my anime tier lists, or putting together another outfit. this page is the personal, non-resume stuff.</p>
               <div className="about-hero__contact">
                 <span className="about-hero__contact-label">reach me:</span>
                 <ContactBar links={PROFILE.links} variant="about" />
