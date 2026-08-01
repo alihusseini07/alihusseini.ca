@@ -3,7 +3,7 @@
 // Works on any deployed site (no sidecar / host bridge needed) and survives
 // reloads even for multi-MB videos that localStorage can't hold.
 
-const DB_NAME = 'portfolio-media';
+const DB_NAME = 'projects-media';
 const STORE = 'blobs';
 
 let dbP: Promise<IDBDatabase> | null = null;

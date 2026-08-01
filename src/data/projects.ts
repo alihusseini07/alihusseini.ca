@@ -1,4 +1,4 @@
-export interface PortfolioItem {
+export interface ProjectItem {
   title: string;
   year: string;
   description: string;
@@ -11,7 +11,7 @@ export interface PortfolioItem {
   video?: string;
 }
 
-export const PROJECTS: PortfolioItem[] = [
+export const PROJECTS: ProjectItem[] = [
   {
     title: 'Compilot',
     year: '2026',

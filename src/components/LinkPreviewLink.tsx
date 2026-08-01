@@ -18,8 +18,8 @@ const CARD_W = 190;
 
 /**
  * Inline link that pops a polaroid-framed screenshot of the destination above
- * the cursor on hover, matching the pinned prints on the portfolio page. Plays
- * the same lens whir the portfolio polaroids use on first entry.
+ * the cursor on hover, matching the pinned prints on the projects page. Plays
+ * the same lens whir the projects polaroids use on first entry.
  */
 export default function LinkPreviewLink({ href, preview, caption, className, style, children, onEnter, onLeave }: Props) {
   const [hover, setHover] = useState(false);
@@ -81,7 +81,7 @@ export default function LinkPreviewLink({ href, preview, caption, className, sty
             width: CARD_W,
             zIndex: 9999,
             pointerEvents: 'none',
-            // polaroid print — same look as the portfolio media frames
+            // polaroid print — same look as the projects media frames
             background: '#fffdf6',
             padding: '8px 8px 0',
             border: '2px solid #34302a',

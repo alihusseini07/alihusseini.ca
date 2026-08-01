@@ -53,7 +53,7 @@ export interface Theme {
   /** paper/polaroid/card surface */
   cardBg: string;
   cardBorder: string;
-  /** faint dot-grid on the portfolio design board */
+  /** faint dot-grid on the projects design board */
   dotGrid: string;
 }
 
@@ -167,9 +167,9 @@ export const EXPERIENCE = [
   link?: string; preview?: string; previewCaption?: string;
 }[];
 
-// Landing-page folders. "Projects" is now "Portfolio"; "Experiences" is now "Skills".
+// Landing-page folders. "Experiences" is now "Skills".
 export const FOLDERS = [
-  { label: 'About',  color: 'amber' as const, route: '/about' },
-  { label: 'Portfolio', color: 'blue'  as const, route: '/portfolio' },
-  { label: 'Skills',    color: 'green' as const, route: '/skills' },
+  { label: 'About',    color: 'amber' as const, route: '/about' },
+  { label: 'Projects', color: 'blue'  as const, route: '/projects' },
+  { label: 'Skills',   color: 'green' as const, route: '/skills' },
 ];

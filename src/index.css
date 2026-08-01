@@ -335,7 +335,7 @@ html[data-theme='dark'] [style*='cursor: pointer'] {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* scroll-triggered reveal (portfolio frames): media and text slam in from
+/* scroll-triggered reveal (projects frames): media and text slam in from
    opposite sides with an overshoot bounce as each frame scrolls into view */
 @keyframes slide-in-left {
   0% { opacity: 0; transform: translateX(-140px); }
@@ -466,7 +466,7 @@ html[data-theme='dark'] .btn-sticker::after {
 /* -------------------------------------------------------------------------
    ABOUT / WARM PHOTO DIARY
    Full-canvas editorial sheet; shared pixel controls remain intentionally
-   outside this type system so the site still feels like one portfolio.
+   outside this type system so the site still feels like one project.
    ---------------------------------------------------------------------- */
 .about-root {
   min-height: 100vh;
@@ -766,7 +766,7 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 .about-strip__caption-lead { color: var(--about-ink); }
 
 /* "(watch out for spoilers)" — hand-drawn red underline traced on when the
-   strip scrolls into view (pathLength=1 dash 1→0, same trick as the portfolio
+   strip scrolls into view (pathLength=1 dash 1→0, same trick as the projects
    side doodles). */
 .about-spoiler { position: relative; white-space: nowrap; }
 .about-spoiler__underline {

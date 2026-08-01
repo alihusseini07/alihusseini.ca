@@ -3,7 +3,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import PageTransition from './components/PageTransition';
 import LandingPage from './components/LandingPage';
 import AboutMe from './pages/AboutMe';
-import Portfolio from './pages/Portfolio';
+import Projects from './pages/Projects';
 import Skills from './pages/Skills';
 import { ThemeProvider } from './lib/theme';
 
@@ -16,7 +16,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/about" element={<AboutMe />} />
-              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/skills" element={<Skills />} />
             </Routes>
           </PageTransition>
