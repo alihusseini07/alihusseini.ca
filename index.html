@@ -7,7 +7,13 @@
     <title>Ali Husseini</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <!-- Preload the latin woff2 for the fonts that carry the page (VT323 body,
+         Anton headings, Press Start 2P pixel UI) so they're decoded before first
+         paint. With display=block below, this all but eliminates the flash. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/vt323/v18/pxiKyp0ihIEF2isfFJU.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm3Kz-C8.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/pressstart2p/v16/e3t4euO8T-267oIAQAu6jDQyK3nVivM.woff2">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400;700&family=VT323&display=block" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>
