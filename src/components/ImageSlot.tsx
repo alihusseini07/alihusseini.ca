@@ -9,10 +9,15 @@ export interface ImageSlotProps {
   /** image URL, committed as a repo asset */
   src?: string;
   style?: CSSProperties;
+  /** reports the image's intrinsic aspect ratio (w/h) once it loads */
+  onAspect?: (ratio: number) => void;
 }
 
 /** Static cover image. Set `src` in the data file to change it — no in-browser editing. */
-export default function ImageSlot({ placeholder = 'No image set', src, style }: ImageSlotProps) {
+export default function ImageSlot({ placeholder = 'No image set', src, style, onAspect }: ImageSlotProps) {
+  const report = (el: HTMLImageElement | null) => {
+    if (el?.naturalWidth && el.naturalHeight) onAspect?.(el.naturalWidth / el.naturalHeight);
+  };
   // A cached image can finish before onLoad binds, so the ref callback also
   // checks .complete; until loaded we show a pixel spinner and fade the cover in.
   const [loaded, setLoaded] = useState(false);
@@ -25,8 +30,8 @@ export default function ImageSlot({ placeholder = 'No image set', src, style }: 
               src={src}
               alt=""
               draggable={false}
-              ref={(el) => { if (el?.complete) setLoaded(true); }}
-              onLoad={() => setLoaded(true)}
+              ref={(el) => { if (el?.complete) { setLoaded(true); report(el); } }}
+              onLoad={(e) => { setLoaded(true); report(e.currentTarget); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: loaded ? 1 : 0, transition: 'opacity .4s ease' }}
             />
             {!loaded && <span className="media-spin" aria-hidden />}

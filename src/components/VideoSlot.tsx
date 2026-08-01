@@ -11,6 +11,8 @@ export interface VideoSlotProps {
   /** optional pre-set video URL (a committed asset); a drop overrides it */
   src?: string;
   style?: CSSProperties;
+  /** reports the video's intrinsic aspect ratio (w/h) once metadata loads */
+  onAspect?: (ratio: number) => void;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface VideoSlotProps {
  * pop-up with native controls (mute, pause, rewind, etc). The uploaded file
  * persists in IndexedDB, keyed by `id`.
  */
-export default function VideoSlot({ id, placeholder = 'Drop a video', src, style }: VideoSlotProps) {
+export default function VideoSlot({ id, placeholder = 'Drop a video', src, style, onAspect }: VideoSlotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const urlRef = useRef<string | null>(null);
@@ -102,6 +104,10 @@ export default function VideoSlot({ id, placeholder = 'Drop a video', src, style
             muted
             playsInline
             draggable={false}
+            onLoadedMetadata={(e) => {
+              const v = e.currentTarget;
+              if (v.videoWidth && v.videoHeight) onAspect?.(v.videoWidth / v.videoHeight);
+            }}
             onClick={() => setOpen(true)}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#1c1a17', cursor: 'pointer' }}
           />

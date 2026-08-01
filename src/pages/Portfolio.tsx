@@ -122,6 +122,8 @@ export default function Portfolio() {
   const isMobile = useIsMobile();
   const frameRefs = useRef<(HTMLElement | null)[]>([]);
   const [shown, setShown] = useState<boolean[]>(() => PROJECTS.map(() => false));
+  // video aspect ratios (w/h), reported once metadata loads; sizes the print to hug the clip
+  const [ratios, setRatios] = useState<Record<number, number>>({});
 
   // scroll-triggered reveal: each frame slides in as it scrolls into view
   useEffect(() => {
@@ -230,11 +232,11 @@ export default function Portfolio() {
                       {/* pushpin holding the print to the board */}
                       <div aria-hidden style={{ position: 'absolute', top: -9, left: '50%', marginLeft: -8, width: 16, height: 16, borderRadius: '50%', background: accent(PINS[i % PINS.length]), border: '2px solid #34302a', boxShadow: 'inset 3px 3px 0 rgba(255,255,255,.4), inset -3px -3px 0 rgba(0,0,0,.25), 0 3px 3px rgba(52,48,42,.3)', zIndex: 3 }} />
                       {/* photo window: dark like undeveloped film until the media loads */}
-                      <div style={{ position: 'relative', width: '100%', height: MEDIA_H, background: '#241f19', overflow: 'hidden' }}>
+                      <div style={{ position: 'relative', width: '100%', ...(ratios[i] ? { aspectRatio: String(ratios[i]) } : { height: MEDIA_H }), background: '#241f19', overflow: 'hidden' }}>
                         {d.video ? (
-                          <VideoSlot id={`proj-${i}-media`} src={d.video} placeholder="drop demo video" style={{ display: 'block', width: '100%', height: MEDIA_H }} />
+                          <VideoSlot id={`proj-${i}-media`} src={d.video} placeholder="drop demo video" onAspect={(r) => setRatios((m) => (m[i] === r ? m : { ...m, [i]: r }))} style={{ display: 'block', width: '100%', height: '100%' }} />
                         ) : (
-                          <ImageSlot id={`proj-${i}-media`} src={d.image} placeholder="drop cover" style={{ display: 'block', width: '100%', height: MEDIA_H }} />
+                          <ImageSlot id={`proj-${i}-media`} src={d.image} placeholder="drop cover" onAspect={(r) => setRatios((m) => (m[i] === r ? m : { ...m, [i]: r }))} style={{ display: 'block', width: '100%', height: '100%' }} />
                         )}
                         {/* film gloss streak */}
                         <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.16) 9%, transparent 9%, transparent 13%, rgba(255,255,255,.08) 13%, rgba(255,255,255,.08) 16%, transparent 16%)' }} />
