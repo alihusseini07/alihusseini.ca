@@ -297,12 +297,44 @@ export default function PixelName({ lines, width = 440, color = '#3f8fd6', lineG
     }
     window.addEventListener('theme-reveal', onReveal);
 
-    // rasterizing before the display font arrives would sample a fallback font
-    document.fonts.load(`80px ${FONT}`).then(build);
+    // Rasterizing before Anton arrives samples a fallback font, giving the
+    // garbled thin-stroke render seen on mobile first loads. document.fonts.load
+    // resolves *immediately* if no matching @font-face is registered yet (the
+    // Google Fonts <link> may not be parsed when React mounts), so we can't just
+    // build in its .then. Instead: only build once Anton is genuinely present
+    // (check the family alone — the FONT list's fallbacks would always pass),
+    // triggered from load()/ready() plus a short poll for the late-registration
+    // race, whichever fires first.
+    const ANTON = "80px 'Anton'";
+    let pollId = 0;
+    let built = false;
+    const buildWhenReady = () => {
+      if (disposed || built) return;
+      if (!document.fonts.check(ANTON)) return;
+      built = true;
+      if (pollId) window.clearInterval(pollId);
+      build();
+    };
+    document.fonts.load(ANTON).then(buildWhenReady).catch(() => {});
+    document.fonts.ready.then(buildWhenReady).catch(() => {});
+    buildWhenReady();
+    if (!built) {
+      let tries = 0;
+      pollId = window.setInterval(() => {
+        if (built || disposed || tries++ > 50) {
+          window.clearInterval(pollId);
+          // last resort: draw with whatever's available rather than nothing
+          if (!built && !disposed) { built = true; build(); }
+          return;
+        }
+        buildWhenReady();
+      }, 100);
+    }
 
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      if (pollId) window.clearInterval(pollId);
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('theme-reveal', onReveal);
