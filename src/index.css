@@ -765,6 +765,30 @@ html[data-theme='dark'] .about-strip__frame { background: #d9cdb8; }
 .about-strip__caption--top { margin: 0 auto 18px; max-width: 74ch; }
 .about-strip__caption-lead { color: var(--about-ink); }
 
+/* "(watch out for spoilers)" — hand-drawn red underline traced on when the
+   strip scrolls into view (pathLength=1 dash 1→0, same trick as the portfolio
+   side doodles). */
+.about-spoiler { position: relative; white-space: nowrap; }
+.about-spoiler__underline {
+  position: absolute;
+  left: -2%;
+  bottom: -0.32em;
+  width: 104%;
+  height: 0.5em;
+  overflow: visible;
+  pointer-events: none;
+}
+.about-spoiler__underline path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.about-reveal.is-visible .about-spoiler__underline path {
+  animation: doodle-draw .7s cubic-bezier(.45, .05, .55, .95) .45s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-spoiler__underline path { animation: none; stroke-dashoffset: 0; }
+}
+
 /* Fashion carousel: active item centered, neighbors peek at the sides,
    transparent PNGs float straight on the page — no reel box. */
 .fashion-carousel { --fc-step: clamp(190px, 24vw, 330px); }

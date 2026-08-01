@@ -251,7 +251,25 @@ function AnimeCaption({ text }: { text: string }) {
       {paren && (
         <>
           {' '}
-          <span className="about-strip__caption-lead">{paren}</span>
+          <span className="about-strip__caption-lead about-spoiler">
+            {paren}
+            <svg
+              className="about-spoiler__underline"
+              viewBox="0 0 200 12"
+              preserveAspectRatio="none"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M2 7 C 26 3, 52 9, 78 6 S 130 3, 156 7 S 190 8, 198 5"
+                pathLength={1}
+                stroke="#c9352c"
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
         </>
       )}
     </p>
