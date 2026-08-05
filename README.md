@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="public/assets/favicon.png" alt="favicon" width="48" height="48" />
+
 # [alihusseini.ca](https://alihusseini.ca)
 
 my personal website
@@ -18,7 +20,7 @@ my personal website
 
 ## what's on it
 
-a landing page, then three stops: **about**, **projects**, and **skills**.
+a landing page, then three main pages: **about**, **projects**, and **skills**.
 
 - **about** is where the personality lives: a bio, a photo/video archive, and a scroll through the anime, shows, and fits i'm into
 - **projects** lays my work out like a pinboard of polaroids, tech-stack chips and all
