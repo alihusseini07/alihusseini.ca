@@ -25,7 +25,7 @@ a landing page, then three main pages: **about**, **projects**, and **skills**.
 - **about** is where the personality lives: a bio, a photo/video archive, and a scroll through the anime, shows, and fits i'm into
 - **projects** lays my work out like a pinboard of polaroids, tech-stack chips and all
 - **skills** is a spellbook of everything i work with, because a normal list felt too boring for a portfolio
-- scroll to the bottom of any page and the footer becomes a little interactive sea: drag the ship to sail it, click the water for a splash, click the ship to fire the cannon and make luffy's arm stretch out (watch of easter eggs)
+- scroll to the bottom of any page and the footer becomes a little interactive sea: drag the ship to sail it, click the water for a splash, click the ship to fire the cannon and make luffy's arm stretch out (watch for easter eggs)
 - light/dark mode, a little sound design, and custom pixel cursors run underneath all of it
 
 ## built with
