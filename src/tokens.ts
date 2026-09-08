@@ -127,7 +127,7 @@ export const PROFILE = {
     previewCaption: 'uwaterloo.ca',
   },
   bullets: [
-    { color: '#e8a72e', text: 'incoming @ axl labs', highlightPart: 'axl labs', link: 'https://axl.vc/', preview: '/assets/axl-preview.webp', previewCaption: 'axl.vc' },
+    { color: '#e8a72e', text: 'building startups @ axl labs', highlightPart: 'axl labs', link: 'https://axl.vc/', preview: '/assets/axl-preview.webp', previewCaption: 'axl.vc' },
     { color: '#3f8fd6', text: 'interested in software & robotics' },
     { color: '#5db84a', text: 'i like kickboxing, anime, and fashion' },
     { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027', highlightColor: '#e0409a' },
