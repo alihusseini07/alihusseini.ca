@@ -143,6 +143,17 @@ export const PROFILE = {
 // Landing-page experience cards, stacked to the right of the intro bullets.
 export const EXPERIENCE = [
   {
+    company: 'axl labs',
+    role: 'AI software engineer',
+    dates: 'sept 2026 – present',
+    logo: '/assets/axl-logo-black.png',
+    logoDark: '/assets/axl-logo-white.png',
+    accent: '#e8a72e',
+    link: 'https://axl.vc/',
+    preview: '/assets/axl-preview.webp',
+    previewCaption: 'axl.vc',
+  },
+  {
     company: 'ATS360 (Netdynamic)',
     role: 'software engineer co-op',
     dates: 'jan – apr 2026',
@@ -163,7 +174,7 @@ export const EXPERIENCE = [
     previewCaption: 'uwfsae.ca',
   },
 ] as {
-  company: string; role: string; dates: string; logo: string; accent: string;
+  company: string; role: string; dates: string; logo: string; logoDark?: string; accent: string;
   link?: string; preview?: string; previewCaption?: string;
 }[];
 
