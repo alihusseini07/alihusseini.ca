@@ -27,6 +27,11 @@ import {
   siCelery,
   siKubernetes,
   siRedis,
+  siXml,
+  siGithubactions,
+  siXcode,
+  siElevenlabs,
+  siVitest,
 } from 'simple-icons'
 
 export type Category = 'languages' | 'frameworks' | 'tools'
@@ -60,11 +65,13 @@ export const skills: Skill[] = [
   { name: 'HTML',            category: 'languages', blurb: 'Semantic structure of the web.', icon: fromSi(siHtml5), related: ['CSS', 'JavaScript'] },
   { name: 'CSS',             category: 'languages', blurb: 'Layout, motion, design systems.', icon: fromSi(siCss), related: ['HTML', 'Tailwind CSS'] },
   { name: 'Bash',            category: 'languages', blurb: 'Glue for everything CLI.', icon: fromSi(siGnubash), related: ['Git', 'Docker'] },
-  { name: 'Swift',           category: 'languages', blurb: 'Apple-platform language for iOS / macOS.', icon: fromSi(siSwift), related: ['SwiftUI'] },
+  { name: 'Swift',           category: 'languages', blurb: 'Apple-platform language for iOS / macOS.', icon: fromSi(siSwift), related: ['SwiftUI', 'Xcode'] },
+  { name: 'Java',            category: 'languages', blurb: 'Object-oriented workhorse for backends and coursework.', icon: img('/icons/java.svg') },
+  { name: 'XML',             category: 'languages', blurb: 'Structured markup for configs and data exchange.', icon: fromSi(siXml), related: ['HTML', 'NetSuite'] },
 
   // Frameworks & Libraries
   { name: 'React',           category: 'frameworks', blurb: 'Component model for UI.', icon: fromSi(siReact), related: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Vite'] },
-  { name: 'SuiteScript',     category: 'frameworks', blurb: 'JS SDK for NetSuite customization.', icon: img('/icons/suitescript.svg'), related: ['JavaScript'] },
+  { name: 'SuiteScript',     category: 'frameworks', blurb: 'JS SDK for NetSuite customization.', icon: img('/icons/suitescript.svg'), related: ['JavaScript', 'NetSuite'] },
   { name: 'SwiftUI',         category: 'frameworks', blurb: 'Declarative UI framework for Apple platforms.', icon: img('/icons/swiftui.svg'), related: ['Swift'] },
   { name: 'Next.js',         category: 'frameworks', blurb: 'App router, SSR, the full stack.', icon: fromSi(siNextdotjs), related: ['React', 'TypeScript', 'Tailwind CSS'] },
   { name: 'Tailwind CSS',    category: 'frameworks', blurb: 'Utility-first styling at speed.', icon: fromSi(siTailwindcss), related: ['CSS', 'React', 'Next.js'] },
@@ -79,10 +86,13 @@ export const skills: Skill[] = [
   { name: 'FastAPI',         category: 'frameworks', blurb: 'High-performance Python API framework with auto-docs.', icon: fromSi(siFastapi), related: ['Python', 'Celery'] },
   { name: 'Vite',            category: 'frameworks', blurb: 'Lightning-fast frontend build tool.', icon: fromSi(siVite), related: ['React', 'TypeScript'] },
   { name: 'Celery',          category: 'frameworks', blurb: 'Distributed task queue for Python.', icon: fromSi(siCelery), related: ['Python', 'FastAPI', 'Redis'] },
+  { name: 'Vitest',          category: 'frameworks', blurb: 'Fast unit testing built on Vite.', icon: fromSi(siVitest), related: ['Vite', 'TypeScript', 'pytest'] },
 
   // Tools
   { name: 'Git',                category: 'tools', blurb: 'Version control everywhere.', icon: fromSi(siGit), related: ['GitHub'] },
-  { name: 'GitHub',             category: 'tools', blurb: 'Code, reviews, releases.', icon: fromSi(siGithub), related: ['Git'] },
+  { name: 'GitHub',             category: 'tools', blurb: 'Code, reviews, releases.', icon: fromSi(siGithub), related: ['Git', 'GitHub Actions'] },
+  { name: 'GitHub Actions',     category: 'tools', blurb: 'CI/CD pipelines straight from the repo.', icon: fromSi(siGithubactions), related: ['GitHub', 'Docker'] },
+  { name: 'Xcode',              category: 'tools', blurb: 'Apple IDE for building and shipping iOS apps.', icon: fromSi(siXcode), related: ['Swift', 'SwiftUI'] },
   { name: 'Docker',             category: 'tools', blurb: 'Reproducible runtimes.', icon: fromSi(siDocker), related: ['Railway', 'PostgreSQL', 'Kubernetes'] },
   { name: 'Kubernetes',         category: 'tools', blurb: 'Container orchestration at scale.', icon: fromSi(siKubernetes), related: ['Docker'] },
   { name: 'Redis',              category: 'tools', blurb: 'In-memory data store for caching and queues.', icon: fromSi(siRedis), related: ['Celery', 'PostgreSQL'] },
@@ -93,6 +103,9 @@ export const skills: Skill[] = [
   { name: 'AWS Lambda',         category: 'tools', blurb: 'Serverless compute.', icon: img('/icons/aws-lambda.svg'), related: ['AWS S3', 'AWS Bedrock', 'AWS IAM', 'Node.js', 'Python'] },
   { name: 'AWS Bedrock',        category: 'tools', blurb: 'Managed foundation models.', icon: img('/icons/aws-bedrock.svg'), related: ['AWS Lambda', 'AWS S3', 'Python'] },
   { name: 'AWS IAM',            category: 'tools', blurb: 'Identity and access management for AWS.', icon: img('/icons/aws-iam.svg'), related: ['AWS S3', 'AWS Lambda', 'AWS Bedrock'] },
+  { name: 'NetSuite',           category: 'tools', blurb: 'Cloud ERP for finance, inventory, and ops.', icon: img('/icons/netsuite.svg'), related: ['SuiteScript', 'XML'] },
+  { name: 'ElevenLabs',         category: 'tools', blurb: 'AI voice generation and text-to-speech.', icon: fromSi(siElevenlabs), related: ['OpenRouter'] },
+  { name: 'OpenRouter',         category: 'tools', blurb: 'One API for routing across LLM providers.', icon: img('/icons/openrouter.svg'), related: ['AWS Bedrock', 'ElevenLabs'] },
   { name: 'AutoCAD',            category: 'tools', blurb: '2D/3D drafting standard.', icon: img('/icons/autocad.svg'), related: ['Fusion 360', 'Autodesk Inventor', 'SolidWorks'] },
   { name: 'Fusion 360',         category: 'tools', blurb: 'Cloud-based CAD/CAM/CAE.', icon: img('/icons/fusion-360.svg'), related: ['AutoCAD', 'Autodesk Inventor', 'SolidWorks'] },
   { name: 'Autodesk Inventor',  category: 'tools', blurb: 'Mechanical 3D modeling and simulation.', icon: img('/icons/autodesk-inventor.svg'), related: ['AutoCAD', 'Fusion 360', 'SolidWorks'] },
