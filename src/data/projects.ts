@@ -16,7 +16,7 @@ export const PROJECTS: ProjectItem[] = [
     title: 'Compilot',
     year: '2026',
     description:
-      'A tiered multi-agent platform that tracks and analyzes competitor companies across the web. Runs 3 parallel scraper agents across 6+ sources (GitHub, RSS, job boards, HN) and synthesizes LLM conclusions into daily, weekly, and monthly intelligence reports.',
+      'An AI tool that monitors competitors across GitHub, news, job boards, and Hacker News, and turns what it finds into daily, weekly, and monthly reports.',
     stack: ['Python', 'FastAPI', 'Celery', 'Redis', 'PostgreSQL', 'React', 'Vite', 'Docker', 'Kubernetes'],
     demo: '#',
     github: 'https://github.com/alihusseini07/compilot',
