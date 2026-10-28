@@ -163,16 +163,6 @@ export const EXPERIENCE = [
     preview: '/assets/ats360-preview.webp',
     previewCaption: 'ats360.com',
   },
-  {
-    company: 'UW Formula Electric',
-    role: 'firmware developer',
-    dates: 'sept – dec 2025',
-    logo: '/assets/waterlooformulaelectric_logo.png',
-    accent: '#5db84a',
-    link: 'https://www.uwfsae.ca/',
-    preview: '/assets/uwfe-preview.webp',
-    previewCaption: 'uwfsae.ca',
-  },
 ] as {
   company: string; role: string; dates: string; logo: string; logoDark?: string; accent: string;
   link?: string; preview?: string; previewCaption?: string;
