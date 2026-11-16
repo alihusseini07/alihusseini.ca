@@ -133,7 +133,7 @@ export const PROFILE = {
     { color: '#34302a', text: 'seeking summer 2027 opportunities', highlightPart: 'summer 2027', highlightColor: '#e0409a' },
   ] as { color: string; text: string; highlight?: boolean; highlightPart?: string; highlightColor?: string; link?: string; preview?: string; previewCaption?: string }[],
   links: {
-    linkedin: 'https://www.linkedin.com/in/ahusseini-profile/',
+    linkedin: 'https://www.linkedin.com/in/alihusse/',
     github: 'https://github.com/alihusseini07',
     x: 'https://x.com/ahusseini07',
     email: 'mailto:ahusseini007@gmail.com',
